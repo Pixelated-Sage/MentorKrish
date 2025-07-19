@@ -1,0 +1,50 @@
+
+/* src/styles/globals.css */
+@import "tailwindcss";
+/* THEN your custom CSS below */
+
+/* Custom global color palette using CSS variables */
+:root {
+  --bg-white: #ffffff;
+  --primary-red: #e53935;        /* Card red */
+  --accent-yellow: #fbc02d;      /* Logo yellow/orange */
+  --text-black: #000000;
+  --text-grey: #4a4a4a;
+  --text-light-grey: #9e9e9e;
+}
+
+/* Custom Tailwind-friendly utility classes */
+.bg-main {
+  background-color: var(--bg-white);
+}
+
+.bg-card {
+  background-color: var(--primary-red);
+}
+
+.bg-accent {
+  background-color: var(--accent-yellow);
+}
+
+.text-black {
+  color: var(--text-black);
+}
+
+.text-grey {
+  color: var(--text-grey);
+}
+
+.text-light-grey {
+  color: var(--text-light-grey);
+}
+
+/* Optional: Base font styling */
+body {
+  background-color: var(--bg-white);
+  color: var(--text-black);
+  font-family: 'Inter', sans-serif;
+}
+
+
+
+
