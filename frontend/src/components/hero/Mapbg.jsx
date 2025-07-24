@@ -1,18 +1,22 @@
-// src/components/MapBg.jsx
 import React from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const MapBg = () => {
+  /*
+    Using CSS transform scale for zoom on small devices,
+    plus adjusting projection zoom slightly for better phone look.
+  */
   return (
-    <div className="absolute inset-0 z-[0] pointer-events-auto">
+    <div className="absolute inset-0 z-[0] pointer-events-auto overflow-visible">
       <ComposableMap
         projection="geoMercator"
-        projectionConfig={{ scale: 150 }}
+        projectionConfig={{ scale: 160 }}
         width={1000}
         height={600}
         style={{ width: "100%", height: "100%" }}
+        className="scale-190 -mt-[3rem] md:scale-100 md:mt-[0] origin-center transition-transform duration-500"
       >
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
@@ -24,8 +28,8 @@ const MapBg = () => {
                 strokeWidth={0.3}
                 style={{
                   default: {
-                    fill: "#999999",     // Soft gray
-                    opacity: 0.2,         // Low opacity to make it subtle
+                    fill: "#999999", // Soft gray
+                    opacity: 0.2,
                     transition: "all 0.3s ease-in-out",
                   },
                   hover: {

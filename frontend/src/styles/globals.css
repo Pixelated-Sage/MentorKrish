@@ -3,48 +3,48 @@
 @import "tailwindcss";
 /* THEN your custom CSS below */
 
-/* Custom global color palette using CSS variables */
 :root {
-  --bg-white: #ffffff;
-  --primary-red: #e53935;        /* Card red */
-  --accent-yellow: #fbc02d;      /* Logo yellow/orange */
-  --text-black: #000000;
-  --text-grey: #4a4a4a;
-  --text-light-grey: #9e9e9e;
+  --w1: #ffffff;
+  --w2: #f5f5f5;
+  --g1: #4a4a4a;
+  --g2: #7a7979;
+
+  --r1: #D84040;
+  --r2: #8E1616;
+  --accent: #fbc02d;
+  --black: #000000;
 }
 
-/* Custom Tailwind-friendly utility classes */
-.bg-main {
-  background-color: var(--bg-white);
-}
+/* Backgrounds */
+.bg-w1 { background-color: var(--w1); }
+.bg-w2 { background-color: var(--w2); }
+.bg-r1 { background-color: var(--r1); }
+.bg-r2 { background-color: var(--r2); }
+.bg-g1 { background-color: var(--g1); }
+.bg-g2 { background-color: var(--g2); }
+.bg-accent { background-color: var(--accent); }
+.bg-black { background-color: var(--black); }
 
-.bg-card {
-  background-color: var(--primary-red);
-}
+/* Text */
+.text-w1 { color: var(--w1); }
+.text-w2 { color: var(--w2); }
+.text-g1 { color: var(--g1); }
+.text-g2 { color: var(--g2); }
+.text-r1 { color: var(--r1); }
+.text-r2 { color: var(--r2); }
+.text-black { color: var(--black); }
 
-.bg-accent {
-  background-color: var(--accent-yellow);
-}
-
-.text-black {
-  color: var(--text-black);
-}
-
-.text-grey {
-  color: var(--text-grey);
-}
-
-.text-light-grey {
-  color: var(--text-light-grey);
-}
-
-/* Optional: Base font styling */
-body {
-  background-color: var(--bg-white);
-  color: var(--text-black);
-  font-family: 'Inter', sans-serif;
-}
+/* Utilities */
+.border-w1 { border-color: var(--w1); }
+.border-g2 { border-color: var(--g2); }
+.border-r1 { border-color: var(--r1); }
+.border-r2 { border-color: var(--r2); }
 
 
+
+
+
+
+/* styles/globals.css or in a global stylesheet */
 
 

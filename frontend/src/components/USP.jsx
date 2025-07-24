@@ -27,19 +27,14 @@ const uspData = [
     icon: "🗺️",
     desc: "Align aspirations with financial realities through strategic planning.",
   },
-  {
-    title: "Proven Success",
-    icon: "🏆",
-    desc: "Our tailored approach has consistently yielded positive outcomes.",
-  },
 ];
 
 const USP = () => {
   return (
-    <section className="bg-white py-16 px-4 md:px-20" id="usp">
+    <section className="bg-w1 py-16 px-4 md:px-20" id="usp">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Unique Strengths</h2>
-        <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-g1 mb-4">Our Unique Strengths</h2>
+        <p className="text-g1 text-lg max-w-3xl mx-auto">
           Unlock Your Potential with Mentor Krish’s Tailored Educational Approach
         </p>
       </div>
@@ -52,11 +47,11 @@ const USP = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.5 }}
             viewport={{ once: true }}
-            className="bg-gray-50 shadow-xl rounded-2xl p-6 hover:shadow-2xl transition duration-300 border border-gray-100"
+            className="bg-w2 shadow-xl rounded-2xl p-6 hover:shadow-2xl transition duration-300 border border-w1"
           >
             <div className="text-4xl mb-4">{usp.icon}</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">{usp.title}</h3>
-            <p className="text-gray-600 text-sm">{usp.desc}</p>
+            <h3 className="text-xl font-semibold text-black mb-2">{usp.title}</h3>
+            <p className="text-g1 text-sm">{usp.desc}</p>
           </motion.div>
         ))}
       </div>

@@ -1,79 +1,141 @@
-// CardRevealSection.jsx
-
 import React from 'react';
 
 const cardData = [
   {
     title: "Integrated Courses",
-    subtitle: "Your Gateway to Global Education: IELTS, SAT & more",
-    description: "Our Courses: SAT, PSAT, ACT, IELTS, TOEFL",
+    subtitle: "Your Gateway to Global Education",
+    tagline: "IELTS • SAT • PSAT • ACT • TOEFL",
+    description: "Comprehensive test preparation programs designed to unlock opportunities at world-class universities and institutions.",
     button: {
-      label: "Book Now",
+      label: "Book Consultation",
       link: "tel:+919999999999"
     },
-    extra: "📞 +91-9999999999 | 🌐 www.mentorkrish.com"
+    contact: {
+      phone: "+91-9999999999",
+      website: "www.mentorkrish.com"
+    },
+    icon: ""
   },
   {
     title: "Profile & Placement",
-    subtitle: "Profile Building, Career Counseling",
-    description: "Abroad & Domestic Placement Support for All",
+    subtitle: "Strategic Career Development",
+    tagline: "Build • Guide • Place",
+    description: "End-to-end career counseling with personalized profile building and comprehensive placement support for global opportunities.",
     button: {
-      label: "Get Guidance",
+      label: "Get Expert Guidance",
       link: "#"
-    }
+    },
+    icon: ""
   },
   {
-    title: "Do You Know?",
-    subtitle: "75% of people are in the wrong profession.",
-    description: "93.7% students are unsure about their career. Take a free career stream test!",
+    title: "Career Discovery",
+    subtitle: "Find Your True Calling",
+    tagline: "75% are in the wrong profession",
+    description: "Join the 6.3% who are confident about their career path. Take our scientifically-designed career assessment test.",
     button: {
-      label: "Take Test",
+      label: "Discover Your Path",
       link: "#"
-    }
+    },
+    stats: "93.7% students need career clarity",
+    icon: ""
   },
   {
     title: "DSAT Platform",
+    subtitle: "Digital SAT Excellence",
+    tagline: "Practice • Perfect • Perform",
     image: "/assets/img/dsat.jpg",
-    description: "Try our platform with real SAT-style mock questions.",
+    description: "Experience authentic SAT preparation with our advanced digital platform featuring real-time analytics and adaptive learning.",
     button: {
-      label: "Try Now",
+      label: "Start Free Trial",
       link: "#"
-    }
+    },
+    icon: ""
   }
 ];
 
 const CardRevealSection = () => {
   return (
-    <section className="relative -mt-[12rem] bg-white  pb-32 z-10">
-      {/* Cards Grid */}
-<div className="w-[90%] max-w-9xl mx-auto flex flex-wrap justify-center items-stretch gap-10">
+    <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10">
+      <div className="w-[90%] max-w-9xl mx-auto flex flex-wrap justify-center items-stretch gap-8">
         {cardData.map((card, index) => (
           <div
             key={index}
-            className="bg-[#D84040] text-white rounded-3xl shadow-2xl p-8 w-full md:w-[45%] xl:w-[22%] min-h-[400px] flex flex-col justify-between hover:scale-[1.05] transition-transform duration-300 ease-in-out"
+            className="bg-r1 text-w1 rounded-3xl shadow-2xl p-4 md:p-6 w-2/2 md:w-1/5 min-h-[380px] flex flex-col justify-between hover:scale-[1.05] hover:shadow-3xl transition-all duration-300 ease-in-out border border-white/10"
           >
-            <div className="space-y-3 mb-6">
-              <h2 className="text-3xl font-extrabold">{card.title}</h2>
-              {card.subtitle && <p className="text-lg text-gray-200">{card.subtitle}</p>}
+            {/* Header Section */}
+            <div className="space-y-2 mb-6">
+              {/* Icon and Title */}
+              <div className="flex items-center space-x-3">
+                <h2 className="text-2xl md:text-2xl font-bold tracking-tight leading-tight">
+                  {card.title}
+                </h2>
+              </div>
+              
+              {/* Subtitle */}
+              <h3 className="text-sm md:text-sm font-semibold text-accent leading-snug">
+                {card.subtitle}
+              </h3>
+              
+              {/* Tagline */}
+              <div className="inline-block">
+                <span className="text-sm font-medium text-w2 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">
+                  {card.tagline}
+                </span>
+              </div>
+              
+              {/* Image */}
               {card.image && (
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="w-full h-36 object-contain rounded"
-                />
+                <div className="my-4">
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="w-full h-36 object-cover rounded-xl shadow-lg border border-white/20"
+                  />
+                </div>
               )}
-              <p className="text-base text-white">{card.description}</p>
+              
+              {/* Description */}
+              <p className="text-sm md:text-base text-w1/90 leading-relaxed font-light">
+                {card.description}
+              </p>
+              
+              {/* Stats */}
+              {card.stats && (
+                <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                  <p className="text-xs font-medium text-accent text-center">
+                    📊 {card.stats}
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
+            
+            {/* Footer Section */}
+            <div className="space-y-3">
+              {/* CTA Button */}
               <a
                 href={card.button.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-accent text-black font-semibold py-2 px-4 rounded hover:scale-110 transition-transform duration-200 ease-in-out text-center"
+                className="block w-full bg-accent text-black font-bold py-3 px-6 rounded-xl hover:bg-w1 hover:scale-[1.02] transition-all duration-200 ease-in-out text-center shadow-lg hover:shadow-xl border-2 border-transparent hover:border-accent"
               >
                 {card.button.label}
               </a>
-              {card.extra && <p className="text-xs text-gray-300">{card.extra}</p>}
+              
+              {/* Contact Info */}
+              {card.contact && (
+                <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                  <div className="flex flex-col space-y-1 text-center">
+                    <p className="text-xs text-w2 flex items-center justify-center space-x-2">
+                      <span>📞</span>
+                      <span className="font-medium">{card.contact.phone}</span>
+                    </p>
+                    <p className="text-xs text-w2 flex items-center justify-center space-x-2">
+                      <span>🌐</span>
+                      <span className="font-medium">{card.contact.website}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
