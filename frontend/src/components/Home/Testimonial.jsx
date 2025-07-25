@@ -115,7 +115,7 @@ export default function HomeTestimonial() {
 
   return (
     <section className="px-0 py-10 md:py-16 bg-w2">
-      <div className="max-w-9xl mx-auto">
+      <div className="max-w-8xl px-7 mx-auto">
         <h2 className="text-center text-2xl sm:text-3xl font-bold mb-12 text-g1">
           Alumni Success Stories
         </h2>
@@ -197,7 +197,7 @@ export default function HomeTestimonial() {
               key={i}
               onClick={() => scrollToIdx(i)}
               aria-label={`Go to testimonial ${i + 1}`}
-              className={`w-2.5 h-2.5 rounded-full border border-g2 transition duration-200
+              className={`w-2.5 h-2.5 rounded-funpmll border border-g2 transition duration-200
                 ${i === active
                   ? "bg-r1 border-r1 scale-110"
                   : "bg-w2 hover:bg-r2 hover:border-r2"
