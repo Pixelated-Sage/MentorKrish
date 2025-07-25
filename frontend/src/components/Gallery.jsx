@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Heart, Download, ExternalLink, Eye } from 'lucide-react';
 
@@ -6,6 +6,7 @@ const Gallery = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [likedCards, setLikedCards] = useState(new Set());
   const [filter, setFilter] = useState('all');
+
 
   // Sample data with different card types and sizes
   const galleryData = [
@@ -17,7 +18,7 @@ const Gallery = () => {
       description: 'Clean and minimalist interface design',
       category: 'design',
       size: 'medium',
-      tags: ['UI', 'Design', 'Modern']
+      tags: ['UI', 'Design', 'Modern'],
     },
     {
       id: 2,
@@ -28,7 +29,7 @@ const Gallery = () => {
       description: 'Learn advanced animation techniques',
       category: 'tutorial',
       size: 'large',
-      tags: ['Animation', 'Tutorial', 'Motion']
+      tags: ['Animation', 'Tutorial', 'Motion'],
     },
     {
       id: 3,
@@ -38,7 +39,7 @@ const Gallery = () => {
       description: 'Vibrant color combinations',
       category: 'design',
       size: 'small',
-      tags: ['Colors', 'Palette', 'Design']
+      tags: ['Colors', 'Palette', 'Design'],
     },
     {
       id: 4,
@@ -48,7 +49,7 @@ const Gallery = () => {
       description: 'Beautiful typography in web design',
       category: 'design',
       size: 'medium',
-      tags: ['Typography', 'Fonts', 'Design']
+      tags: ['Typography', 'Fonts', 'Design'],
     },
     {
       id: 5,
@@ -59,7 +60,7 @@ const Gallery = () => {
       description: 'Interactive coding demonstration',
       category: 'tutorial',
       size: 'medium',
-      tags: ['Code', 'Demo', 'Development']
+      tags: ['Code', 'Demo', 'Development'],
     },
     {
       id: 6,
@@ -69,7 +70,7 @@ const Gallery = () => {
       description: 'Sleek mobile interface',
       category: 'design',
       size: 'large',
-      tags: ['Mobile', 'App', 'Interface']
+      tags: ['Mobile', 'App', 'Interface'],
     },
     {
       id: 7,
@@ -79,7 +80,7 @@ const Gallery = () => {
       description: 'Beautiful charts and graphs',
       category: 'design',
       size: 'small',
-      tags: ['Data', 'Charts', 'Analytics']
+      tags: ['Data', 'Charts', 'Analytics'],
     },
     {
       id: 8,
@@ -90,7 +91,7 @@ const Gallery = () => {
       description: 'Latest technology trends',
       category: 'tutorial',
       size: 'medium',
-      tags: ['Technology', 'Tutorial', 'Innovation']
+      tags: ['Technology', 'Tutorial', 'Innovation'],
     },
     {
       id: 9,
@@ -100,7 +101,7 @@ const Gallery = () => {
       description: 'Modern web development practices',
       category: 'development',
       size: 'large',
-      tags: ['Web', 'Development', 'Code']
+      tags: ['Web', 'Development', 'Code'],
     },
     {
       id: 10,
@@ -110,86 +111,85 @@ const Gallery = () => {
       description: 'Innovative design concepts',
       category: 'design',
       size: 'small',
-      tags: ['Creative', 'Innovation', 'Art']
-    }
+      tags: ['Creative', 'Innovation', 'Art'],
+    },
   ];
 
   const getSizeClass = (size) => {
-    switch (size) {
-      case 'small':
-        return 'row-span-2';
-      case 'medium':
-        return 'row-span-3';
-      case 'large':
-        return 'row-span-4';
-      default:
-        return 'row-span-3';
-    }
+    return `
+      ${size === 'small' ? 'row-span-2' :
+        size === 'medium' ? 'row-span-3' :
+        size === 'large' ? 'row-span-4' : 'row-span-3'
+      }
+      sm:${
+        size === 'small' ? 'row-span-2' :
+        size === 'medium' ? 'row-span-3' :
+        size === 'large' ? 'row-span-4' : 'row-span-3'
+      }
+      xs:row-span-2
+    `;
   };
 
-  const filteredData = filter === 'all' 
-    ? galleryData 
-    : galleryData.filter(item => item.category === filter);
+  const filteredData = filter === 'all' ? galleryData : galleryData.filter(item => item.category === filter);
 
   const toggleLike = (cardId) => {
     setLikedCards(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(cardId)) {
-        newSet.delete(cardId);
-      } else {
-        newSet.add(cardId);
-      }
+      if (newSet.has(cardId)) newSet.delete(cardId);
+      else newSet.add(cardId);
       return newSet;
     });
   };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.5 }
+      transition: { duration: 0.4 }
     },
     hover: {
       y: -5,
-      transition: { duration: 0.2 }
+      transition: { duration: 0.18 }
     }
   };
 
   const overlayVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { duration: 0.2 }
+      transition: { duration: 0.18 }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-w2 p-3 sm:p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
+          transition={{ duration: 0.5 }}
+          className="mb-5 sm:mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Design Gallery</h1>
-          <p className="text-gray-600 mb-6">Discover amazing designs and tutorials</p>
-          
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-g1 mb-2 sm:mb-4">Design Gallery</h1>
+          <p className="text-g2 text-xs sm:text-sm mb-4 sm:mb-6">Discover amazing designs and tutorials</p>
+
           {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {['all', 'design', 'tutorial', 'development'].map((category) => (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {['all', 'design', 'tutorial', 'development'].map(category => (
               <motion.button
                 key={category}
                 onClick={() => setFilter(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  filter === category
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium border
+                  transition-all duration-150
+                  ${
+                    filter === category
+                      ? 'bg-r1 text-w1 border-r1 shadow-md'
+                      : 'bg-w1 text-g1 border-g2 hover:bg-g2 hover:text-w1'
+                  }`}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </motion.button>
@@ -197,10 +197,16 @@ const Gallery = () => {
           </div>
         </motion.div>
 
-        {/* Pinterest-style Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 auto-rows-[100px]">
+        {/* Responsive Grid */}
+        <div className="
+            grid 
+            grid-cols-2 
+            sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 
+            gap-2 sm:gap-4 
+            auto-rows-[90px] sm:auto-rows-[100px] md:auto-rows-[120px]
+        ">
           <AnimatePresence>
-            {filteredData.map((item, index) => (
+            {filteredData.map((item, idx) => (
               <motion.div
                 key={item.id}
                 variants={cardVariants}
@@ -209,10 +215,14 @@ const Gallery = () => {
                 exit="hidden"
                 whileHover="hover"
                 layout
-                className={`relative bg-white rounded-xl shadow-md overflow-hidden cursor-pointer group ${getSizeClass(item.size)}`}
+                className={`
+                  relative bg-w1 rounded-xl shadow group cursor-pointer 
+                  overflow-hidden
+                  ${getSizeClass(item.size)}
+                  transition-shadow
+                `}
                 onMouseEnter={() => setHoveredCard(item.id)}
                 onMouseLeave={() => setHoveredCard(null)}
-                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Media Content */}
                 <div className="relative w-full h-full">
@@ -220,17 +230,19 @@ const Gallery = () => {
                     <img
                       src={item.src}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                      draggable={false}
                     />
                   ) : (
                     <div className="relative w-full h-full">
                       <img
                         src={item.poster}
                         alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                        draggable={false}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
-                        <Play className="w-12 h-12 text-white opacity-80" />
+                        <Play className="w-8 sm:w-10 h-8 sm:h-10 text-w1 opacity-80" />
                       </div>
                     </div>
                   )}
@@ -243,64 +255,56 @@ const Gallery = () => {
                         initial="hidden"
                         animate="visible"
                         exit="hidden"
-                        className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-between p-4"
+                        className="absolute inset-0 bg-black/60 flex flex-col justify-between p-2 sm:p-4"
                       >
-                        {/* Top Actions */}
-                        <div className="flex justify-between items-start">
-                          <div className="flex gap-2">
-                            {item.tags.map((tag, tagIndex) => (
+                        {/* Top Actions/Tags */}
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex gap-1 flex-wrap">
+                            {item.tags.map((tag, tagIdx) => (
                               <span
-                                key={tagIndex}
-                                className="px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs text-white"
+                                key={tagIdx}
+                                className="px-1.5 sm:px-2 py-0.5 bg-w1/20 rounded-full text-[10px] sm:text-xs text-w1"
                               >
                                 {tag}
                               </span>
                             ))}
                           </div>
                           <motion.button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleLike(item.id);
-                            }}
-                            className="p-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all"
-                            whileHover={{ scale: 1.1 }}
+                            onClick={e => { e.stopPropagation(); toggleLike(item.id); }}
+                            className="p-1 bg-w1/20 rounded-full hover:bg-w1/30 transition-all"
+                            whileHover={{ scale: 1.12 }}
                             whileTap={{ scale: 0.9 }}
                           >
                             <Heart
-                              className={`w-4 h-4 ${
-                                likedCards.has(item.id) ? 'fill-red-500 text-red-500' : 'text-white'
-                              }`}
+                              className={`w-4 h-4 ${likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'}`}
                             />
                           </motion.button>
                         </div>
-
                         {/* Bottom Content */}
-                        <div>
-                          <h3 className="text-white font-semibold text-lg mb-1">{item.title}</h3>
-                          <p className="text-white text-sm opacity-80 mb-3">{item.description}</p>
-                          
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
+                        <div className="">
+                          <h3 className="text-w1 font-semibold text-xs sm:text-sm mb-1">{item.title}</h3>
+                          <p className="text-w1 text-[10px] sm:text-xs opacity-90 mb-2">{item.description}</p>
+                          <div className="flex gap-1 sm:gap-2">
                             <motion.button
-                              className="flex items-center gap-1 px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs text-white hover:bg-opacity-30 transition-all"
+                              className="flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-w1/20 rounded-full text-[10px] sm:text-xs text-w1 hover:bg-w1/30 transition-all"
                               whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileTap={{ scale: 0.96 }}
                             >
                               <Eye className="w-3 h-3" />
                               View
                             </motion.button>
                             <motion.button
-                              className="flex items-center gap-1 px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs text-white hover:bg-opacity-30 transition-all"
+                              className="flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-w1/20 rounded-full text-[10px] sm:text-xs text-w1 hover:bg-w1/30 transition-all"
                               whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileTap={{ scale: 0.96 }}
                             >
                               <Download className="w-3 h-3" />
                               Save
                             </motion.button>
                             <motion.button
-                              className="flex items-center gap-1 px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs text-white hover:bg-opacity-30 transition-all"
+                              className="flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-w1/20 rounded-full text-[10px] sm:text-xs text-w1 hover:bg-w1/30 transition-all"
                               whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileTap={{ scale: 0.96 }}
                             >
                               <ExternalLink className="w-3 h-3" />
                               Open
@@ -321,12 +325,12 @@ const Gallery = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center mt-12"
+          className="text-center mt-7 sm:mt-12"
         >
           <motion.button
-            className="px-8 py-3 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="px-5 sm:px-8 py-2 sm:py-3 bg-r1 text-w1 rounded-full font-medium hover:bg-r2 transition-colors text-xs sm:text-base"
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.97 }}
           >
             Load More
           </motion.button>

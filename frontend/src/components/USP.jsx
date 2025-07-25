@@ -1,62 +1,68 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+// Data updated to match your screenshot content
 const uspData = [
   {
-    title: "Psychometric Test",
+    title: "Psychometric Testing",
+    subtitle: "Know Yourself",
     icon: "🧠",
-    desc: "Discover Your True Potential with Our Psychometric Assessments.",
+    desc: "Identify your learning style, strengths, weaknesses and career inclinations through comprehensive, scientific assessments.",
   },
   {
-    title: "DSAT Platform",
-    icon: "🖥️",
-    desc: "Simulate the official test environment with our Digital SAT platform.",
+    title: "One-on-One Class for Verbal & Quant",
+    subtitle: "Personalized Prep",
+    icon: "👨‍🏫",
+    desc: "Get individual attention for both verbal and quantitative sections, customized according to your needs and progress.",
+  },
+  {
+    title: "Bumper Score Booster",
+    subtitle: "Maximum Improvement",
+    icon: "🚀",
+    desc: "Accelerate your performance with strategic revision sessions, advanced practice, and last-mile tips for score maximization.",
   },
   {
     title: "Profile Building",
-    icon: "📚",
-    desc: "Crafting Your Unique Academic and Career Narrative.",
+    subtitle: "Stand Out Globally",
+    icon: "🗂️",
+    desc: "Strategically craft your academic, extracurricular, and leadership narrative for a compelling college application.",
   },
   {
-    title: "Expert Mentors",
-    icon: "🎓",
-    desc: "Personalized guidance to navigate academic challenges.",
-  },
-  {
-    title: "Career Mapping",
-    icon: "🗺️",
-    desc: "Align aspirations with financial realities through strategic planning.",
+    title: "College Admission Assistance",
+    subtitle: "Guided Admissions",
+    icon: "🎯",
+    desc: "Expert support from shortlist to application, essays, interview prep, scholarship, and final admit—every step handled.",
   },
 ];
 
-const USP = () => {
-  return (
-    <section className="bg-w1 py-16 px-4 md:px-20" id="usp">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-g1 mb-4">Our Unique Strengths</h2>
-        <p className="text-g1 text-lg max-w-3xl mx-auto">
-          Unlock Your Potential with Mentor Krish’s Tailored Educational Approach
-        </p>
-      </div>
+const USP = () => (
+  <section className="bg-w1 py-14 px-2 sm:px-4 md:px-16" id="usp">
+    <div className="text-center mb-10">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-g1 mb-2">Our Unique Strengths</h2>
+      <p className="text-g2 text-base sm:text-lg max-w-2xl mx-auto">
+        From assessment to admission—Mentor Krish’s approach ensures every student has an edge.
+      </p>
+    </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {uspData.map((usp, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            viewport={{ once: true }}
-            className="bg-w2 shadow-xl rounded-2xl p-6 hover:shadow-2xl transition duration-300 border border-w1"
-          >
-            <div className="text-4xl mb-4">{usp.icon}</div>
-            <h3 className="text-xl font-semibold text-black mb-2">{usp.title}</h3>
-            <p className="text-g1 text-sm">{usp.desc}</p>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-};
+    {/* Responsive, multi-column, clean grid */}
+    <div className="grid px-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
+      {uspData.map((usp, idx) => (
+        <motion.div
+          key={idx}
+          className="bg-w2 rounded-2xl shadow-md hover:shadow-xl border border-w1 p-3 sm:p-5 flex flex-col items-center text-center transition-all duration-200"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: idx * 0.08, duration: 0.5 }}
+        >
+          <div className="text-2xl sm:text-3xl mb-2">{usp.icon}</div>
+          <h3 className="font-semibold text-base sm:text-lg text-g1 mb-1">{usp.title}</h3>
+          <p className="text-g2 text-xs sm:text-sm mb-1 italic font-medium">{usp.subtitle}</p>
+          <p className="text-g1 text-xs sm:text-sm">{usp.desc}</p>
+        </motion.div>
+      ))}
+    </div>
+  </section>
+);
 
 export default USP;
