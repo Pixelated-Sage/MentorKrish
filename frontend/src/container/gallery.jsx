@@ -2,15 +2,117 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '@/components/Navbar';
+import Navbar from '../components/Navbar';
 import Footer from '@/components/Footer';
 import { Play, Heart, Download, ExternalLink, Eye } from 'lucide-react';
 
 // Sample gallery data (copy your full galleryData here or import from separate file)
 // For brevity, use your current galleryData or expand as needed
 const galleryData = [
-  // ... copy your galleryData array here or place in separate file and import
-];
+    {
+      id: 1,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=500&fit=crop',
+      title: 'Modern UI Design',
+      description: 'Clean and minimalist interface design',
+      category: 'design',
+      size: 'medium',
+      tags: ['UI', 'Design', 'Modern'],
+    },
+    {
+      id: 2,
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      poster: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=600&fit=crop',
+      title: 'Animation Tutorial',
+      description: 'Learn advanced animation techniques',
+      category: 'tutorial',
+      size: 'large',
+      tags: ['Animation', 'Tutorial', 'Motion'],
+    },
+    {
+      id: 3,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1558655146-364adaf1fcc9?w=400&h=300&fit=crop',
+      title: 'Color Palette',
+      description: 'Vibrant color combinations',
+      category: 'design',
+      size: 'small',
+      tags: ['Colors', 'Palette', 'Design'],
+    },
+    {
+      id: 4,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?w=400&h=550&fit=crop',
+      title: 'Typography Example',
+      description: 'Beautiful typography in web design',
+      category: 'design',
+      size: 'medium',
+      tags: ['Typography', 'Fonts', 'Design'],
+    },
+    {
+      id: 5,
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
+      poster: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
+      title: 'Code Demo',
+      description: 'Interactive coding demonstration',
+      category: 'tutorial',
+      size: 'medium',
+      tags: ['Code', 'Demo', 'Development'],
+    },
+    {
+      id: 6,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=700&fit=crop',
+      title: 'Mobile App Design',
+      description: 'Sleek mobile interface',
+      category: 'design',
+      size: 'large',
+      tags: ['Mobile', 'App', 'Interface'],
+    },
+    {
+      id: 7,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=280&fit=crop',
+      title: 'Data Visualization',
+      description: 'Beautiful charts and graphs',
+      category: 'design',
+      size: 'small',
+      tags: ['Data', 'Charts', 'Analytics'],
+    },
+    {
+      id: 8,
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      poster: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=500&fit=crop',
+      title: 'Tech Tutorial',
+      description: 'Latest technology trends',
+      category: 'tutorial',
+      size: 'medium',
+      tags: ['Technology', 'Tutorial', 'Innovation'],
+    },
+    {
+      id: 9,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=600&fit=crop',
+      title: 'Web Development',
+      description: 'Modern web development practices',
+      category: 'development',
+      size: 'large',
+      tags: ['Web', 'Development', 'Code'],
+    },
+    {
+      id: 10,
+      type: 'image',
+      src: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=350&fit=crop',
+      title: 'Creative Design',
+      description: 'Innovative design concepts',
+      category: 'design',
+      size: 'small',
+      tags: ['Creative', 'Innovation', 'Art'],
+    },
+  ];
 
 // Pagination settings
 const ITEMS_PER_PAGE = 12;
@@ -90,7 +192,7 @@ const Gallery = () => {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-w2 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
+      <main className="min-h-screen bg-w2 mt-9 p-4 sm:p-6 md:p-10 max-w-8xl mx-auto">
 
         {/* Page header */}
         <motion.div 

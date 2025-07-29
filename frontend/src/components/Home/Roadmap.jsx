@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const roadmapItems = [
   {
@@ -75,103 +76,80 @@ const roadmapItems = [
   },
 ];
 
-// Multiple SVG wavy arrows with slight shape differences and responsiveness
-const ArrowVariants = [
-  () => (
-    <svg
-      className="w-16 h-8 sm:w-20 sm:h-10 md:w-24 md:h-14 flex-shrink-0"
-      viewBox="0 0 120 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2 20 C12 0, 32 40, 42 20 S70 0, 80 20 S108 40, 118 20"
-        stroke="var(--g2)"
-        strokeWidth="2"
-        strokeDasharray="6 6"
-        fill="none"
-      />
-      {/* <polygon points="118,20 110,14 110,26" fill="var(--g2)" /> */}
-    </svg>
-  ),
+const fadeUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.08, duration: 0.7, type: "spring", stiffness: 80 },
+  }),
+};
 
-  () => (
-    <svg
-      className="w-16 h-8 sm:w-20 sm:h-10 md:w-24 md:h-14 flex-shrink-0"
-      viewBox="0 0 120 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2 20 C8 12, 24 28, 38 18 C52 8, 64 32, 78 20 C92 8, 106 32, 118 20"
-        stroke="var(--g2)"
-        strokeWidth="2"
-        strokeDasharray="6 6"
-        fill="none"
-      />
-      {/* <polygon points="118,20 110,14 110,26" fill="var(--g2)" /> */}
-    </svg>
-  ),
-
-  () => (
-    <svg
-      className="w-16 h-8 sm:w-20 sm:h-10 md:w-24 md:h-14 flex-shrink-0"
-      viewBox="0 0 120 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2 20 Q18 4 36 24 T74 20 Q90 16 108 36"
-        stroke="var(--g2)"
-        strokeWidth="2"
-        strokeDasharray="6 6"
-        fill="none"
-      />
-      {/* <polygon points="118,20 110,14 110,26" fill="var(--g2)" /> */}
-    </svg>
-  ),
-];
+const chevron =
+  "M25,0 L75,0 Q92,20 75,40 L25,40 Q8,20 25,0 Z"; // SVG chevron shape
 
 const Roadmap = () => {
   return (
-    <section className="py-16 px-4 sm:px-8 md:px-12 bg-w2">
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-g1">
-        Our Proven Path To Student Success
-      </h2>
+    <section className="bg-w2 py-20 px-2 sm:px-8 md:px-16">
+      <div className="max-w-4xl mx-auto flex flex-col items-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-g1 mb-14 text-center">
+          Our Proven Path to Student Success
+        </h2>
 
-      {/* Horizontal scroll container */}
-      <div className="overflow-x-auto pt-10 no-scrollbar">
-        <ul className="flex items-center gap-6 max-w-full w-max px-2">
-          {roadmapItems.map((item, idx) => (
-            <React.Fragment key={item.title}>
-              <li className="relative min-w-[220px] max-w-[220px] sm:min-w-[240px] sm:max-w-[240px] bg-w1 border border-g2 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 cursor-default flex flex-col items-center px-5 py-7">
-                {/* Number Circle */}
-                <div className="relative w-12 h-12 rounded-full bg-r1 flex items-center justify-center -mt-10 mb-4 shadow-md border-4 border-w1 overflow-visible z-10">
-                  <span className="text-w1 font-semibold select-none">{idx + 1}</span>
-                  {/* Icon circle, overflowing upward */}
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-w1 border-2 border-r1 flex items-center justify-center text-xl shadow-lg select-none">
-                    {item.icon}
-                  </span>
+        {/* Vertical Timeline Roadmap */}
+        <div className="relative w-full flex flex-col items-center">
+          {/* Vertical line */}
+          <div className="hidden sm:block absolute left-1/2 top-0 h-full border-r-2 border-dotted border-g2 z-0" style={{ transform: "translateX(-50%)" }} />
+
+          <ul className="space-y-0 w-full">
+            {roadmapItems.map((step, i) => (
+              <motion.li
+                key={i}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="relative z-10 w-full flex sm:even:flex-row-reverse mb-0 pb-0 group"
+              >
+                {/* Step Marker & Chevron */}
+                <div className={`flex flex-col items-center w-1/6 min-w-[72px] mx-auto sm:mx-0`}>
+                  {/* Step dot */}
+                  <div className="rounded-full bg-r1 text-w1 flex items-center justify-center w-14 h-14 border-4 border-white shadow-lg text-2xl font-extrabold relative z-20">
+                    {step.icon}
+                  </div>
+                  {/* Vertical line connector except for last */}
+                  {i !== roadmapItems.length - 1 && (
+                    <div className="hidden sm:block h-12 w-2 bg-g2/30 rounded-full z-0 my-1" />
+                  )}
                 </div>
 
-                <h3 className="font-semibold text-g1 text-base sm:text-lg text-center mt-3 mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-g2 text-xs sm:text-sm text-center leading-relaxed select-text">
-                  {item.description}
-                </p>
-              </li>
-
-              {/* Add arrow path except after last */}
-              {idx !== roadmapItems.length - 1 && (
-                // Select arrow by cycling variants
-                <div className="flex-shrink-0 mt-10 hidden md:flex">
-                  {ArrowVariants[idx % ArrowVariants.length]()}
+                {/* Big Drawn Chevron */}
+                <div className={`flex flex-col items-center w-5/6`}>
+                  {/* Chevron on alternating side for desktop, same side for mobile */}
+                  <svg width={120} height={44} viewBox="0 0 100 40" className="mx-auto sm:mx-0" aria-hidden="true">
+                    <path d={chevron} fill="var(--r1)" fillOpacity={i % 2 === 0 ? 0.12 : 0.20} />
+                  </svg>
+                  {/* Card */}
+                  <div
+                    className={`
+                      relative bg-w1 border-l-4 border-r1 rounded-3xl shadow-md px-4 sm:px-10 py-6 mt-[-18px] mb-7
+                      max-w-[400px] sm:max-w-[350px] md:max-w-[430px]
+                      ${i % 2 === 0 ? "sm:self-end" : "sm:self-start"}
+                      group-hover:shadow-lg transition-shadow
+                    `}
+                  >
+                    <h3 className="font-bold text-lg text-g1 mb-2 flex items-center gap-2">
+                      <span className="hidden sm:inline text-xl text-r1 font-extrabold">{i + 1}.</span>
+                      {step.title}
+                    </h3>
+                    <p className="text-g2 text-sm sm:text-base">{step.description}</p>
+                  </div>
                 </div>
-              )}
-            </React.Fragment>
-          ))}
-        </ul>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
