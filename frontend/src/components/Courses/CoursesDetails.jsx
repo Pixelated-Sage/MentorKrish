@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { useEffect, useState } from 'react';
 // Expanded course data with multiple sections for each course
 const courses = [
   {

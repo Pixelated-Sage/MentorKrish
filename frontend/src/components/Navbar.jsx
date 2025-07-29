@@ -7,13 +7,19 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const navItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Courses', href: '/courses' },
-    { label: 'Career', href: '/career' },
-    { label: 'DSAT', href: '/dsat' },  // update as needed
-    { label: 'Contact', href: '/contact' },
-  ];
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Courses', href: '/courses' },
+  { label: 'Register', href: '/register' },
+  { label: 'Login', href: '/login' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Trial', href: '/trial' },
+  { label: 'Career', href: '/career' },
+  { label: 'Psychometric', href: '/psycohmetric' },
+  { label: 'Blogs', href: '/blogs' },
+  { label: 'Gallery', href: '/gallery' }
+  
+];
 
   useEffect(() => {
     const handleScroll = () => {
