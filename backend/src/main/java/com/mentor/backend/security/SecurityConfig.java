@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()  // Allow unauthenticated access to /auth/** endpoints
+                        .requestMatchers("/api/auth/**").permitAll()  // Allow unauthenticated access to /auth/** endpoints
                         .anyRequest().authenticated()             // All other endpoints require authentication
                 )
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);

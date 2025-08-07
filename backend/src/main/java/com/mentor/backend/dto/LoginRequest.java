@@ -1,12 +1,16 @@
 package com.mentor.backend.dto;
 
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class LoginRequest {
-    private String firebaseUid;
-    private String idToken; // Firebase ID Token (optional, if validated backend-side)
+
+    private String firebaseUid; // for firebase login
+
+    @Email
+    private String email;
+
+    private String password;
 }

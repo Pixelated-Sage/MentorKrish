@@ -5,6 +5,7 @@ import com.mentor.backend.dto.RegisterRequest;
 import com.mentor.backend.entity.User;
 import com.mentor.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,9 +15,10 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User registerUser(RegisterRequest request) {
-        Optional<User> existing = userRepository.findByFirebaseUid(request.getFirebaseUid());
+        Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
             return existing.get(); // already registered
         }
@@ -30,12 +32,20 @@ public class AuthService {
                 .phoneVerified(false)
                 .loginMethod(request.getLoginMethod())
                 .role("USER")
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
         return userRepository.save(user);
     }
 
     public Optional<User> loginUser(LoginRequest request) {
-        return userRepository.findByFirebaseUid(request.getFirebaseUid());
+        if (request.getFirebaseUid() != null && !request.getFirebaseUid().isBlank()) {
+            return userRepository.findByFirebaseUid(request.getFirebaseUid());
+        }
+        if (request.getEmail() != null && request.getPassword() != null) {
+            return userRepository.findByEmail(request.getEmail())
+                    .filter(user -> user.getPassword().equals(request.getPassword())); // plain-text check
+        }
+        return Optional.empty();
     }
 }

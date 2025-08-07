@@ -31,4 +31,6 @@ public class User {
     private boolean phoneVerified;
 
     private String role; // USER, ADMIN, etc.
+    @Column(nullable = true)
+    private String password;
 }
