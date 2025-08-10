@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "@/components/Footer";
+import Footer from "../components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- MOCK DATA (replace with CMS/fetch in future) ---

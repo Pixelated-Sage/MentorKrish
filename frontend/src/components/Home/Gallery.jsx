@@ -163,7 +163,7 @@ const Gallery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-w2 p-3 sm:p-4">
+    <div className="min-h-screen bg-w1 p-3 sm:p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

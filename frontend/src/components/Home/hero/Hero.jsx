@@ -18,7 +18,7 @@ const Hero = () => {
     <section className="relative min-h-screen px-4 md:px-10 py-12 flex flex-col items-center justify-center bg-w1 overflow-hidden">
       <MapBg />
       <motion.div
-        className="text-center max-w-3xl sm:max-w-4xl space-y-6 sm:space-y-8 mb-28 sm:mb-36"
+        className="text-center max-w-7xl space-y-6 sm:space-y-8 mb-28 sm:mb-36"
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}

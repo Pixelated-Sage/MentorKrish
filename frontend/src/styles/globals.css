@@ -8,7 +8,7 @@
   --w2: #f5f5f5;
   --g1: #4a4a4a;
   --g2: #7a7979;
-
+  --g3: #1f1f1f;
   --r1: #D84040;
   --r2: #8E1616;
   --accent: #fbc02d;
@@ -22,6 +22,7 @@
 .bg-r2 { background-color: var(--r2); }
 .bg-g1 { background-color: var(--g1); }
 .bg-g2 { background-color: var(--g2); }
+.bg-g3 { background-color: var(--g3); }
 .bg-accent { background-color: var(--accent); }
 .bg-black { background-color: var(--black); }
 

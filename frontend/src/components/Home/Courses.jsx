@@ -92,34 +92,23 @@ const RoundsDashboard = () => {
   }, [filter]);
 
   return (
-    <div className="min-h-screen bg-w1 py-8 px-4 sm:px-6 md:px-0">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-w1 py-8 px-2 sm:px-4 md:px-0">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8 sm:mb-10 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-g1 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-g1 leading-tight">
             Test Preparation Programs
           </h1>
-          <p className="text-g2 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+          <p className="text-g2 text-xs sm:text-base mt-2 max-w-xl mx-auto">
             Structured coaching for leading standardized exams. Select a program to view course details.
           </p>
         </header>
 
         {/* Filter Controls */}
         <section className="flex flex-wrap justify-center md:justify-start gap-2 mb-6 sm:mb-8">
-          <span className="font-medium text-g2 self-center mr-2 whitespace-nowrap text-sm sm:text-base">
+          <span className="font-medium text-g2 self-center mr-2 whitespace-nowrap text-xs sm:text-base">
             Filter:
           </span>
-          {/* Include a "All" filter button */}
-          {/* <button
-            onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded-full border text-xs sm:text-sm font-medium transition-colors duration-150 whitespace-nowrap ${
-              filter === 'all'
-                ? 'bg-g1 text-w1 border-g1'
-                : 'bg-w2 text-g2 border-g2 hover:bg-g2 hover:text-w1'
-            }`}
-          >
-            All
-          </button> */}
           {filterOptions.map(opt => (
             <button
               key={opt.value}
@@ -139,12 +128,12 @@ const RoundsDashboard = () => {
         <main>
           {filteredRounds.length > 0 ? (
             <div
-              className={`rounded-2xl shadow-lg border-2 ${filteredRounds[filteredActiveRound].borderColor} ${filteredRounds[filteredActiveRound].bgColor} p-5 sm:p-6 md:p-10 flex flex-col gap-6`}
+              className={`rounded-2xl shadow-lg border-2 ${filteredRounds[filteredActiveRound].borderColor} ${filteredRounds[filteredActiveRound].bgColor} p-4 sm:p-6 md:p-8 flex flex-col gap-5`}
             >
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start">
-                <div className="text-5xl sm:text-6xl flex-shrink-0">{filteredRounds[filteredActiveRound].icon}</div>
+                <div className="text-4xl sm:text-5xl flex-shrink-0">{filteredRounds[filteredActiveRound].icon}</div>
                 <div className="flex-1">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-g1">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-g1">
                     {filteredRounds[filteredActiveRound].course}
                   </h2>
                   <div
@@ -152,28 +141,28 @@ const RoundsDashboard = () => {
                   >
                     {filteredRounds[filteredActiveRound].subtitle}
                   </div>
-                  <p className="text-g2 text-sm sm:text-base mt-3 leading-relaxed">
+                  <p className="text-g2 text-xs sm:text-base mt-3 leading-relaxed">
                     {filteredRounds[filteredActiveRound].description}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-w1 border border-w2 rounded-lg p-4 sm:p-5">
+                <div className="bg-w1 border border-w2 rounded-lg p-3 sm:p-5">
                   <div className="text-g2 text-xs uppercase font-bold mb-1">Focus Areas</div>
-                  <div className="text-g1 font-medium text-sm sm:text-base">{filteredRounds[filteredActiveRound].focus}</div>
+                  <div className="text-g1 font-medium text-xs sm:text-base">{filteredRounds[filteredActiveRound].focus}</div>
                 </div>
                 {filteredRounds[filteredActiveRound].platform && (
-                  <div className="bg-w1 border border-w2 rounded-lg p-4 sm:p-5">
+                  <div className="bg-w1 border border-w2 rounded-lg p-3 sm:p-5">
                     <div className="text-g2 text-xs uppercase font-bold mb-1">Platform</div>
-                    <div className="text-g1 font-medium text-sm sm:text-base">{filteredRounds[filteredActiveRound].platform}</div>
+                    <div className="text-g1 font-medium text-xs sm:text-base">{filteredRounds[filteredActiveRound].platform}</div>
                   </div>
                 )}
               </div>
 
               <div className="flex flex-col md:flex-row md:justify-between gap-4 items-center">
                 <div>
-                  <h3 className="font-medium text-g1 mb-2 text-sm sm:text-base">Why choose this?</h3>
+                  <h3 className="font-medium text-g1 mb-2 text-xs sm:text-base">Why choose this?</h3>
                   <ul className="list-disc ml-5 text-g2 text-xs sm:text-sm leading-tight">
                     <li>Professional guidance & structured curriculum</li>
                     <li>Progress tracking & analytics</li>
@@ -181,14 +170,14 @@ const RoundsDashboard = () => {
                   </ul>
                 </div>
                 <button
-                  className={`mt-4 md:mt-0 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap`}
+                  className={`mt-4 md:mt-0 px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap`}
                 >
                   Start {filteredRounds[filteredActiveRound].subtitle} Preparation
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-center text-g2 py-16 text-sm sm:text-base">
+            <div className="text-center text-g2 py-16 text-xs sm:text-base">
               No programs found for this filter.
             </div>
           )}
