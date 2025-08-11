@@ -1,27 +1,31 @@
 package com.mentor.backend.filter;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.mentor.backend.entity.User;
 import com.mentor.backend.service.UserService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Collections;
-
-@Component
+// @Component
 @RequiredArgsConstructor
 public class FirebaseAuthFilter extends OncePerRequestFilter {
 
     private final FirebaseAuth firebaseAuth;
-    private final UserService userService;  // ✅ Injected
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,11 +45,10 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
                 String name = decodedToken.getName();
                 Object phoneObj = decodedToken.getClaims().get("phone_number");
                 String phoneNumber = phoneObj != null ? phoneObj.toString() : null;
-
                 boolean emailVerified = decodedToken.isEmailVerified();
 
-                // Save user if not already in DB
-                userService.saveUserIfNotExists(
+                // Save user if not exists, and fetch from DB
+                User user = userService.saveUserIfNotExists(
                         uid,
                         email,
                         name,
@@ -54,8 +57,12 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
                         "GOOGLE"
                 );
 
+                // Add ROLE_ prefix so Spring Security understands it
+                List<SimpleGrantedAuthority> authorities =
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()));
+
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(uid, null, Collections.emptyList());
+                        new UsernamePasswordAuthenticationToken(uid, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -67,4 +74,3 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

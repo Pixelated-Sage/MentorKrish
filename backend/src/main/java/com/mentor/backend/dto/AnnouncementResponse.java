@@ -1,4 +1,5 @@
 package com.mentor.backend.dto;
+import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +14,6 @@ public class AnnouncementResponse {
     private String imageUrl;
     private String date;
     private String time;
+    private LocalDateTime createdAt;  // Add these two
+    private LocalDateTime updatedAt;
 }

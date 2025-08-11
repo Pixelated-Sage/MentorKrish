@@ -1,14 +1,16 @@
 package com.mentor.backend.service;
 
+import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.mentor.backend.dto.LoginRequest;
 import com.mentor.backend.dto.RegisterRequest;
 import com.mentor.backend.entity.User;
 import com.mentor.backend.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +40,14 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public Optional<User> loginUser(LoginRequest request) {
+  public Optional<User> loginUser(LoginRequest request) {
         if (request.getFirebaseUid() != null && !request.getFirebaseUid().isBlank()) {
             return userRepository.findByFirebaseUid(request.getFirebaseUid());
         }
         if (request.getEmail() != null && request.getPassword() != null) {
             return userRepository.findByEmail(request.getEmail())
-                    .filter(user -> user.getPassword().equals(request.getPassword())); // plain-text check
+                // FIX: use password encoder to check hash!
+                .filter(user -> passwordEncoder.matches(request.getPassword(), user.getPassword()));
         }
         return Optional.empty();
     }

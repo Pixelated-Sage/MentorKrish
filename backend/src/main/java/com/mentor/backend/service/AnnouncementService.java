@@ -19,7 +19,7 @@ public class AnnouncementService {
 
     private final AnnouncementRepository announcementRepository;
 
-    public AnnouncementResponse createAnnouncement(AnnouncementRequest request) {
+    public AnnouncementResponse create(AnnouncementRequest request) {
         Announcement announcement = Announcement.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -33,19 +33,19 @@ public class AnnouncementService {
         return mapToResponse(saved);
     }
 
-    public List<AnnouncementResponse> getAllAnnouncements() {
+    public List<AnnouncementResponse> getAll() {
         return announcementRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public AnnouncementResponse getAnnouncementById(Long id) {
+    public AnnouncementResponse getById(Long id) {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Announcement not found with id: " + id));
         return mapToResponse(announcement);
     }
 
-    public AnnouncementResponse updateAnnouncement(Long id, AnnouncementRequest request) {
+    public AnnouncementResponse update(Long id, AnnouncementRequest request) {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Announcement not found with id: " + id));
 
@@ -59,7 +59,7 @@ public class AnnouncementService {
         return mapToResponse(updated);
     }
 
-    public void deleteAnnouncement(Long id) {
+    public void delete(Long id) {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Announcement not found with id: " + id));
         announcementRepository.delete(announcement);
