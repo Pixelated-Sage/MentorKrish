@@ -1,5 +1,6 @@
 HELP.md
 target/
+src/main/resources/application.properties
 src/main/resources/firebase-config.json
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
