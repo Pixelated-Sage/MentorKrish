@@ -18,9 +18,11 @@ public class AboutController {
     private final AboutService aboutService;
 
     @PostMapping
-    public ResponseEntity<AboutResponse> create(@Valid @RequestBody AboutRequest request) {
+    public ResponseEntity<AboutResponse> createOrUpdate(@Valid @RequestBody AboutRequest request) {
+        // Always updates record with ID=1 (or creates it if missing)
         return ResponseEntity.ok(aboutService.createAbout(request));
     }
+
 
     @GetMapping
     public ResponseEntity<List<AboutResponse>> getAll() {
@@ -37,5 +39,12 @@ public class AboutController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         aboutService.deleteAbout(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/latest")
+    public ResponseEntity<AboutResponse> getLatest() {
+        AboutResponse latest = aboutService.getLatest();
+        if (latest == null) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(latest);
     }
 }

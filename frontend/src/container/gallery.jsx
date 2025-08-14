@@ -5,116 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Play, Heart, Download, ExternalLink, Eye } from 'lucide-react';
+import { fetchGallery } from '../lib/api';
+import sample from "../../public/assets/img/dsat.jpg";
 
-// Sample gallery data (copy your full galleryData here or import from separate file)
-// For brevity, use your current galleryData or expand as needed
-const galleryData = [
-    {
-      id: 1,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=500&fit=crop',
-      title: 'Modern UI Design',
-      description: 'Clean and minimalist interface design',
-      category: 'design',
-      size: 'medium',
-      tags: ['UI', 'Design', 'Modern'],
-    },
-    {
-      id: 2,
-      type: 'video',
-      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      poster: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=600&fit=crop',
-      title: 'Animation Tutorial',
-      description: 'Learn advanced animation techniques',
-      category: 'tutorial',
-      size: 'large',
-      tags: ['Animation', 'Tutorial', 'Motion'],
-    },
-    {
-      id: 3,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1558655146-364adaf1fcc9?w=400&h=300&fit=crop',
-      title: 'Color Palette',
-      description: 'Vibrant color combinations',
-      category: 'design',
-      size: 'small',
-      tags: ['Colors', 'Palette', 'Design'],
-    },
-    {
-      id: 4,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?w=400&h=550&fit=crop',
-      title: 'Typography Example',
-      description: 'Beautiful typography in web design',
-      category: 'design',
-      size: 'medium',
-      tags: ['Typography', 'Fonts', 'Design'],
-    },
-    {
-      id: 5,
-      type: 'video',
-      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
-      poster: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
-      title: 'Code Demo',
-      description: 'Interactive coding demonstration',
-      category: 'tutorial',
-      size: 'medium',
-      tags: ['Code', 'Demo', 'Development'],
-    },
-    {
-      id: 6,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=700&fit=crop',
-      title: 'Mobile App Design',
-      description: 'Sleek mobile interface',
-      category: 'design',
-      size: 'large',
-      tags: ['Mobile', 'App', 'Interface'],
-    },
-    {
-      id: 7,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=280&fit=crop',
-      title: 'Data Visualization',
-      description: 'Beautiful charts and graphs',
-      category: 'design',
-      size: 'small',
-      tags: ['Data', 'Charts', 'Analytics'],
-    },
-    {
-      id: 8,
-      type: 'video',
-      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      poster: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=500&fit=crop',
-      title: 'Tech Tutorial',
-      description: 'Latest technology trends',
-      category: 'tutorial',
-      size: 'medium',
-      tags: ['Technology', 'Tutorial', 'Innovation'],
-    },
-    {
-      id: 9,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=600&fit=crop',
-      title: 'Web Development',
-      description: 'Modern web development practices',
-      category: 'development',
-      size: 'large',
-      tags: ['Web', 'Development', 'Code'],
-    },
-    {
-      id: 10,
-      type: 'image',
-      src: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=350&fit=crop',
-      title: 'Creative Design',
-      description: 'Innovative design concepts',
-      category: 'design',
-      size: 'small',
-      tags: ['Creative', 'Innovation', 'Art'],
-    },
-  ];
-
-// Pagination settings
 const ITEMS_PER_PAGE = 12;
 
 const cardVariants = {
@@ -139,28 +32,46 @@ const overlayVariants = {
 };
 
 const Gallery = () => {
+  const [galleryData, setGalleryData] = useState([]);
   const [filter, setFilter] = useState('all');
   const [hoveredCard, setHoveredCard] = useState(null);
   const [likedCards, setLikedCards] = useState(new Set());
+  const [loading, setLoading] = useState(true);
   const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
 
-  // Filtered data according to selected filter
-  const filteredData =
-    filter === 'all'
-      ? galleryData
-      : galleryData.filter((item) => item.category === filter);
+  useEffect(() => {
+    async function loadGallery() {
+      setLoading(true);
+      const data = await fetchGallery();
 
-  // Data to display currently (pagination/load more)
+      // Map backend response to the format your component expects
+      const mapped = data.map(item => ({
+        id: item.id,
+        type: 'image', // all items from backend are images for now
+        src: item.imageUrl || sample,
+        title: item.title || '',
+        description: item.description || '',
+        category: item.tag || 'all',
+        tags: item.tag ? item.tag.split(',').map(t => t.trim()) : [],
+        size: 'medium' // default, as backend doesn't return this
+      }));
+
+      setGalleryData(data);
+      setLoading(false);
+    }
+    loadGallery();
+  }, []);
+
+  // Filtering and pagination logic
+  const filteredData = filter === 'all' ? galleryData : galleryData.filter(item => item.category === filter);
   const displayedData = filteredData.slice(0, visibleItems);
 
-  // Load more handler: show more items by pagination size
   const handleLoadMore = () => {
-    setVisibleItems((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredData.length));
+    setVisibleItems(prev => Math.min(prev + ITEMS_PER_PAGE, filteredData.length));
   };
 
-  // Toggle like state of cards
   const toggleLike = (cardId) => {
-    setLikedCards((prev) => {
+    setLikedCards(prev => {
       const newSet = new Set(prev);
       if (newSet.has(cardId)) newSet.delete(cardId);
       else newSet.add(cardId);
@@ -168,9 +79,10 @@ const Gallery = () => {
     });
   };
 
-  // Extract all categories dynamically from data
-  const categories = Array.from(new Set(galleryData.map((item) => item.category)));
-  categories.unshift('all');
+  // Dynamic category filter from actual galleryData
+  const categoriesSet = new Set(['all']);
+  galleryData.forEach(item => { if (item.category) categoriesSet.add(item.category); });
+  const categoriesArr = Array.from(categoriesSet);
 
   // Responsive row spans for masonry style layout
   const getSizeClass = (size) => {
@@ -192,8 +104,7 @@ const Gallery = () => {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-w2 mt-9 p-4 sm:p-6 md:p-10 max-w-8xl mx-auto">
-
+      <main className="min-h-screen bg-w2 mt-9 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
         {/* Page header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }} 
@@ -209,7 +120,7 @@ const Gallery = () => {
 
         {/* Sticky Filter Bar */}
         <div className="sticky top-16 z-30 bg-w2/95 backdrop-blur-sm border-b border-w2 mb-6 py-3 flex flex-wrap justify-center gap-3 shadow-sm">
-          {categories.map((cat) => (
+          {categoriesArr.map((cat) => (
             <button
               key={cat}
               onClick={() => {
@@ -239,24 +150,26 @@ const Gallery = () => {
           `}
         >
           <AnimatePresence>
-            {displayedData.map((item) => (
-              <motion.div
-                layout
-                key={item.id}
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                whileHover="hover"
-                className={`relative rounded-xl shadow-md overflow-hidden cursor-pointer bg-w1 ${getSizeClass(item.size)}`}
-                onMouseEnter={() => setHoveredCard(item.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                tabIndex={0}
-                aria-label={item.title}
-              >
-                {/* Media */}
-                <div className="relative w-full h-full">
-                  {item.type === 'image' ? (
+            {loading ? (
+              <div className="col-span-full text-center py-10">Loading gallery...</div>
+            ) : (
+              displayedData.map((item) => (
+                <motion.div
+                  layout
+                  key={item.id}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  whileHover="hover"
+                  className={`relative rounded-xl shadow-md overflow-hidden cursor-pointer bg-w1 ${getSizeClass(item.size)}`}
+                  onMouseEnter={() => setHoveredCard(item.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  tabIndex={0}
+                  aria-label={item.title}
+                >
+                  {/* Media */}
+                  <div className="relative w-full h-full">
                     <img
                       src={item.src}
                       alt={item.title}
@@ -264,104 +177,91 @@ const Gallery = () => {
                       className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                       draggable={false}
                     />
-                  ) : (
-                    <>
-                      <img
-                        src={item.poster}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                        draggable={false}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-20 flex justify-center items-center pointer-events-none">
-                        <Play className="w-8 h-8 text-w1 opacity-80" />
-                      </div>
-                    </>
-                  )}
 
-                  {/* Overlay */}
-                  <AnimatePresence>
-                    {hoveredCard === item.id && (
-                      <motion.div
-                        variants={overlayVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1"
-                      >
-                        {/* Tags and Like Button */}
-                        <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
-                          <div className="flex flex-wrap gap-1">
-                            {item.tags.map((tag, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none"
+                    {/* Overlay */}
+                    <AnimatePresence>
+                      {hoveredCard === item.id && (
+                        <motion.div
+                          variants={overlayVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="hidden"
+                          className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1"
+                        >
+                          {/* Tags and Like Button */}
+                          <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
+                            <div className="flex flex-wrap gap-1">
+                              {item.tags.map((tag, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+
+                            <motion.button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleLike(item.id);
+                              }}
+                              aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
+                              className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
+                              whileHover={{ scale: 1.2 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Heart
+                                className={`w-5 h-5 ${
+                                  likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'
+                                }`}
+                              />
+                            </motion.button>
+                          </div>
+
+                          {/* Title and description */}
+                          <div>
+                            <h3 className="text-lg font-semibold">{item.title}</h3>
+                            <p className="text-xs sm:text-sm opacity-90 mt-1">{item.description}</p>
+
+                            {/* Action buttons */}
+                            <div className="flex gap-2 mt-3 flex-wrap">
+                              <motion.button
+                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label="View details"
                               >
-                                {tag}
-                              </span>
-                            ))}
+                                <Eye className="w-4 h-4" /> View
+                              </motion.button>
+                              <motion.button
+                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label="Save"
+                              >
+                                <Download className="w-4 h-4" /> Save
+                              </motion.button>
+                              <motion.button
+                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label="Open externally"
+                              >
+                                <ExternalLink className="w-4 h-4" /> Open
+                              </motion.button>
+                            </div>
                           </div>
-
-                          <motion.button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleLike(item.id);
-                            }}
-                            aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
-                            className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
-                            whileHover={{ scale: 1.2 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Heart
-                              className={`w-5 h-5 ${
-                                likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'
-                              }`}
-                            />
-                          </motion.button>
-                        </div>
-
-                        {/* Title and description */}
-                        <div>
-                          <h3 className="text-lg font-semibold">{item.title}</h3>
-                          <p className="text-xs sm:text-sm opacity-90 mt-1">{item.description}</p>
-
-                          {/* Action buttons */}
-                          <div className="flex gap-2 mt-3 flex-wrap">
-                            <motion.button
-                              className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.96 }}
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label="View details"
-                            >
-                              <Eye className="w-4 h-4" /> View
-                            </motion.button>
-                            <motion.button
-                              className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.96 }}
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label="Save"
-                            >
-                              <Download className="w-4 h-4" /> Save
-                            </motion.button>
-                            <motion.button
-                              className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.96 }}
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label="Open externally"
-                            >
-                              <ExternalLink className="w-4 h-4" /> Open
-                            </motion.button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </AnimatePresence>
         </div>
 

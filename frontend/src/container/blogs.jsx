@@ -1,71 +1,22 @@
 // container/Blog.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
+import { fetchBlogs, fetchBlogBySlug } from "../lib/api"; // API functions
 
-// --- MOCK DATA (replace with CMS/fetch in future) ---
-const posts = [
-  {
-    id: 1,
-    title: "5 Tips to Ace Your SAT Exam",
-    date: "2024-04-10",
-    author: "Mentor Krish Team",
-    tags: ["SAT", "Test Prep"],
-    excerpt: "Get actionable insights to maximize your SAT score and avoid common mistakes. These proven tips work for all students.",
-    content:
-      "Start early with practice tests, focus on time management, analyze your mistakes, practice mental math, and don't neglect reading comprehension.",
-    image: "/assets/img/blog1.jpg",
-    replies: [
-      {
-        name: "Aarav",
-        date: "2024-04-12",
-        comment: "Super helpful, thanks!"
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: "How Psychometric Testing Can Change Your Academic Journey",
-    date: "2024-04-02",
-    author: "Ms. Neelam Sharma",
-    tags: ["Psychometric", "Career Guidance"],
-    excerpt: "Discover how understanding your strengths and interests leads to clearer college and career decisions.",
-    content:
-      "Psychometric testing goes beyond grades. It uncovers your real aptitudes and helps chart a roadmap that's right for you.",
-    image: "/assets/img/blog2.jpg",
-    replies: []
-  },
-  {
-    id: 3,
-    title: "Profile Building: The Secret Weapon for College Admission",
-    date: "2024-03-22",
-    author: "Mentor Krish Team",
-    tags: ["Profile", "Admissions"],
-    excerpt: "Learn how extracurriculars, leadership roles, and authentic interests make your application stand out globally.",
-    content:
-      "Admissions officers look for depth, consistency, and passion. Start early and document your journey for the best impact.",
-    image: "/assets/img/blog3.jpg",
-    replies: [
-      {
-        name: "Priya",
-        date: "2024-03-24",
-        comment: "This demystified the process for me!"
-      }
-    ]
-  }
-];
-
-// --- COMPONENTS ---
-
+// --- MOTION CONFIG ---
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i=0) => ({
-    opacity: 1, y: 0, transition: { delay: i*0.15, duration: 0.7 } 
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.7 }
   })
 };
 
+// --- BLOG CARD COMPONENT ---
 function BlogPostCard({ post, onOpen }) {
   return (
     <motion.div
@@ -75,7 +26,7 @@ function BlogPostCard({ post, onOpen }) {
       viewport={{ once: true }}
       variants={fadeIn}
       className="bg-w1 rounded-2xl border border-w2 shadow-xl hover:shadow-2xl transition cursor-pointer flex flex-col"
-      onClick={() => onOpen(post)}
+      onClick={() => onOpen(post.slug)} // use slug to fetch full blog
     >
       <img
         src={post.image}
@@ -98,6 +49,7 @@ function BlogPostCard({ post, onOpen }) {
   );
 }
 
+// --- BLOG MODAL COMPONENT ---
 function BlogModal({ post, onClose, onReply }) {
   const [openReplies, setOpenReplies] = useState(false);
   const [reply, setReply] = useState({ name: "", comment: "" });
@@ -123,7 +75,13 @@ function BlogModal({ post, onClose, onReply }) {
         exit={{ scale: 0.99, opacity: 0, y: 40, transition: { duration: 0.25 } }}
         className="relative bg-w1 rounded-3xl max-w-2xl w-full shadow-2xl border border-w2"
       >
-        <button className="absolute right-4 top-4 text-g2 hover:text-g1 text-xl" onClick={onClose} aria-label="Close post">&times;</button>
+        <button
+          className="absolute right-4 top-4 text-g2 hover:text-g1 text-xl"
+          onClick={onClose}
+          aria-label="Close post"
+        >
+          &times;
+        </button>
         <img src={post.image} alt={post.title} className="rounded-t-3xl w-full h-60 object-cover" />
         <div className="p-8">
           <div className="flex flex-wrap mb-2 gap-2">
@@ -154,7 +112,12 @@ function BlogModal({ post, onClose, onReply }) {
                     <div className="space-y-2">
                       {post.replies.map((r, i) => (
                         <div key={i} className="rounded-lg border px-4 py-2 border-w2 mb-1 bg-w2">
-                          <div className="text-g1 font-bold text-xs">{r.name} <span className="font-normal text-g2 text-[10px]">({r.date})</span></div>
+                          <div className="text-g1 font-bold text-xs">
+                            {r.name}{" "}
+                            <span className="font-normal text-g2 text-[10px]">
+                              ({r.date})
+                            </span>
+                          </div>
                           <div className="text-g2 text-sm">{r.comment}</div>
                         </div>
                       ))}
@@ -169,7 +132,7 @@ function BlogModal({ post, onClose, onReply }) {
                 type="text"
                 placeholder="Your Name"
                 value={reply.name}
-                onChange={e => setReply(r => ({ ...r, name: e.target.value }))}
+                onChange={(e) => setReply((r) => ({ ...r, name: e.target.value }))}
                 required
               />
               <textarea
@@ -177,7 +140,7 @@ function BlogModal({ post, onClose, onReply }) {
                 placeholder="Leave a reply..."
                 value={reply.comment}
                 minLength={5}
-                onChange={e => setReply(r => ({ ...r, comment: e.target.value }))}
+                onChange={(e) => setReply((r) => ({ ...r, comment: e.target.value }))}
                 required
               />
               {error && <span className="text-r1 text-xs">{error}</span>}
@@ -198,17 +161,58 @@ function BlogModal({ post, onClose, onReply }) {
 // MAIN BLOG PAGE
 export default function Blog() {
   const [modal, setModal] = useState(null);
-  const [postsState, setPostsState] = useState(posts);
+  const [postsState, setPostsState] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Handle reply in modal (local demo state, replace with backend call in real use)
+  // Fetch blogs on mount
+  useEffect(() => {
+    const loadBlogs = async () => {
+      setLoading(true);
+      const allPosts = await fetchBlogs();
+      const mapped = allPosts.map((b) => ({
+        id: b.id,
+        slug: b.slug,
+        title: b.title,
+        date: b.publishedAt || b.createdAt,
+        author: b.author || "Mentor Krish Team",
+        tags: b.tags || [], // backend may not have this yet
+        excerpt: b.content ? b.content.slice(0, 120) + "..." : "",
+        content: b.content || "",
+        image: b.imageUrl || "/assets/img/blog-placeholder.jpg",
+        replies: [] // placeholder until backend comments exist
+      }));
+      setPostsState(mapped);
+      setLoading(false);
+    };
+    loadBlogs();
+  }, []);
+
+  // Open modal and fetch full blog by slug
+  const handleOpenModal = async (slug) => {
+    const blogDetail = await fetchBlogBySlug(slug);
+    if (blogDetail) {
+      setModal({
+        id: blogDetail.id,
+        slug: blogDetail.slug,
+        title: blogDetail.title,
+        date: blogDetail.publishedAt || blogDetail.createdAt,
+        author: blogDetail.author || "Mentor Krish Team",
+        tags: blogDetail.tags || [],
+        excerpt: blogDetail.content ? blogDetail.content.slice(0, 120) + "..." : "",
+        content: blogDetail.content || "",
+        image: blogDetail.imageUrl || "/assets/img/blog-placeholder.jpg",
+        replies: [] // future backend integration for comments
+      });
+    }
+  };
+
   const handleReply = (postId, reply) => {
-    setPostsState(prev =>
-      prev.map(p =>
-        p.id === postId
-          ? { ...p, replies: [...p.replies, reply] }
-          : p
-      )
+    setPostsState((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, replies: [...p.replies, reply] } : p))
     );
+    if (modal && modal.id === postId) {
+      setModal((prev) => ({ ...prev, replies: [...prev.replies, reply] }));
+    }
   };
 
   return (
@@ -240,11 +244,15 @@ export default function Blog() {
       {/* Blog Posts Grid */}
       <section className="bg-w1 py-12 min-h-[50vh]">
         <div className="max-w-7xl mx-auto px-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {postsState.map((post, i) => (
-              <BlogPostCard post={post} key={post.id} onOpen={setModal} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-10">Loading blogs...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {postsState.map((post, i) => (
+                <BlogPostCard post={post} key={post.id} onOpen={handleOpenModal} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -252,7 +260,7 @@ export default function Blog() {
       <AnimatePresence>
         {modal && (
           <BlogModal
-            post={postsState.find(p => p.id === modal.id)}
+            post={modal}
             onClose={() => setModal(null)}
             onReply={handleReply}
           />

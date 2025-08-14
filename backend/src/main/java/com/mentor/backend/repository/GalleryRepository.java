@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GalleryRepository extends JpaRepository<Gallery, Long> {
-    // Add custom queries if needed later (e.g. findByTag)
 }

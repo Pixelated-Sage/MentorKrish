@@ -1,6 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { fetchAboutLatest } from "../../lib/api";
 
 const AboutSection = () => {
+  const [about, setAbout] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadAbout() {
+      setLoading(true);
+      const data = await fetchAboutLatest();
+      setAbout(data);
+      setLoading(false);
+    }
+    loadAbout();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center">
+        Loading about section...
+      </div>
+    );
+  }
+
+  if (!about) {
+    return (
+      <div className="py-16 text-center text-red-500">
+        Failed to load About Section
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-gray-50 to-white py-16 px-4 flex flex-col items-center relative overflow-hidden">
       {/* Floating Background Elements */}
@@ -46,11 +76,10 @@ const AboutSection = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-r1 mb-1">About Mentor Krish</h2>
               </div>
               <p className="text-xs sm:text-sm text-g1 leading-relaxed">
-                Empowering students for academic excellence and global admissions through mentoring and proven strategies.
+                {about.content}
               </p>
             </div>
-
-            {/* Key Highlights */}
+            {/* You can keep your "Mission", "Approach", "Stats" blocks static OR make them editable in backend later */}
             <div className="grid md:grid-cols-2 gap-2">
               <div className="bg-w1 p-2 rounded-lg shadow-md border-l-4 border-r1">
                 <h4 className="font-semibold text-r1 mb-1 text-sm">Our Mission</h4>
@@ -61,8 +90,6 @@ const AboutSection = () => {
                 <p className="text-g2 text-xs">Personalized mentoring with proven strategies and support</p>
               </div>
             </div>
-
-            {/* Achievement Stats */}
             <div className="bg-w2 p-3 rounded-lg shadow-sm">
               <div className="grid grid-cols-3 gap-1 text-center">
                 <div>
@@ -109,7 +136,7 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* Content */}
+          {/* Founder Content */}
           <div className="order-4 md:order-2 w-full md:w-[60%] mb-4 md:mb-0 space-y-3">
             <div className="text-center md:text-left">
               <div className="flex gap-1 md:gap-2 mb-1 justify-center md:justify-start">
@@ -120,13 +147,14 @@ const AboutSection = () => {
                 />
                 <h2 className="text-xl sm:text-2xl font-bold text-r1 mb-0.5">Meet Our Founder</h2>
               </div>
-              <h3 className="text-sm sm:text-base font-semibold text-g1 mb-1">Ms. Neelam Sharma</h3>
+              <h3 className="text-sm sm:text-base font-semibold text-g1 mb-1">
+                {about.founderName}
+              </h3>
               <p className="text-xs sm:text-sm italic text-r2 font-medium">
-                "Every child is unique — with the right guidance, every child can achieve greatness."
+                "{about.founderQuote}"
               </p>
             </div>
-
-            {/* Founder Credentials */}
+            {/* You can still keep expertise/specialization static */}
             <div className="grid md:grid-cols-2 gap-2">
               <div className="bg-w1 p-2 rounded-lg shadow-md">
                 <h4 className="font-semibold text-r1 mb-1 text-sm">Expertise</h4>
@@ -145,8 +173,6 @@ const AboutSection = () => {
                 </ul>
               </div>
             </div>
-
-            {/* Philosophy */}
             <div className="bg-w1 shadow-lg p-3 rounded-lg">
               <h4 className="font-semibold text-g1x mb-1 text-sm">Leadership Philosophy</h4>
               <p className="text-gray-700 text-xs">

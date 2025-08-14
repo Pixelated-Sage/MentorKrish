@@ -7,7 +7,7 @@ import com.mentor.backend.exception.ResourceNotFoundException;
 import com.mentor.backend.repository.AboutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,15 +18,18 @@ public class AboutService {
     private final AboutRepository aboutRepository;
 
     public AboutResponse createAbout(AboutRequest request) {
-        About about = About.builder()
-                .content(request.getContent())
-                .founderName(request.getFounderName())
-                .founderQuote(request.getFounderQuote())
-                .build();
+        // Always operate on record ID = 1
+        About about = aboutRepository.findById(1L)
+                .orElse(About.builder().id(1L).build());
+
+        about.setContent(request.getContent());
+        about.setFounderName(request.getFounderName());
+        about.setFounderQuote(request.getFounderQuote());
 
         About saved = aboutRepository.save(about);
         return mapToResponse(saved);
     }
+
 
     public List<AboutResponse> getAll() {
         return aboutRepository.findAll()
@@ -62,4 +65,11 @@ public class AboutService {
                 .founderQuote(about.getFounderQuote())
                 .build();
     }
+
+    public AboutResponse getLatest() {
+        return aboutRepository.findById(1L)
+                .map(this::mapToResponse)
+                .orElse(null);
+    }
+
 }

@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "gallery")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,23 +18,14 @@ public class Gallery {
     private Long id;
 
     private String title;
-
     private String subtitle;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // persisted filename on server (UUID + extension)
-    @Column(nullable = true)
-    private String filename;
+    private String filename; // stored in uploads folder
 
-    // full URL or relative path used by frontend
-    private String imageUrl;
-
-    // simple single tag or comma-separated tags
     private String tag;
-
-    // optional layout type for frontend (e.g. "grid", "cover", "masonry")
     private String layoutType;
 
     private LocalDateTime createdAt;

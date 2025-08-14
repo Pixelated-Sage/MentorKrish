@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { loginUser } from '../lib/api'; // import the api helper
 
 const formVariants = {
   visible: { opacity: 1, y: 0 },
@@ -51,26 +52,16 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Call your backend login API here
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+      const user = await loginUser(formData);
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData?.message || 'Login failed. Please check your credentials.');
-      }
+      // If backend returns a token, store it here:
+      // localStorage.setItem('authToken', user.token);
 
-      const data = await res.json();
+      // For now, just store user email or info if needed
+      localStorage.setItem('userEmail', user.email);
 
-      // Example: Assume backend returns { token: '...' }
-      localStorage.setItem('authToken', data.token);
-
-      // Redirect user after login
-      router.push('/dashboard'); // Or '/' if no dashboard
-
+      // Redirect after login success
+      router.push('/');
     } catch (error) {
       setServerError(error.message);
     } finally {
@@ -113,9 +104,7 @@ export default function Login() {
               required
             />
             {errors.email && (
-              <p id="email-error" className="mt-1 text-xs text-r1">
-                {errors.email}
-              </p>
+              <p id="email-error" className="mt-1 text-xs text-r1">{errors.email}</p>
             )}
           </div>
 
@@ -140,9 +129,7 @@ export default function Login() {
               required
             />
             {errors.password && (
-              <p id="password-error" className="mt-1 text-xs text-r1">
-                {errors.password}
-              </p>
+              <p id="password-error" className="mt-1 text-xs text-r1">{errors.password}</p>
             )}
           </div>
 
