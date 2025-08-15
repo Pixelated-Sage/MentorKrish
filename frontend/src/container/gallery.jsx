@@ -1,6 +1,5 @@
 // pages/gallery.jsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -20,6 +19,53 @@ const overlayVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.25 } },
 };
+
+// Media component with Intersection Observer for lazy video play
+function Media({ src, title }) {
+  const ref = useRef();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.75 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, []);
+
+  const isVideo = src?.match(/\.(mp4|mov|webm)$/i);
+
+  return (
+    <div ref={ref} className="relative w-full h-full">
+      {isVideo ? (
+        <video
+          src={src}
+          className="w-full h-full object-cover"
+          autoPlay={isVisible}
+          loop
+          muted
+          playsInline
+          draggable={false}
+        />
+      ) : (
+        <img
+          src={src || sample}
+          alt={title}
+          loading="lazy"
+          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          draggable={false}
+        />
+      )}
+    </div>
+  );
+}
 
 const Gallery = () => {
   const [galleryData, setGalleryData] = useState([]);
@@ -63,8 +109,6 @@ const Gallery = () => {
     sm:${size === 'small' ? 'row-span-2' : size === 'medium' ? 'row-span-3' : size === 'large' ? 'row-span-4' : 'row-span-3'}
     xs:row-span-2
   `;
-
-  const isVideo = (url) => url?.match(/\.(mp4|mov|webm)$/i);
 
   return (
     <>
@@ -113,72 +157,48 @@ const Gallery = () => {
                   tabIndex={0}
                   aria-label={item.title}
                 >
-                  {/* Media */}
-                  <div className="relative w-full h-full">
-                    {isVideo(item.src) ? (
-                      <video
-                        src={item.src}
-                        // controls
-                        autoPlay
-                        loop
-                        muted
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    ) : (
-                      <img
-                        src={item.src || sample}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                        draggable={false}
-                      />
-                    )}
+                  <Media src={item.src} title={item.title} />
 
-                    {/* Overlay */}
-                    <AnimatePresence>
-                      {hoveredCard === item.id && (
-                        <motion.div variants={overlayVariants} initial="hidden" animate="visible" exit="hidden" className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1">
-                          {/* Tags and Like Button */}
-                          <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
-                            <div className="flex flex-wrap gap-1">
-                              {item.tags?.map((tag, i) => (
-                                <span key={i} className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none">{tag}</span>
-                              ))}
-                            </div>
-                            <motion.button
-                              onClick={(e) => { e.stopPropagation(); toggleLike(item.id); }}
-                              aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
-                              className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
-                              whileHover={{ scale: 1.2 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <Heart className={`w-5 h-5 ${likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'}`} />
+                  {/* Overlay */}
+                  <AnimatePresence>
+                    {hoveredCard === item.id && (
+                      <motion.div variants={overlayVariants} initial="hidden" animate="visible" exit="hidden" className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1">
+                        <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-1">
+                            {item.tags?.map((tag, i) => (
+                              <span key={i} className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none">{tag}</span>
+                            ))}
+                          </div>
+                          <motion.button
+                            onClick={(e) => { e.stopPropagation(); toggleLike(item.id); }}
+                            aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
+                            className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
+                            whileHover={{ scale: 1.2 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <Heart className={`w-5 h-5 ${likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'}`} />
+                          </motion.button>
+                        </div>
+
+                        <div>
+                          <h3 className="text-lg font-semibold">{item.title}</h3>
+                          <p className="text-xs sm:text-sm opacity-90 mt-1">{item.description}</p>
+
+                          <div className="flex gap-2 mt-3 flex-wrap">
+                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="View details">
+                              <Eye className="w-4 h-4" /> View
+                            </motion.button>
+                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Save">
+                              <Download className="w-4 h-4" /> Save
+                            </motion.button>
+                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Open externally">
+                              <ExternalLink className="w-4 h-4" /> Open
                             </motion.button>
                           </div>
-
-                          {/* Title and description */}
-                          <div>
-                            <h3 className="text-lg font-semibold">{item.title}</h3>
-                            <p className="text-xs sm:text-sm opacity-90 mt-1">{item.description}</p>
-
-                            {/* Action buttons */}
-                            <div className="flex gap-2 mt-3 flex-wrap">
-                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="View details">
-                                <Eye className="w-4 h-4" /> View
-                              </motion.button>
-                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Save">
-                                <Download className="w-4 h-4" /> Save
-                              </motion.button>
-                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Open externally">
-                                <ExternalLink className="w-4 h-4" /> Open
-                              </motion.button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               ))
             )}
