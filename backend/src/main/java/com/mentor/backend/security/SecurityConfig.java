@@ -39,12 +39,13 @@ public class SecurityConfig {
                 // Public access to auth endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 
-                // Public GET endpoints (read-only)
+            // Public GET endpoints (read-only)
                 .requestMatchers(HttpMethod.GET,
-                    "/api/blogs/**",
-                    "/api/announcements/**",
-                    "/api/gallery/**",
-                    "/api/about/**"
+                        "/api/blogs/**",
+                        "/api/announcements/**",
+                        "/api/gallery/**",
+                        "/api/about/**",
+                        "/uploads/**" // permit all for public image access
                 ).permitAll()
                 
                 // Public POST endpoints (forms)
