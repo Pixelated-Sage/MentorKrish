@@ -20,13 +20,13 @@ const Navbar = () => {
     { label: 'Home', href: '/' },
     { label: 'Courses', href: '/courses' },
     // { label: 'Register', href: '/register' },
-    // { label: 'Login', href: '/login' },
     { label: 'Career', href: '/career' },
     { label: 'Psychometric', href: '/psycohmetric' },
     { label: 'Blogs', href: '/blogs' },
     { label: 'Gallery', href: '/gallery' },
     { label: 'Contact', href: '/contact' },
     { label: 'Trial', href: '/trial' },
+    { label: 'Login', href: '/login' },
   ];
 
   if (isAdmin) {
