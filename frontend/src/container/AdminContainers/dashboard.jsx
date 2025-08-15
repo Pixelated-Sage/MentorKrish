@@ -7,6 +7,7 @@ import BlogsManager from '../../components/admin/BlogsManager';
 import AnnouncementsManager from '../../components/admin/AnnouncementsManager';
 // import TrialBookingsManager from '../../components/admin/TrialBookingsManager';
 import AboutManager from '../../components/admin/AboutManager';
+import GalleryManager from '../../components/admin/GalleryManager';
 
 const views = {
   dashboard: DashboardView,
@@ -15,6 +16,7 @@ const views = {
   announcements: AnnouncementsManager,
   // trials: TrialBookingsManager,
   about: AboutManager,
+  gallery: GalleryManager,
 };
 
 export default function AdminDashboard() {

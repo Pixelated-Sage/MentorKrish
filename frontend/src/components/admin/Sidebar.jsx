@@ -7,6 +7,7 @@ const items = [
   { id: 'announcements', label: 'Manage Announcements' },
   { id: 'trials', label: 'Manage Trial Bookings' },
   { id: 'about', label: 'Manage About Section' },
+  { id: 'gallery', label: 'Manage Gallery Section' },
 ];
 
 export default function Sidebar({ activeView, setActiveView }) {

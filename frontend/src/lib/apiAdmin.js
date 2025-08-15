@@ -127,3 +127,31 @@ export async function deleteAbout(id) {
   });
   if (!res.ok) throw new Error('Failed to delete about data');
 }
+
+
+
+export async function fetchGalleryAdmin() {
+  const res = await apiFetch('/api/gallery', { method: 'GET' });
+  if (!res.ok) throw new Error('Failed to fetch gallery');
+  return res.json();
+}
+
+// Upload a gallery item (image + meta, as FormData)
+export async function uploadGalleryItem(meta, file) {
+  const formData = new FormData();
+  formData.append('meta', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+  formData.append('file', file);
+  const res = await apiFetch('/api/gallery/upload', {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to upload');
+  return res.json();
+}
+
+// Delete gallery item
+export async function deleteGalleryItem(id) {
+  const res = await apiFetch(`/api/gallery/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete');
+}
+

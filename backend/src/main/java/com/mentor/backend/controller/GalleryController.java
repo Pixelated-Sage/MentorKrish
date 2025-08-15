@@ -48,15 +48,15 @@ public class GalleryController {
                 .title(meta.getTitle())
                 .subtitle(meta.getSubtitle())
                 .description(meta.getDescription())
-                .filename(filename) // <-- store file name in DB
+                .filename(filename)
                 .tag(meta.getTag())
                 .layoutType(meta.getLayoutType())
                 .build();
 
-        gallery = galleryService.create(gallery); // <-- new method for saving
-
+        gallery = galleryService.create(gallery);
         return ResponseEntity.ok(mapToResponse(gallery));
     }
+
     private String getFileExtension(String name) {
         return name.lastIndexOf(".") != -1 ? name.substring(name.lastIndexOf(".")) : "";
     }
