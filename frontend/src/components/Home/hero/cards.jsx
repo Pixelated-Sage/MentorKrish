@@ -8,7 +8,7 @@ const cardData = [
     description: "Comprehensive test preparation programs designed to unlock opportunities at world-class universities and institutions.",
     button: {
       label: "Book Consultation",
-      link: "tel:+919999999999"
+      link: "/trial" // ✅ changed
     },
     contact: {
       phone: "+91-9999999999",
@@ -23,7 +23,7 @@ const cardData = [
     description: "End-to-end career counseling with personalized profile building and comprehensive placement support for global opportunities.",
     button: {
       label: "Get Expert Guidance",
-      link: "#"
+      link: "/contact" // ✅ changed
     },
     icon: ""
   },
@@ -34,7 +34,7 @@ const cardData = [
     description: "Join the 6.3% who are confident about their career path. Take our scientifically-designed career assessment test.",
     button: {
       label: "Discover Your Path",
-      link: "#"
+      link: "/register" // ✅ changed
     },
     stats: "93.7% students need career clarity",
     icon: ""
@@ -47,7 +47,7 @@ const cardData = [
     description: "Experience authentic SAT preparation with our advanced digital platform featuring real-time analytics and adaptive learning.",
     button: {
       label: "Start Free Trial",
-      link: "#"
+      link: "/trial" // ✅ changed
     },
     icon: ""
   }
@@ -101,8 +101,6 @@ const CardRevealSection = () => {
             <div className="space-y-2">
               <a
                 href={card.button.link}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="block w-full bg-accent text-black font-bold py-2 px-4 rounded-xl hover:bg-w1 hover:scale-[1.02] transition-all duration-200 ease-in-out text-center shadow-lg hover:shadow-xl border-2 border-transparent hover:border-accent text-xs sm:text-sm"
               >
                 {card.button.label}

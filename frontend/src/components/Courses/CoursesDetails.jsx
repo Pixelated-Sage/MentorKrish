@@ -4,51 +4,54 @@ import { useEffect, useState } from 'react';
 // Expanded course data with multiple sections for each course
 const courses = [
   {
-    key: 'SAT',
-    label: 'SAT',
-    overview: {
-      heading: 'SAT Overview',
-      content: `The SAT course thoroughly prepares students for Reading, Writing, and Math sections using real test simulations and analytics.`,
-    },
-    why: {
-      heading: 'Why Choose SAT?',
-      content: `SAT is the most widely recognized college admission test in the US that opens doors to top universities worldwide.`,
-    },
-    benefits: {
-      heading: 'Benefits of SAT Course',
-      content: `Gain structured learning, expert mentorship, practice with real exam simulations, and sharpen test-taking skills.`,
-    },
-    audience: {
-      heading: 'Who Should Pursue',
-      content: `High school students aiming for undergraduate admissions, seeking strong foundational skills for higher education.`,
-    },
-    curriculum: {
-      heading: 'Course Curriculum',
-      content: `Reading comprehension, Writing and Language, Math (Algebra, Geometry, Data Analysis), and Essay optional.`,
-    },
-  },
-  {
     key: 'PSAT',
     label: 'PSAT',
     overview: {
       heading: 'PSAT Overview',
-      content: `PSAT builds foundational test skills, time management, and critical reading to prepare for SAT success.`,
+      content: `The PSAT (Preliminary SAT) is a standardized test for students in grades 8–11. It serves as a practice for the SAT and a qualifier for the National Merit Scholarship (for 11th graders).`,
     },
     why: {
       heading: 'Why Choose PSAT?',
-      content: `PSAT acts as a practice tool and qualifying test for National Merit Scholarships, fueling academic excellence.`,
+      content: `It builds foundational skills for the SAT, identifies academic strengths, and boosts confidence for future college entrance exams.`,
     },
     benefits: {
       heading: 'Benefits of PSAT Course',
-      content: `Strengthen critical thinking, early test readiness, and benchmark academic progress effectively.`,
+      content: `Early exposure to SAT-style questions.\nTargeted improvement in Math, Reading, and Writing.\nDiagnostic reports to track progress.\nPersonalized feedback and strategy sessions.`,
     },
     audience: {
-      heading: 'Who Should Pursue',
-      content: `Students in 10th and 11th grade preparing to step confidently into SAT and college admissions.`,
+      heading: 'Who Should Pursue PSAT?',
+      content: `Students from Grade 8 to 11 aiming to build strong test-taking skills and secure a competitive edge for college admissions.`,
     },
     curriculum: {
       heading: 'Course Curriculum',
-      content: `Diagnostic tests, timed drills, critical reading improvement, writing strategies, and math fundamentals.`,
+      content: `Our PSAT course mirrors the SAT structure and prepares students across both Math and Reading & Writing modules:\n
+🔹 Reading & Writing — Craft and Structure, Central Ideas, English Conventions, Expression of Ideas.\n
+🔹 Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
+    },
+  },
+  {
+    key: 'SAT',
+    label: 'SAT',
+    overview: {
+      heading: 'SAT Overview',
+      content: `The SAT is a globally recognized standardized test used for college admissions, assessing students' readiness in Reading, Writing, and Math. It is accepted by universities across the world, especially in the U.S.`,
+    },
+    why: {
+      heading: 'Why Choose SAT?',
+      content: `It opens doors to top global universities, scholarship opportunities, and builds strong academic and analytical skills essential for future success.`,
+    },
+    benefits: {
+      heading: 'Benefits of SAT Course',
+      content: `In-depth practice on Digital SAT format.\nConcept-based learning with targeted drills.\nAI-driven performance tracking.\nExpert strategies for time and stress management.\nReal-time doubt-solving and detailed feedback.`,
+    },
+    audience: {
+      heading: 'Who Should Pursue SAT?',
+      content: `Students in grades 10–12 aiming for undergraduate programs in top universities abroad, especially those targeting the U.S., Canada, or global scholarships.`,
+    },
+    curriculum: {
+      heading: 'Course Curriculum',
+      content: `🔹 Reading & Writing — Words in Context, Central Ideas, Grammar, Rhetorical Skills.\n
+🔹 Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
     },
   },
   {
@@ -56,23 +59,26 @@ const courses = [
     label: 'ACT',
     overview: {
       heading: 'ACT Overview',
-      content: `ACT Accelerator focuses on English, Math, Reading, and Science reasoning with extensive question banks and strategy sessions.`,
+      content: `The ACT is a standardized test used for college admissions in the U.S. and accepted by universities worldwide. It assesses skills in English, Math, Reading, and Science Reasoning, with an optional Writing section.`,
     },
     why: {
       heading: 'Why Choose ACT?',
-      content: `ACT is widely accepted by US universities and emphasizes science and time management skills.`,
+      content: `The ACT suits students who prefer straightforward questions and strong time management. It offers broader content coverage and includes a Science section, making it ideal for STEM-focused students.`,
     },
     benefits: {
       heading: 'Benefits of ACT Course',
-      content: `Enhance quick problem solving, integrated reasoning, and develop confidence under timed conditions.`,
+      content: `Covers all four core sections plus optional writing.\nEmphasis on speed, accuracy, and time-saving techniques.\nScience reasoning strategies unique to ACT.\nFull-length practice tests simulating real exam conditions.\nPersonalized performance analysis and feedback.`,
     },
     audience: {
-      heading: 'Who Should Pursue',
-      content: `Students targeting US colleges who want a comprehensive and competitive exam prep alternative to SAT.`,
+      heading: 'Who Should Pursue ACT?',
+      content: `Students in grades 10–12 aiming to study in the U.S. or globally, especially those with strengths in science, fast-paced environments, or seeking an alternative to the SAT.`,
     },
     curriculum: {
       heading: 'Course Curriculum',
-      content: `English grammar, math topics through pre-calculus, reading comprehension, science interpretation.`,
+      content: `🔹 English — Grammar, punctuation, sentence structure, rhetorical skills.\n
+🔹 Math — Algebra, Geometry, Trigonometry, Elementary Statistics.\n
+🔹 Reading — Comprehension across prose, humanities, social sciences, and fiction.\n
+🔹 Science — Graph interpretation, experimental analysis, scientific reasoning.`,
     },
   },
   {
@@ -80,23 +86,26 @@ const courses = [
     label: 'IELTS',
     overview: {
       heading: 'IELTS Overview',
-      content: `The IELTS Band Booster covers Listening, Reading, Writing, and Speaking with British Council-aligned curriculum and live mocks.`,
+      content: `The IELTS (International English Language Testing System) is an English proficiency test required by universities, employers, and immigration authorities in English-speaking countries like the UK, Canada, Australia, and New Zealand.`,
     },
     why: {
       heading: 'Why Choose IELTS?',
-      content: `IELTS is accepted globally for work, study, and migration in English-speaking countries.`,
+      content: `IELTS is accepted by over 11,000 institutions globally and evaluates real-life language skills through speaking, listening, reading, and writing tasks.`,
     },
     benefits: {
       heading: 'Benefits of IELTS Course',
-      content: `Expert coaching in four modules with focus on fluency, pronunciation, and exam strategy.`,
+      content: `Comprehensive practice for Academic and General Training modules.\nPersonalized feedback on speaking and writing.\nVocabulary-building and grammar correction sessions.\nFull-length mock tests with scoring and analysis.\nTips to manage time and improve fluency.`,
     },
     audience: {
-      heading: 'Who Should Pursue',
-      content: `Students and professionals aspiring to validate English proficiency for international goals.`,
+      heading: 'Who Should Pursue IELTS?',
+      content: `Students, professionals, or immigrants applying for higher education, job opportunities, or PR in countries like the UK, Australia, or Canada.`,
     },
     curriculum: {
       heading: 'Course Curriculum',
-      content: `Listening practices, academic and general reading, essay writing, speaking drills and mock interviews.`,
+      content: `🔹 Listening — Practice across 4 sections with multiple accents.\n
+🔹 Reading — Skimming, scanning, main idea identification.\n
+🔹 Writing — Task 1: Reports or Letters; Task 2: Essays.\n
+🔹 Speaking — Interview, cue card, and follow-up practice.`,
     },
   },
   {
@@ -104,23 +113,26 @@ const courses = [
     label: 'TOEFL',
     overview: {
       heading: 'TOEFL Overview',
-      content: `TOEFL Pathfinder includes intensive fluency training, grammar drills, and real-time speaking feedback for high scores.`,
+      content: `The TOEFL (Test of English as a Foreign Language) is a computer-based test accepted by universities and institutions worldwide, especially in the U.S. and Canada, to assess academic English proficiency.`,
     },
     why: {
       heading: 'Why Choose TOEFL?',
-      content: `TOEFL is recognized by most US universities and measures academic English proficiency.`,
+      content: `TOEFL focuses on academic language and integrated skills, making it ideal for university readiness. It is preferred by U.S. institutions and has a structured online format.`,
     },
     benefits: {
       heading: 'Benefits of TOEFL Course',
-      content: `Comprehensive training of reading, listening, speaking, and writing with personalized feedback.`,
+      content: `Training in integrated tasks (Reading + Speaking/Writing).\nPractice in academic listening and note-taking.\nAI-based speaking evaluations and writing reviews.\nReal-time mock test simulations.\nStrategic tips for navigating online format.`,
     },
     audience: {
-      heading: 'Who Should Pursue',
-      content: `International students planning to study in English-speaking academic settings.`,
+      heading: 'Who Should Pursue TOEFL?',
+      content: `Students applying to U.S. and Canadian universities or seeking scholarships, especially where TOEFL is the preferred English language test.`,
     },
     curriculum: {
       heading: 'Course Curriculum',
-      content: `Internet-based test prep, integrated skills practice, grammar and vocabulary building.`,
+      content: `🔹 Reading — Academic texts, vocabulary-based and inference questions.\n
+🔹 Listening — Lectures and conversations from campus contexts.\n
+🔹 Speaking — 4 integrated and independent tasks.\n
+🔹 Writing — Summarizing listening + reading, and opinion essays.`,
     },
   },
 ];

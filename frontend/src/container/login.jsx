@@ -52,23 +52,36 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const user = await loginUser(formData);
+      const result = await loginUser(formData); // { token, id, email, fullName, role }
 
-      // If backend returns a token, store it here:
-      // localStorage.setItem('authToken', user.token);
+      if (!result || !result.token) {
+        throw new Error('No token in login response');
+      }
 
-      // For now, just store user email or info if needed
-      localStorage.setItem('userEmail', user.email);
+      console.log('Login response:', result);
 
-      // Redirect after login success
-      router.push('/');
+      localStorage.setItem('authToken', result.token);
+      localStorage.setItem('userEmail', result.email);
+      localStorage.setItem('userRole', result.role);
+
+      console.log('Stored token:', localStorage.getItem('authToken'));
+      console.log('Stored email:', localStorage.getItem('userEmail'));
+      console.log('Stored role:', localStorage.getItem('userRole'));
+
+      // tiny delay to ensure storage is committed before redirect (paranoia for race conditions)
+      await new Promise(r => setTimeout(r, 50));
+
+      if (result.role === 'ADMIN') {
+        return router.push('/admin');
+      } else {
+        return router.push('/');
+      }
     } catch (error) {
-      setServerError(error.message);
+        setServerError(error.message);
     } finally {
       setLoading(false);
     }
-  };
-
+  }
   return (
     <>
       <Navbar />

@@ -16,7 +16,7 @@ export default function AnnouncementsSection() {
         image: item.imageUrl || "/assets/img/dsat.jpg", // Fallback if no image
         description: item.description,
         timer: null, // Backend has date/time, you can calc timer later if needed
-        link: "#", // No link in backend yet, placeholder
+        link: "/contact", // No link in backend yet, placeholder
       }));
 
       setAnnouncements(mapped);

@@ -25,7 +25,6 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
-//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<AnnouncementResponse> create(@RequestBody AnnouncementRequest request) {
         return ResponseEntity.ok(announcementService.create(request));
@@ -41,13 +40,11 @@ public class AnnouncementController {
         return ResponseEntity.ok(announcementService.getById(id));
     }
 
-    // @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<AnnouncementResponse> update(@PathVariable Long id, @RequestBody AnnouncementRequest request) {
         return ResponseEntity.ok(announcementService.update(id, request));
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         announcementService.delete(id);

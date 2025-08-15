@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/router'; // ✅ Import Next.js router
 import MapBg from './Mapbg';
 
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const router = useRouter(); // ✅ Get router instance
 
-  // Keeps your hover-tracking intact without disruption
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setMousePosition({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     });
+  };
+
+  const handleRegisterClick = () => {
+    router.push('/register'); // ✅ Navigate to /register page
   };
 
   return (
@@ -83,6 +88,7 @@ const Hero = () => {
           <motion.button
             className="relative inline-block px-8 sm:px-10 py-3 sm:py-4 font-bold text-base sm:text-lg overflow-hidden border-2 border-r2 text-black rounded-full bg-w2 shadow-lg hover:shadow-xl transition-all duration-300"
             onMouseMove={handleMouseMove}
+            onClick={handleRegisterClick} // ✅ Navigate when clicked
             whileHover={{ scale: 1.05, backgroundColor: "#D84040", color: "#ffffff" }}
             whileTap={{ scale: 0.95 }}
           >

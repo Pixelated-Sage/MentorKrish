@@ -43,8 +43,8 @@ public class AboutController {
 
     @GetMapping("/latest")
     public ResponseEntity<AboutResponse> getLatest() {
-        AboutResponse latest = aboutService.getLatest();
-        if (latest == null) return ResponseEntity.noContent().build();
-        return ResponseEntity.ok(latest);
+        List<AboutResponse> all = aboutService.getAll();
+        if (all.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(all.get(all.size() - 1));
     }
 }

@@ -7,7 +7,7 @@ import com.mentor.backend.exception.ResourceNotFoundException;
 import com.mentor.backend.repository.AboutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Sort;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,18 +18,15 @@ public class AboutService {
     private final AboutRepository aboutRepository;
 
     public AboutResponse createAbout(AboutRequest request) {
-        // Always operate on record ID = 1
-        About about = aboutRepository.findById(1L)
-                .orElse(About.builder().id(1L).build());
-
-        about.setContent(request.getContent());
-        about.setFounderName(request.getFounderName());
-        about.setFounderQuote(request.getFounderQuote());
+        About about = aboutRepository.findById(1L).orElse(new About());
+        about.setId(1L);
+        about.setContent(request.getContent() != null ? request.getContent() : "");
+        about.setFounderName(request.getFounderName() != null ? request.getFounderName() : "");
+        about.setFounderQuote(request.getFounderQuote() != null ? request.getFounderQuote() : "");
 
         About saved = aboutRepository.save(about);
-        return mapToResponse(saved);
+        return mapToResponse(saved); // ✅ use your own mapper
     }
-
 
     public List<AboutResponse> getAll() {
         return aboutRepository.findAll()
@@ -42,9 +39,9 @@ public class AboutService {
         About about = aboutRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("About", "id", id));
 
-        about.setContent(request.getContent());
-        about.setFounderName(request.getFounderName());
-        about.setFounderQuote(request.getFounderQuote());
+        about.setContent(request.getContent() != null ? request.getContent() : "");
+        about.setFounderName(request.getFounderName() != null ? request.getFounderName() : "");
+        about.setFounderQuote(request.getFounderQuote() != null ? request.getFounderQuote() : "");
 
         About updated = aboutRepository.save(about);
         return mapToResponse(updated);
@@ -71,5 +68,4 @@ public class AboutService {
                 .map(this::mapToResponse)
                 .orElse(null);
     }
-
 }

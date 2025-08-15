@@ -33,9 +33,31 @@ export async function fetchAboutLatest() {
 
 //Blog API functions
 
+export function getAuthHeaders() {
+  const token = localStorage.getItem('authToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// Centralized API fetch with auth and 401 handling
+export async function apiFetch(path, options = {}) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      ...getAuthHeaders(),
+    },
+  });
+  if (res.status === 401) {
+    localStorage.removeItem('authToken');
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
+
 export async function fetchBlogs() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs`);
+    const res = await apiFetch('/api/blogs', { method: 'GET' });
     if (!res.ok) throw new Error(`Failed to fetch blogs: ${res.status}`);
     return await res.json();
   } catch (err) {
@@ -67,16 +89,16 @@ export async function fetchGallery(limit = null) {
     const data = await res.json();
 
     const mapped = data.map(item => ({
-    id: item.id,
-    type: item.imageEndpoint?.match(/\.(mp4|mov|avi|webm)$/i) ? "video" : "image",
-    src: item.imageUrl  
-     ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}` 
-     : sample, // Fallback to sample image if no URL
-    title: item.title,
-    description: item.description,
-    category: item.tag || "uncategorized",
-    size: item.layoutType || "medium",
-    tags: item.tag ? item.tag.split(",").map(t => t.trim()) : []
+      id: item.id,
+      type: 'image', // Always image, since imageEndpoint is not present
+      src: item.imageUrl  
+        ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}` 
+        : sample, // Fallback to sample image if no URL
+      title: item.title,
+      description: item.description,
+      category: item.tag || "uncategorized",
+      size: item.layoutType || "medium",
+      tags: item.tag ? item.tag.split(",").map(t => t.trim()) : []
     }));
 
     return limit ? mapped.slice(0, limit) : mapped;

@@ -6,20 +6,32 @@ import Link from 'next/link';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Courses', href: '/courses' },
-  { label: 'Register', href: '/register' },
-  { label: 'Login', href: '/login' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Trial', href: '/trial' },
-  { label: 'Career', href: '/career' },
-  { label: 'Psychometric', href: '/psycohmetric' },
-  { label: 'Blogs', href: '/blogs' },
-  { label: 'Gallery', href: '/gallery' }
-  
-];
+  // Use useEffect to check localStorage only on the client-side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userRole = localStorage.getItem("userRole");
+      setIsAdmin(userRole === "ADMIN");
+    }
+  }, []);
+
+  const navItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Courses', href: '/courses' },
+    // { label: 'Register', href: '/register' },
+    // { label: 'Login', href: '/login' },
+    { label: 'Career', href: '/career' },
+    { label: 'Psychometric', href: '/psycohmetric' },
+    { label: 'Blogs', href: '/blogs' },
+    { label: 'Gallery', href: '/gallery' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Trial', href: '/trial' },
+  ];
+
+  if (isAdmin) {
+    navItems.push({ label: 'Admin Panel', href: '/admin' });
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,7 +93,6 @@ const navItems = [
               </Link>
             </motion.div>
           ))}
-
           <motion.a
             href="tel:+919999999999"
             whileHover={{

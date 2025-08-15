@@ -18,7 +18,7 @@ const roundsData = [
     focus: 'Reading, Writing, Math',
     platform: 'DSAT online platform with real test interface',
     icon: '📚',
-    color: 'bg-r1 text-w1',    // for button gradients, etc
+    color: 'bg-r1 text-w1',
     bgColor: 'bg-w2',
     borderColor: 'border-r1'
   },
@@ -84,7 +84,6 @@ const RoundsDashboard = () => {
     ? roundsData
     : roundsData.filter(r => r.subtitle === filter);
 
-  // Ensure activeRound index never out of bounds
   const filteredActiveRound = Math.min(activeRound, filteredRounds.length - 1);
 
   React.useEffect(() => {
@@ -169,11 +168,12 @@ const RoundsDashboard = () => {
                     <li>Test-oriented strategies & personalized attention</li>
                   </ul>
                 </div>
-                <button
-                  className={`mt-4 md:mt-0 px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap`}
+                <a
+                  href="/register"
+                  className={`mt-4 md:mt-0 px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap text-center`}
                 >
                   Start {filteredRounds[filteredActiveRound].subtitle} Preparation
-                </button>
+                </a>
               </div>
             </div>
           ) : (
