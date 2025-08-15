@@ -13,10 +13,12 @@ export default function AnnouncementsSection() {
       // Map backend fields → UI format
       const mapped = data.map((item) => ({
         title: item.title,
-        image: item.imageUrl || "/assets/img/dsat.jpg", // Fallback if no image
+        image: item.imageUrl
+          ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`
+          : "/assets/img/dsat.jpg",
         description: item.description,
-        timer: null, // Backend has date/time, you can calc timer later if needed
-        link: "/contact", // No link in backend yet, placeholder
+        timer: null,
+        link: "/contact",
       }));
 
       setAnnouncements(mapped);

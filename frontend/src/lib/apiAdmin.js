@@ -7,18 +7,28 @@ export async function fetchAnnouncementsAdmin(page = 1, size = 10) {
   return res.json();
 }
 
-// Admin: Create announcement
+// Admin: Create announcement (multipart/form-data)
 export async function createAnnouncement(data) {
+  const formData = new FormData();
+  formData.append('title', data.title);
+  formData.append('description', data.description);
+  formData.append('date', data.date);
+  formData.append('time', data.time);
+  if (data.image) {
+    formData.append('image', data.image); // must be a File or Blob
+  }
+
   const res = await apiFetch(`/api/announcements`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: formData
+    
+    // ❌ Don't set Content-Type manually — browser will set it
   });
   if (!res.ok) throw new Error('Failed to create announcement');
   return res.json();
 }
 
-// Admin: Update announcement
+// Admin: Update announcement (JSON — your backend expects AnnouncementRequest)
 export async function updateAnnouncement(id, data) {
   const res = await apiFetch(`/api/announcements/${id}`, {
     method: 'PUT',
@@ -36,7 +46,6 @@ export async function deleteAnnouncement(id) {
   });
   if (!res.ok) throw new Error('Failed to delete announcement');
 }
-
 
 
 

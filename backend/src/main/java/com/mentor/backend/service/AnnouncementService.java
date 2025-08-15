@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,17 +21,30 @@ public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
 
     public AnnouncementResponse create(AnnouncementRequest request) {
+        LocalDate parsedDate;
+        LocalTime parsedTime;
+
+        try {
+            parsedDate = LocalDate.parse(request.getDate());
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Use yyyy-MM-dd");
+        }
+
+        try {
+            parsedTime = LocalTime.parse(request.getTime());
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid time format. Use HH:mm or HH:mm:ss");
+        }
+
         Announcement announcement = Announcement.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .imageUrl(request.getImageUrl())
-                .date(LocalDate.parse(request.getDate()))
-                .time(LocalTime.parse(request.getTime()))
+                .date(parsedDate)
+                .time(parsedTime)
                 .build();
 
-        Announcement saved = announcementRepository.save(announcement);
-
-        return mapToResponse(saved);
+        return mapToResponse(announcementRepository.save(announcement));
     }
 
     public List<AnnouncementResponse> getAll() {
@@ -49,14 +63,18 @@ public class AnnouncementService {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Announcement not found with id: " + id));
 
+        try {
+            announcement.setDate(LocalDate.parse(request.getDate()));
+            announcement.setTime(LocalTime.parse(request.getTime()));
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date/time format");
+        }
+
         announcement.setTitle(request.getTitle());
         announcement.setDescription(request.getDescription());
         announcement.setImageUrl(request.getImageUrl());
-        announcement.setDate(LocalDate.parse(request.getDate()));
-        announcement.setTime(LocalTime.parse(request.getTime()));
 
-        Announcement updated = announcementRepository.save(announcement);
-        return mapToResponse(updated);
+        return mapToResponse(announcementRepository.save(announcement));
     }
 
     public void delete(Long id) {
@@ -66,11 +84,16 @@ public class AnnouncementService {
     }
 
     private AnnouncementResponse mapToResponse(Announcement announcement) {
+        String imagePath = null;
+        if (announcement.getImageUrl() != null && !announcement.getImageUrl().isBlank()) {
+            imagePath = "/uploads/" + announcement.getImageUrl();
+        }
+
         return AnnouncementResponse.builder()
                 .id(announcement.getId())
                 .title(announcement.getTitle())
                 .description(announcement.getDescription())
-                .imageUrl(announcement.getImageUrl())
+                .imageUrl(imagePath)
                 .date(announcement.getDate().toString())
                 .time(announcement.getTime().toString())
                 .createdAt(announcement.getCreatedAt())
