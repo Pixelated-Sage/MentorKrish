@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,13 +36,26 @@ public class GalleryController {
 
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<GalleryResponse> upload(
-            @RequestPart("meta") GalleryRequest meta,
+            @RequestPart("meta") String metaJson,
             @RequestPart("file") MultipartFile file) throws IOException {
 
+        // Parse the JSON string manually to GalleryRequest
+        ObjectMapper mapper = new ObjectMapper();
+        GalleryRequest meta = mapper.readValue(metaJson, GalleryRequest.class);
+
+        // Generate unique filename
         String filename = UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
-        Path uploadPath = Paths.get("uploads").resolve(filename);
-        Files.createDirectories(uploadPath.getParent());
-        Files.write(uploadPath, file.getBytes());
+
+        // Create upload directory if not exists
+        Path uploadPath = Paths.get("uploads");
+        Files.createDirectories(uploadPath);
+        Path filePath = uploadPath.resolve(filename);
+
+        // Save file
+        Files.write(filePath, file.getBytes());
+
+        // Determine media type (image/video)
+        String mediaType = file.getContentType(); // e.g., image/png, video/mp4
 
         Gallery gallery = Gallery.builder()
                 .title(meta.getTitle())
@@ -56,6 +69,7 @@ public class GalleryController {
         gallery = galleryService.create(gallery);
         return ResponseEntity.ok(mapToResponse(gallery));
     }
+
 
     private String getFileExtension(String name) {
         return name.lastIndexOf(".") != -1 ? name.substring(name.lastIndexOf(".")) : "";

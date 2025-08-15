@@ -12,23 +12,13 @@ const ITEMS_PER_PAGE = 12;
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35 }
-  },
-  hover: {
-    y: -5,
-    transition: { duration: 0.18 }
-  }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+  hover: { y: -5, transition: { duration: 0.18 } },
 };
 
 const overlayVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.25 }
-  }
+  visible: { opacity: 1, transition: { duration: 0.25 } },
 };
 
 const Gallery = () => {
@@ -43,26 +33,12 @@ const Gallery = () => {
     async function loadGallery() {
       setLoading(true);
       const data = await fetchGallery();
-
-      // Map backend response to the format your component expects
-      const mapped = data.map(item => ({
-        id: item.id,
-        type: 'image', // all items from backend are images for now
-        src: item.imageUrl || sample,
-        title: item.title || '',
-        description: item.description || '',
-        category: item.tag || 'all',
-        tags: item.tag ? item.tag.split(',').map(t => t.trim()) : [],
-        size: 'medium' // default, as backend doesn't return this
-      }));
-
       setGalleryData(data);
       setLoading(false);
     }
     loadGallery();
   }, []);
 
-  // Filtering and pagination logic
   const filteredData = filter === 'all' ? galleryData : galleryData.filter(item => item.category === filter);
   const displayedData = filteredData.slice(0, visibleItems);
 
@@ -73,45 +49,29 @@ const Gallery = () => {
   const toggleLike = (cardId) => {
     setLikedCards(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(cardId)) newSet.delete(cardId);
-      else newSet.add(cardId);
+      newSet.has(cardId) ? newSet.delete(cardId) : newSet.add(cardId);
       return newSet;
     });
   };
 
-  // Dynamic category filter from actual galleryData
   const categoriesSet = new Set(['all']);
-  galleryData.forEach(item => { if (item.category) categoriesSet.add(item.category); });
+  galleryData.forEach(item => item.category && categoriesSet.add(item.category));
   const categoriesArr = Array.from(categoriesSet);
 
-  // Responsive row spans for masonry style layout
-  const getSizeClass = (size) => {
-    return `
-      ${size === 'small' ? 'row-span-2' :
-        size === 'medium' ? 'row-span-3' :
-        size === 'large' ? 'row-span-4' : 'row-span-3'
-      }
-      sm:${
-        size === 'small' ? 'row-span-2' :
-        size === 'medium' ? 'row-span-3' :
-        size === 'large' ? 'row-span-4' : 'row-span-3'
-      }
-      xs:row-span-2
-    `;
-  };
+  const getSizeClass = (size) => `
+    ${size === 'small' ? 'row-span-2' : size === 'medium' ? 'row-span-3' : size === 'large' ? 'row-span-4' : 'row-span-3'}
+    sm:${size === 'small' ? 'row-span-2' : size === 'medium' ? 'row-span-3' : size === 'large' ? 'row-span-4' : 'row-span-3'}
+    xs:row-span-2
+  `;
+
+  const isVideo = (url) => url?.match(/\.(mp4|mov|webm)$/i);
 
   return (
     <>
       <Navbar />
-
       <main className="min-h-screen bg-w2 mt-9 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
         {/* Page header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.5 }}
-          className="mb-8 text-center"
-        >
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-g1 mb-2">Gallery</h1>
           <p className="text-g2 max-w-xl mx-auto text-sm sm:text-base">
             Explore our latest designs, tutorials, and development showcases. Filter based on category and dive into the details.
@@ -123,18 +83,8 @@ const Gallery = () => {
           {categoriesArr.map((cat) => (
             <button
               key={cat}
-              onClick={() => {
-                setFilter(cat);
-                setVisibleItems(ITEMS_PER_PAGE);
-                setHoveredCard(null);
-              }}
-              className={`px-5 py-2 rounded-full font-semibold text-sm transition 
-                ${
-                  filter === cat
-                    ? 'bg-r1 text-w1 shadow-md'
-                    : 'bg-w1 text-g2 border border-w2 hover:bg-g2 hover:text-w1'
-                }
-              `}
+              onClick={() => { setFilter(cat); setVisibleItems(ITEMS_PER_PAGE); setHoveredCard(null); }}
+              className={`px-5 py-2 rounded-full font-semibold text-sm transition ${filter === cat ? 'bg-r1 text-w1 shadow-md' : 'bg-w1 text-g2 border border-w2 hover:bg-g2 hover:text-w1'}`}
               aria-pressed={filter === cat}
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -143,12 +93,7 @@ const Gallery = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div
-          className={`
-            grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 
-            gap-3 sm:gap-5 auto-rows-[90px] sm:auto-rows-[100px] md:auto-rows-[120px]
-          `}
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 auto-rows-[90px] sm:auto-rows-[100px] md:auto-rows-[120px]">
           <AnimatePresence>
             {loading ? (
               <div className="col-span-full text-center py-10">Loading gallery...</div>
@@ -170,52 +115,45 @@ const Gallery = () => {
                 >
                   {/* Media */}
                   <div className="relative w-full h-full">
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                      draggable={false}
-                    />
+                    {isVideo(item.src) ? (
+                      <video
+                        src={item.src}
+                        // controls
+                        autoPlay
+                        loop
+                        muted
+                        className="w-full h-full object-cover"
+                        draggable={false}
+                      />
+                    ) : (
+                      <img
+                        src={item.src || sample}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                        draggable={false}
+                      />
+                    )}
 
                     {/* Overlay */}
                     <AnimatePresence>
                       {hoveredCard === item.id && (
-                        <motion.div
-                          variants={overlayVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="hidden"
-                          className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1"
-                        >
+                        <motion.div variants={overlayVariants} initial="hidden" animate="visible" exit="hidden" className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1">
                           {/* Tags and Like Button */}
                           <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
                             <div className="flex flex-wrap gap-1">
-                              {item.tags.map((tag, i) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none"
-                                >
-                                  {tag}
-                                </span>
+                              {item.tags?.map((tag, i) => (
+                                <span key={i} className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none">{tag}</span>
                               ))}
                             </div>
-
                             <motion.button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleLike(item.id);
-                              }}
+                              onClick={(e) => { e.stopPropagation(); toggleLike(item.id); }}
                               aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
                               className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
                               whileHover={{ scale: 1.2 }}
                               whileTap={{ scale: 0.9 }}
                             >
-                              <Heart
-                                className={`w-5 h-5 ${
-                                  likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'
-                                }`}
-                              />
+                              <Heart className={`w-5 h-5 ${likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'}`} />
                             </motion.button>
                           </div>
 
@@ -226,31 +164,13 @@ const Gallery = () => {
 
                             {/* Action buttons */}
                             <div className="flex gap-2 mt-3 flex-wrap">
-                              <motion.button
-                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.96 }}
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="View details"
-                              >
+                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="View details">
                                 <Eye className="w-4 h-4" /> View
                               </motion.button>
-                              <motion.button
-                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.96 }}
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="Save"
-                              >
+                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Save">
                                 <Download className="w-4 h-4" /> Save
                               </motion.button>
-                              <motion.button
-                                className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.96 }}
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="Open externally"
-                              >
+                              <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Open externally">
                                 <ExternalLink className="w-4 h-4" /> Open
                               </motion.button>
                             </div>
@@ -267,19 +187,8 @@ const Gallery = () => {
 
         {/* Load More */}
         {visibleItems < filteredData.length && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-center mt-10"
-          >
-            <motion.button
-              onClick={handleLoadMore}
-              className="px-8 py-3 bg-r1 text-w1 rounded-full font-semibold text-sm sm:text-base shadow hover:bg-r2 transition-colors"
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Load more gallery items"
-            >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-center mt-10">
+            <motion.button onClick={handleLoadMore} className="px-8 py-3 bg-r1 text-w1 rounded-full font-semibold text-sm sm:text-base shadow hover:bg-r2 transition-colors" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.95 }} aria-label="Load more gallery items">
               Load More
             </motion.button>
           </motion.div>
