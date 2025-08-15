@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { isAdminAuthenticated } from '../lib/auth';
+import { isAdminAuthenticated } from '../../lib/auth';
 
 export default function AdminRouteGuard({ children }) {
   const router = useRouter();

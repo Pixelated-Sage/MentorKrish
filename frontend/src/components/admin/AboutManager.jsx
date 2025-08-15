@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AdminRouteGuard from '../../components/AdminRouteGuard';
+import AdminRouteGuard from './AdminRouteGuard';
 import { fetchAboutLatest, createOrUpdateAbout, deleteAbout } from '../../lib/apiAdmin';
 
 export default function AdminAbout() {

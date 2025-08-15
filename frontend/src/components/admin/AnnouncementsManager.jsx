@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AdminRouteGuard from '../../components/AdminRouteGuard';
+import AdminRouteGuard from './AdminRouteGuard';
 import {
   fetchAnnouncementsAdmin,
   createAnnouncement,
@@ -10,7 +10,14 @@ import {
 export default function AdminAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
   const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', imageUrl: '', date: '', time: '' });
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    image: null,       // store actual File
+    imageUrl: '',      // preview only
+    date: '',
+    time: ''
+  });
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [error, setError] = useState('');
@@ -26,21 +33,23 @@ export default function AdminAnnouncements() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  // Handle file drop
   const handleImageDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setForm((f) => ({ ...f, imageUrl: url }));
+      setForm((f) => ({ ...f, image: file, imageUrl: url }));
     }
   };
 
+  // Handle file select
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setForm((f) => ({ ...f, imageUrl: url }));
+      setForm((f) => ({ ...f, image: file, imageUrl: url }));
     }
   };
 
@@ -49,11 +58,14 @@ export default function AdminAnnouncements() {
     setLoading(true);
     try {
       if (editId) {
-        await updateAnnouncement(editId, form);
+        await updateAnnouncement(editId, {
+          ...form,
+          imageUrl: form.imageUrl // keep preview for update
+        });
       } else {
-        await createAnnouncement(form);
+        await createAnnouncement(form); // send file + other data
       }
-      setForm({ title: '', description: '', imageUrl: '', date: '', time: '' });
+      setForm({ title: '', description: '', image: null, imageUrl: '', date: '', time: '' });
       setEditId(null);
       setRefresh((r) => r + 1);
     } catch (err) {
@@ -68,6 +80,7 @@ export default function AdminAnnouncements() {
     setForm({
       title: a.title || '',
       description: a.description || '',
+      image: null, // reset file when editing
       imageUrl: a.imageUrl || '',
       date: a.date || '',
       time: a.time || '',
@@ -152,7 +165,10 @@ export default function AdminAnnouncements() {
           {editId && (
             <button
               type="button"
-              onClick={() => { setForm({ title: '', description: '', imageUrl: '', date: '', time: '' }); setEditId(null); }}
+              onClick={() => {
+                setForm({ title: '', description: '', image: null, imageUrl: '', date: '', time: '' });
+                setEditId(null);
+              }}
               className="ml-4 text-sm text-gray-600 underline"
             >
               Cancel
