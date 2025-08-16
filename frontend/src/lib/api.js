@@ -184,8 +184,19 @@ export async function loginUser(payload) {
     });
 
     if (!res.ok) {
-      throw new Error("Invalid credentials");
+      let errorMessage = "Login failed";
+
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (_) {
+        // fallback if server didn’t return JSON
+        errorMessage = `Login failed with status ${res.status}`;
+      }
+
+      throw new Error(errorMessage);
     }
+
     return await res.json();
   } catch (err) {
     console.error("Login API error:", err);
@@ -193,6 +204,34 @@ export async function loginUser(payload) {
   }
 }
 
+
+
+
+export async function verifyOtp({ email, otp }) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp })
+  });
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || 'Failed to verify OTP');
+  }
+  return await res.text();
+}
+
+export async function resendOtp({ email }) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/resend-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || 'Failed to resend OTP');
+  }
+  return await res.text();
+}
 
 
 

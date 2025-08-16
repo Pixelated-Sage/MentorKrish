@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { loginUser } from '../lib/api'; // import the api helper
+import { loginUser } from '../lib/api'; // API helper
 
 const formVariants = {
   visible: { opacity: 1, y: 0 },
@@ -52,36 +52,37 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const result = await loginUser(formData); // { token, id, email, fullName, role }
+      const result = await loginUser(formData);
 
       if (!result || !result.token) {
         throw new Error('No token in login response');
       }
 
-      console.log('Login response:', result);
-
+      // Save token and user
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userEmail', result.email);
       localStorage.setItem('userRole', result.role);
 
-      console.log('Stored token:', localStorage.getItem('authToken'));
-      console.log('Stored email:', localStorage.getItem('userEmail'));
-      console.log('Stored role:', localStorage.getItem('userRole'));
+      await new Promise(r => setTimeout(r, 50)); // safety delay
 
-      // tiny delay to ensure storage is committed before redirect (paranoia for race conditions)
-      await new Promise(r => setTimeout(r, 50));
-
+      // Routing logic
       if (result.role === 'ADMIN') {
         return router.push('/admin');
       } else {
         return router.push('/');
       }
-    } catch (error) {
-        setServerError(error.message);
+
+    } catch (err) {
+      if (err.message.includes('Email not verified')) {
+        router.push(`/verifyotp?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        setServerError(err.message);
+      }
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <>
       <Navbar />
@@ -108,17 +109,11 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
-              className={`w-full px-4 py-3 rounded-lg border ${
-                errors.email ? 'border-r1' : 'border-w2'
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
               placeholder="you@example.com"
-              aria-invalid={errors.email ? true : false}
-              aria-describedby="email-error"
               required
             />
-            {errors.email && (
-              <p id="email-error" className="mt-1 text-xs text-r1">{errors.email}</p>
-            )}
+            {errors.email && <p className="mt-1 text-xs text-r1">{errors.email}</p>}
           </div>
 
           {/* Password */}
@@ -133,30 +128,19 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
-              className={`w-full px-4 py-3 rounded-lg border ${
-                errors.password ? 'border-r1' : 'border-w2'
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
               placeholder="Enter your password"
-              aria-invalid={errors.password ? true : false}
-              aria-describedby="password-error"
               required
             />
-            {errors.password && (
-              <p id="password-error" className="mt-1 text-xs text-r1">{errors.password}</p>
-            )}
+            {errors.password && <p className="mt-1 text-xs text-r1">{errors.password}</p>}
           </div>
 
           {/* Server error */}
-          {serverError && (
-            <p className="mb-4 text-center text-r1 font-semibold">{serverError}</p>
-          )}
+          {serverError && <p className="mb-4 text-center text-r1 font-semibold">{serverError}</p>}
 
-          {/* Forgot password link */}
+          {/* Forgot password */}
           <div className="mb-6 text-right">
-            <a
-              href="/forgot-password"
-              className="text-r1 font-medium text-sm hover:underline"
-            >
+            <a href="/forgot-password" className="text-r1 font-medium text-sm hover:underline">
               Forgot Password?
             </a>
           </div>

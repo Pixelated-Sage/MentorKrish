@@ -5,6 +5,7 @@ import com.mentor.backend.repository.OtpVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -81,6 +82,7 @@ public class OtpService {
         sendOtp(email);
     }
 
+    @Transactional  // ✅ FIX: ensures delete runs inside a transaction
     public boolean verifyOtp(String email, String otp) {
         Optional<OtpVerification> recOpt = otpRepository.findByEmail(email);
         if (recOpt.isEmpty()) return false;
