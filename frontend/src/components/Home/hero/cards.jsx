@@ -55,7 +55,7 @@ const cardData = [
 
 const CardRevealSection = () => {
   return (
-    <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10">
+    <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10" id = "cards">
       <div className="max-w-8xl mx-auto flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
         {cardData.map((card, index) => (
           <div

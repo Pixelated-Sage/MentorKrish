@@ -16,14 +16,14 @@ const Home = () => {
       <Navbar/>
         <Hero/>
         <Cards/>
-        <About/>
-        <Announcement/>
-        <USP/>
-        <Courses/>
-        <Roadmap/>
-        <Gallery/>
-        <HomeTestimonial/>
-        <Footer/>
+        <About id = "about"/>
+        <Announcement id = "announcement"/>
+        <USP id = "usp"/>
+        <Courses  id = "courses"/>
+        <Roadmap id = "roadmap"/>
+        <Gallery id = "gallery"/>
+        <HomeTestimonial id = "testimonials"/>
+        <Footer  id = "footer"/>
     </div>
   )
 }

@@ -20,7 +20,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen px-4 md:px-10 py-12 flex flex-col items-center justify-center bg-w1 overflow-hidden">
+    <section className="relative min-h-screen px-4 md:px-10 py-12 flex flex-col items-center justify-center bg-w1 overflow-hidden" id = "hero">
       <MapBg />
       <motion.div
         className="text-center max-w-7xl space-y-6 sm:space-y-8 mb-28 sm:mb-36"
