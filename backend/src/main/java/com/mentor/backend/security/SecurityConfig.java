@@ -37,8 +37,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public access to auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Public access to auth endpoints (including OTP)
+                        .requestMatchers(
+                                "/api/auth/send-otp",
+                                "/api/auth/resend-otp",
+                                "/api/auth/verify-otp",
+                                "/api/auth/register",
+                                "/api/auth/login"
+                        ).permitAll()
 
                         // Public GET endpoints
                         .requestMatchers(HttpMethod.GET,

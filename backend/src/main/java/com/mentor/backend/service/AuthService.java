@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final OtpService otpService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User registerUser(RegisterRequest request) {
@@ -37,18 +38,54 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        try {
+            otpService.generateAndSendOtp(saved.getEmail());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send OTP: " + e.getMessage(), e);
+        }
+        return saved;
     }
 
-  public Optional<User> loginUser(LoginRequest request) {
+    public Optional<User> loginUser(LoginRequest request) {
+        Optional<User> userOpt = Optional.empty();
+
         if (request.getFirebaseUid() != null && !request.getFirebaseUid().isBlank()) {
-            return userRepository.findByFirebaseUid(request.getFirebaseUid());
+            userOpt = userRepository.findByFirebaseUid(request.getFirebaseUid());
+        } else if (request.getEmail() != null && request.getPassword() != null) {
+            userOpt = userRepository.findByEmail(request.getEmail())
+                    .filter(user -> passwordEncoder.matches(request.getPassword(), user.getPassword()));
         }
-        if (request.getEmail() != null && request.getPassword() != null) {
-            return userRepository.findByEmail(request.getEmail())
-                // FIX: use password encoder to check hash!
-                .filter(user -> passwordEncoder.matches(request.getPassword(), user.getPassword()));
+
+        if (userOpt.isPresent() && !userOpt.get().isEmailVerified()) {
+            try {
+                otpService.generateAndSendOtp(userOpt.get().getEmail());
+            } catch (Exception e) {
+                throw new RuntimeException("Email not verified and OTP resend failed: " + e.getMessage(), e);
+            }
+            throw new RuntimeException("Email not verified. OTP resent.");
         }
-        return Optional.empty();
+
+        return userOpt;
+    }
+
+    public boolean verifyEmailOtp(String email, String otp) {
+        boolean verified = otpService.verifyOtp(email, otp);
+        if (verified) {
+            userRepository.findByEmail(email).ifPresent(u -> {
+                u.setEmailVerified(true);
+                userRepository.save(u);
+            });
+        }
+        return verified;
+    }
+
+    public void resendOtp(String email) {
+        try {
+            otpService.resendOtp(email);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to resend OTP: " + e.getMessage(), e);
+        }
     }
 }
