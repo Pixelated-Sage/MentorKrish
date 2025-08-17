@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,8 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -28,31 +32,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Allow preflight requests through without authentication
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
 
-        // Check if Bearer token is present
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            try {
+        try {
+            // Check if Bearer token is present
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7).trim();
                 username = jwtUtil.extractUsername(token);
-            } catch (Exception e) {
-                logger.error("JWT token validation failed: " + e.getMessage());
+                log.debug("JwtAuthFilter: extracted username -> {}", username);
             }
+        } catch (Exception e) {
+            log.warn("JwtAuthFilter: failed to extract username from token: {}", e.getMessage());
+            // continue the filter chain — invalid token will simply not authenticate
         }
 
         // If username found and SecurityContext is empty
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userDetailsService.loadUserByUsername(username);
+            try {
+                var userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                if (userDetails != null && jwtUtil.validateToken(token, userDetails)) {
+                    // Use username as principal to make auth.getName() predictable (email/username)
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails.getUsername(), // principal (so auth.getName() == username)
+                                    null,
+                                    userDetails.getAuthorities());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.debug("JwtAuthFilter: authentication set for user {}", userDetails.getUsername());
+                } else {
+                    log.debug("JwtAuthFilter: token invalid for username {}", username);
+                }
+            } catch (Exception e) {
+                log.error("JwtAuthFilter: error during authentication setup for user {}: {}", username, e.getMessage());
             }
         }
 

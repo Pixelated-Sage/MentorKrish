@@ -15,6 +15,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Firebase UID for Google/OTP logins (null for email-password users)
+    @Column(unique = true)
     private String firebaseUid;
 
     @Column(nullable = false, unique = true)
@@ -24,13 +26,19 @@ public class User {
 
     private String phoneNumber;
 
-    private String loginMethod; // GOOGLE or OTP
+    private String loginMethod; // EMAIL, GOOGLE, OTP
 
     private boolean emailVerified;
 
     private boolean phoneVerified;
 
     private String role; // USER, ADMIN, etc.
+
     @Column(nullable = true)
-    private String password;
+    private String password; // stored plain for now, use BCrypt later
+
+    // ✅ Profile Management fields
+    private String profilePicture; // URL to profile picture
+
+    private String address; // User's address
 }
