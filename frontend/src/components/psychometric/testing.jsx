@@ -31,7 +31,7 @@ const fadeIn = {
 
 const Testing = () => {
   return (
-    <section className="bg-w1 py-16 px-3 sm:px-4">
+    <section className="bg-w1 py-16 px-3 sm:px-4" id = "our-approachs-psycohmetric">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Title */}
         <motion.h2

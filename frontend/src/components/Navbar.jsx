@@ -6,23 +6,40 @@ import { useRouter } from "next/router";
 import { scroller } from "react-scroll";
 
 const homeSections = [
-  { name: "Hero", id: "hero" },
-  { name: "Cards", id: "cards" },
-  { name: "About", id: "about" },
-  { name: "Announcement", id: "announcement" },
-  { name: "USP", id: "usp" },
+  { name: "Home", id: "hero" },
+  // { name: "Cards", id: "cards" },
+  { name: "About Us", id: "about" },
+  { name: "Announcements", id: "announcement" },
+  // { name: "USP", id: "usp" },
   { name: "Courses", id: "courses" },
   { name: "Roadmap", id: "roadmap" },
-  { name: "Gallery", id: "gallery" },
+  // { name: "Gallery", id: "gallery" },
   { name: "Testimonial", id: "testimonials" },
-  { name: "Footer", id: "footer" },
+  // { name: "Footer", id: "footer" },
 ];
-// Add more sections for Blogs, Careers, etc. as needed
+
+const careerSections = [
+  { name: "Career", id: "career" },
+  { name: "Why Career Counselling", id: "why-career-counselling" },
+  { name: "Our Approach", id: "our-approach" },
+  { name: "What We Offer", id: "what-we-offer" },
+  { name: "Success Stories", id: "success-stories" },
+  { name: "FAQs", id: "faqs" },
+];
+
+const psycohmetricSections = [
+  { name: "Why Psychometric Testing", id: "why-testing" },
+  { name: "What We Offer", id: "what-we-offer-psycohmetric" },
+  { name: "Our Approach", id: "our-approachs-psycohmetric" },
+  { name: "Book a Session", id: "book-a-session-psycohmetric" },
+  { name: "Success Stories", id: "success-stories-psycohmetric" },
+  { name: "FAQs", id: "faqs-psycohmetric" },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showHomeDropdown, setShowHomeDropdown] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null); // keep null or label of active
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
@@ -39,25 +56,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handler to scroll to section after navigation
-  const goToSection = async (pageHref, sectionId) => {
-    if (router.pathname === pageHref) {
-      scroller.scrollTo(sectionId, {
-        duration: 800,
-        delay: 0,
-        smooth: "easeInOutQuart",
-        offset: -120, // Adjust for navbar height
-      });
-    } else {
-      // Save target section in sessionStorage
-      sessionStorage.setItem("scrollToSection", sectionId);
-      router.push(pageHref);
-    }
-    setIsOpen(false);
-    setShowHomeDropdown(false);
-  };
-
-  // When page loads, scroll to desired section if requested from sessionStorage
+  // Scroll to anchor if exists in sessionStorage after navigation
   useEffect(() => {
     const target = sessionStorage.getItem("scrollToSection");
     if (
@@ -75,14 +74,40 @@ const Navbar = () => {
     }
   }, [router.pathname]);
 
+  // Handles clicking a section (scroll or go, then scroll)
+  const goToSection = async (pageHref, sectionId) => {
+    if (router.pathname === pageHref) {
+      scroller.scrollTo(sectionId, {
+        duration: 800,
+        delay: 0,
+        smooth: "easeInOutQuart",
+        offset: -120,
+      });
+    } else {
+      sessionStorage.setItem("scrollToSection", sectionId);
+      router.push(pageHref);
+    }
+    setIsOpen(false);
+    setDropdownOpen(null);
+  };
+
+  // Items configuration with section mapping
   const navItems = [
     {
       label: "Home",
       href: "/",
       sections: homeSections,
     },
-    { label: "Career", href: "/career" },
-    { label: "Psychometric", href: "/psycohmetric" },
+    {
+      label: "Career",
+      href: "/career",
+      sections: careerSections,
+    },
+    {
+      label: "Psychometric",
+      href: "/psycohmetric",
+      sections: psycohmetricSections,
+    },
     { label: "Blogs", href: "/blogs" },
     { label: "Gallery", href: "/gallery" },
     { label: "Contact", href: "/contact" },
@@ -120,50 +145,66 @@ const Navbar = () => {
             </span>
           </Link>
         </motion.div>
+
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-8 items-center relative">
-          {navItems.map((item, i) =>
-            item.sections ? (
-              // Dropdown, e.g. for Home
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => setShowHomeDropdown(true)}
-                onMouseLeave={() => setShowHomeDropdown(false)}
-              >
-                <span className="text-gray-700 hover:text-gray-900 transition-all duration-200 font-medium text-sm tracking-wide cursor-pointer">
-                  {item.label}
-                </span>
-                {/* Dropdown Menu */}
-                <AnimatePresence>
-                  {showHomeDropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      className="absolute left-0 mt-1 min-w-[200px] bg-white shadow-xl rounded-xl border p-3 z-40"
+          {navItems.map((item, i) => {
+            if (item.sections) {
+              const isThisDropdownOpen = dropdownOpen === item.label;
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => setDropdownOpen(item.label)}
+                  onMouseLeave={() => setDropdownOpen(null)}
+                >
+                  <Link href={item.href}>
+                    {/* Clicking the label always navigates to the main page */}
+                    <span
+                      className="text-gray-700 hover:text-gray-900 transition-all duration-200 font-medium text-sm tracking-wide cursor-pointer"
+                      onClick={() => {
+                        // If already on this page, scroll to top
+                        if (router.pathname === item.href) {
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
+                      }}
                     >
-                      {item.sections.map((section) => (
-                        <button
-                          key={section.id}
-                          onClick={() => goToSection(item.href, section.id)}
-                          className="block w-full text-left py-2 px-4 rounded hover:bg-r1/10 text-g2 text-sm mb-0.5"
-                        >
-                          {section.name}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
+                      {item.label}
+                    </span>
+                  </Link>
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {isThisDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        className="absolute left-0 mt-1 min-w-[150px] bg-white shadow-xl rounded-xl   z-40"
+                      >
+                        {item.sections.map((section) => (
+                          <button
+                            key={section.id}
+                            onClick={() => goToSection(item.href, section.id)}
+                            className="block w-full text-left py-2 px-4 rounded hover:bg-r1/10 text-g2 text-sm mb-0.5"
+                          >
+                            {section.name}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+            // Regular nav
+            return (
               <Link href={item.href} key={item.label}>
                 <span className="text-gray-700 hover:text-gray-900 transition-all duration-200 font-medium text-sm tracking-wide cursor-pointer">
                   {item.label}
                 </span>
               </Link>
-            )
-          )}
+            );
+          })}
           <motion.a
             href="tel:+919999999999"
             whileHover={{
@@ -177,6 +218,7 @@ const Navbar = () => {
             Book Now
           </motion.a>
         </div>
+
         {/* Mobile Hamburger */}
         <div className="md:hidden">
           <motion.button
@@ -185,16 +227,15 @@ const Navbar = () => {
             whileTap={{ scale: 0.9 }}
             className="p-2 rounded-xl bg-white/50 backdrop-blur-sm border border-white/30 shadow-lg"
             style={{
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
             }}
-            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
           >
             {isOpen ? <X size={24} className="text-gray-700" /> : <Menu size={24} className="text-gray-700" />}
           </motion.button>
         </div>
       </div>
-      {/* Mobile dropdown can be handled similarly, omitted for brevity */}
     </motion.nav>
   );
 };

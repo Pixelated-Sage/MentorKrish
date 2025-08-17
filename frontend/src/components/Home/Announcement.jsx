@@ -37,7 +37,7 @@ export default function AnnouncementsSection() {
   }
 
   return (
-    <section className="py-10 bg-w1" id="announcements">
+    <section className="py-10 bg-w1" id="announcement">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-g1 mb-2 text-center">
           Latest Announcements

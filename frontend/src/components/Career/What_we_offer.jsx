@@ -35,7 +35,7 @@ const fadeIn = {
 
 const WhatWeOffer = () => {
   return (
-    <section className="relative bg-w1 py-16 px-2 sm:px-6">
+    <section className="relative bg-w1 py-16 px-2 sm:px-6" id = "what-we-offer">
       {/* Decorative BG pattern */}
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"

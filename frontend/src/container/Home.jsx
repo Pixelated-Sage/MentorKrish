@@ -21,7 +21,7 @@ const Home = () => {
         <USP id = "usp"/>
         <Courses  id = "courses"/>
         <Roadmap id = "roadmap"/>
-        <Gallery id = "gallery"/>
+        {/* <Gallery id = "gallery"/> */}
         <HomeTestimonial id = "testimonials"/>
         <Footer  id = "footer"/>
     </div>
