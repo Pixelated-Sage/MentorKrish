@@ -6,6 +6,7 @@ import com.mentor.backend.entity.User;
 import com.mentor.backend.repository.UserRepository;
 import com.mentor.backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -21,6 +22,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil; // kept in case you need it elsewhere
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // In-memory OTP store (email -> OtpEntry). For production, use persistent store / cache like Redis.
     private final Map<String, OtpEntry> otpStore = new ConcurrentHashMap<>();
@@ -38,12 +40,12 @@ public class AuthService {
         }
 
         User user = User.builder()
-                .firebaseUid(null)
+                .firebaseUid(request.getFirebaseUid()) // allow firebase if provided
                 .email(request.getEmail())
                 .fullName(request.getFullName())
                 .phoneNumber(request.getPhoneNumber())
-                .password(request.getPassword())  // stored plain text for now
-                .loginMethod("EMAIL")
+                .password(passwordEncoder.encode(request.getPassword()))  // ✅ securely hashed
+                .loginMethod(request.getLoginMethod() != null ? request.getLoginMethod() : "EMAIL")
                 .emailVerified(false)
                 .phoneVerified(false)
                 .role("USER")
@@ -53,7 +55,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Optionally send OTP automatically on register:
+        // Optionally send OTP automatically on register
         // resendOtp(user.getEmail());
 
         return user;
@@ -68,9 +70,15 @@ public class AuthService {
 
         User user = userOpt.get();
 
-        // Simple plain-text check (NOT SECURE). Use PasswordEncoder for production.
-        if (user.getPassword() == null || !user.getPassword().equals(request.getPassword())) {
+        // ✅ check hashed password
+        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return Optional.empty();
+        }
+
+        // If email not verified → resend OTP
+        if (!user.isEmailVerified()) {
+            resendOtp(user.getEmail());
+            throw new RuntimeException("Email not verified. OTP resent.");
         }
 
         return Optional.of(user);
@@ -102,8 +110,7 @@ public class AuthService {
         OtpEntry entry = new OtpEntry(otp, now.plus(OTP_TTL), now);
         otpStore.put(email, entry);
 
-        // TODO: Integrate with SMS / Email provider here.
-        // For now we log it so you can see OTP in console during development:
+        // TODO: Integrate with SMS / Email provider
         System.out.println("DEBUG OTP for " + email + " -> " + otp + " (valid " + OTP_TTL.toMinutes() + " minutes)");
     }
 
@@ -130,7 +137,6 @@ public class AuthService {
         // mark user as emailVerified
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            // no user found; treat as failure
             otpStore.remove(email);
             return false;
         }
