@@ -16,7 +16,6 @@ export default function Contact() {
     phone: "",
     message: "",
   });
-
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -45,12 +44,10 @@ export default function Contact() {
     setErrors({});
     setServerError("");
     const validationErrors = validate();
-
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     setSubmitting(true);
 
     try {
@@ -68,22 +65,22 @@ export default function Contact() {
     return (
       <>
         <Navbar />
-        <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
+        <main className="min-h-[70vh] flex flex-col justify-center items-center px-4 py-20 bg-w2">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={formVariants}
-            className="max-w-md w-full bg-w1 rounded-3xl p-10 shadow-xl border border-w2 text-center"
+            className="w-full max-w-sm sm:max-w-md bg-white rounded-3xl p-8 shadow-lg border border-gray-200 text-center"
           >
-            <h1 className="text-3xl font-bold text-g1 mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-g1 mb-5">
               Thank you for reaching out!
             </h1>
-            <p className="text-g2 mb-8">
+            <p className="text-g2 mb-8 text-base sm:text-lg">
               We have received your message and will get back to you shortly.
             </p>
             <button
               onClick={() => setSuccess(false)}
-              className="bg-r1 text-w1 font-semibold py-3 px-8 rounded-full hover:bg-r2 transition-colors shadow-md"
+              className="bg-r1 text-w1 font-semibold py-2 px-8 rounded-full hover:bg-r2 transition-colors shadow-md text-base"
             >
               Send Another Message
             </button>
@@ -97,24 +94,21 @@ export default function Contact() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
+      <main className="min-h-[70vh] flex flex-col justify-center items-center px-4 py-20 bg-w2">
         <motion.form
           initial="hidden"
           animate="visible"
           variants={formVariants}
           onSubmit={handleSubmit}
-          className="max-w-md w-full bg-w1 rounded-3xl p-8 shadow-xl border border-w2"
+          className="w-full max-w-sm sm:max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-200"
           noValidate
         >
-          <h1 className="text-3xl font-bold text-g1 mb-8 text-center">
-            Contact Us
-          </h1>
-
+          <h1 className="text-2xl sm:text-3xl font-bold text-center mb-1 text-g1">Contact Us</h1>
+          <p className="text-g2 text-center mb-5 text-sm sm:text-base">
+            We'd love to hear from you. Fill out the form and we'll reply as soon as possible.
+          </p>
           {/* Name */}
-          <div className="mb-5">
-            <label htmlFor="fullName" className="block text-g1 mb-1 font-semibold">
-              Name <span className="text-r1">*</span>
-            </label>
+          <div className="relative mb-4">
             <input
               type="text"
               id="fullName"
@@ -123,21 +117,24 @@ export default function Contact() {
               onChange={handleChange}
               disabled={submitting}
               placeholder="Your full name"
-              className={`w-full px-4 py-3 rounded-lg border ${
-                errors.fullName ? "border-r1" : "border-w2"
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              className={`peer w-full bg-white/40 border ${errors.fullName ? "border-r1" : "border-gray-200"} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition`}
               required
+              autoComplete="name"
             />
+            <label
+              htmlFor="fullName"
+              className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+            >
+              Name <span className="text-r1">*</span>
+            </label>
             {errors.fullName && (
               <p className="mt-1 text-xs text-r1">{errors.fullName}</p>
             )}
           </div>
-
           {/* Email */}
-          <div className="mb-5">
-            <label htmlFor="email" className="block text-g1 mb-1 font-semibold">
-              Email <span className="text-r1">*</span>
-            </label>
+          <div className="relative mb-4">
             <input
               type="email"
               id="email"
@@ -146,21 +143,24 @@ export default function Contact() {
               onChange={handleChange}
               disabled={submitting}
               placeholder="you@example.com"
-              className={`w-full px-4 py-3 rounded-lg border ${
-                errors.email ? "border-r1" : "border-w2"
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              className={`peer w-full bg-white/40 border ${errors.email ? "border-r1" : "border-gray-200"} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition`}
               required
+              autoComplete="email"
             />
+            <label
+              htmlFor="email"
+              className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+            >
+              Email <span className="text-r1">*</span>
+            </label>
             {errors.email && (
               <p className="mt-1 text-xs text-r1">{errors.email}</p>
             )}
           </div>
-
           {/* Phone */}
-          <div className="mb-5">
-            <label htmlFor="phone" className="block text-g1 mb-1 font-semibold">
-              Phone <span className="text-r1">*</span>
-            </label>
+          <div className="relative mb-4">
             <input
               type="text"
               id="phone"
@@ -168,22 +168,25 @@ export default function Contact() {
               value={formData.phone}
               onChange={handleChange}
               disabled={submitting}
-              placeholder="+91-9876543210"
-              className={`w-full px-4 py-3 rounded-lg border ${
-                errors.phone ? "border-r1" : "border-w2"
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              placeholder="9999999999"
+              className={`peer w-full bg-white/40 border ${errors.phone ? "border-r1" : "border-gray-200"} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition`}
               required
+              autoComplete="tel"
             />
+            <label
+              htmlFor="phone"
+              className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+            >
+              Phone <span className="text-r1">*</span>
+            </label>
             {errors.phone && (
               <p className="mt-1 text-xs text-r1">{errors.phone}</p>
             )}
           </div>
-
           {/* Message */}
-          <div className="mb-6">
-            <label htmlFor="message" className="block text-g1 mb-1 font-semibold">
-              Message <span className="text-r1">*</span>
-            </label>
+          <div className="relative mb-6">
             <textarea
               id="message"
               name="message"
@@ -191,11 +194,17 @@ export default function Contact() {
               onChange={handleChange}
               disabled={submitting}
               placeholder="Write your message here..."
-              className={`w-full px-4 py-3 rounded-lg border min-h-[100px] ${
-                errors.message ? "border-r1" : "border-w2"
-              } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
+              className={`peer w-full bg-white/40 border min-h-[90px] ${errors.message ? "border-r1" : "border-gray-200"} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition resize-none`}
               required
             />
+            <label
+              htmlFor="message"
+              className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+            >
+              Message <span className="text-r1">*</span>
+            </label>
             {errors.message && (
               <p className="mt-1 text-xs text-r1">{errors.message}</p>
             )}
@@ -205,15 +214,15 @@ export default function Contact() {
             <p className="mb-4 text-center text-r1 font-semibold">{serverError}</p>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-r1 text-w1 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-r1 text-white py-3 rounded-full font-bold text-lg shadow-lg hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? "Sending..." : "Send Message"}
           </button>
         </motion.form>
+        <div className="h-7" />
       </main>
       <Footer />
     </>

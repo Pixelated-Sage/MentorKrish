@@ -1,0 +1,261 @@
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { apiFetchWithAuth } from "../lib/api"; // You can create this helper to include auth headers
+import { motion } from "framer-motion";
+
+export default function Profile() {
+  const router = useRouter();
+
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    address1: "",
+    address2: "",
+    address3: "",
+    email: "",
+    phone: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  // Fetch user profile on mount
+  useEffect(() => {
+    async function loadUser() {
+      setLoading(true);
+      try {
+        // Adjust API path accordingly
+        const res = await apiFetchWithAuth("/users/me"); 
+        // example: /users/me returns the current user profile data
+        if (!res.ok) throw new Error("Failed to load profile");
+        const data = await res.json();
+        setUser(data);
+
+        // Prepare formatted address lines
+        const addresses = (data.address || "").split("\n");
+        setFormData({
+          fullName: data.fullName || "",
+          address1: addresses[0] || "",
+          address2: addresses[1] || "",
+          address3: addresses[2] || "",
+          email: data.email || "",
+          phone: data.phone || "",
+        });
+      } catch (err) {
+        setServerError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadUser();
+  }, []);
+
+  // Validate input
+  function validate() {
+    const errs = {};
+    if (!formData.fullName.trim()) errs.fullName = "Name is required";
+    if (!formData.phone.trim()) errs.phone = "Phone number is required";
+    // Add more validations if needed, but email read-only
+    return errs;
+  }
+
+  // Handle input changes
+  function handleChange(e) {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  // Cancel button — navigate back
+  function handleCancel() {
+    router.back();
+  }
+
+  // Update button — send updated info
+  async function handleUpdate(e) {
+    e.preventDefault();
+    setErrors({});
+    setServerError("");
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setUpdating(true);
+    try {
+      const addressCombined = [formData.address1, formData.address2, formData.address3]
+        .filter(Boolean)
+        .join("\n");
+
+      const payload = {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        address: addressCombined,
+        // email is readonly, not sending any email updates 
+      };
+
+      const res = await apiFetchWithAuth(`/users/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      alert("Profile updated successfully!");
+      router.reload(); // refresh profile data
+    } catch (err) {
+      setServerError(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-[75vh] flex items-center justify-center text-lg text-g2">Loading Profile...</main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-[75vh] flex items-center justify-center text-lg text-r1">Failed to load profile</main>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-[75vh] bg-w2 pt-32 pb-20 flex justify-center">
+        <motion.form
+          onSubmit={handleUpdate}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-4xl bg-white rounded-3xl shadow-xl border border-gray-200 p-8 flex gap-12 w-full mx-4"
+        >
+          {/* Left: Profile Picture */}
+          <div className="flex-shrink-0">
+            <img
+              src={user.profilePicture || "/default-profile.png"} // fallback profile pic
+              alt={user.fullName}
+              className="w-40 h-40 rounded-full object-cover shadow-md"
+            />
+          </div>
+          {/* Right: Form Fields */}
+          <div className="flex-grow">
+            {/* Name */}
+            <div className="mb-6">
+              <label htmlFor="fullName" className="block mb-1 font-semibold text-g1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                disabled={updating}
+                className={`w-full rounded-xl border p-3 text-lg ${
+                  errors.fullName ? "border-r1" : "border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition`}
+              />
+              {errors.fullName && <p className="mt-1 text-r1">{errors.fullName}</p>}
+            </div>
+            {/* Address */}
+            <div className="mb-6 space-y-3">
+              <label className="block mb-1 font-semibold text-g1">Address</label>
+              <input
+                type="text"
+                name="address1"
+                placeholder="Address Line 1"
+                value={formData.address1}
+                onChange={handleChange}
+                disabled={updating}
+                className="w-full rounded-xl border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition"
+              />
+              <input
+                type="text"
+                name="address2"
+                placeholder="Address Line 2"
+                value={formData.address2}
+                onChange={handleChange}
+                disabled={updating}
+                className="w-full rounded-xl border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition"
+              />
+              <input
+                type="text"
+                name="address3"
+                placeholder="Address Line 3"
+                value={formData.address3}
+                onChange={handleChange}
+                disabled={updating}
+                className="w-full rounded-xl border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition"
+              />
+            </div>
+            {/* Email - readonly */}
+            <div className="mb-6">
+              <label htmlFor="email" className="block mb-1 font-semibold text-g1">
+                Email <span className="text-g2">(verified)</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                readOnly
+                disabled
+                className="w-full rounded-xl border border-gray-300 p-3 bg-gray-100 text-gray-600 cursor-not-allowed"
+              />
+            </div>
+            {/* Phone */}
+            <div className="mb-8">
+              <label htmlFor="phone" className="block mb-1 font-semibold text-g1">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                disabled={updating}
+                className={`w-full rounded-xl border p-3 text-lg ${
+                  errors.phone ? "border-r1" : "border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition`}
+              />
+              {errors.phone && <p className="mt-1 text-r1">{errors.phone}</p>}
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-4 justify-end">
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                disabled={updating}
+                className="px-6 py-2 rounded-xl border border-gray-300 text-g1 hover:bg-w2 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={updating}
+                className="px-6 py-2 rounded-xl bg-r1 text-white hover:bg-r2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {updating ? "Updating..." : "Update"}
+              </button>
+            </div>
+          </div>
+        </motion.form>
+      </main>
+      <Footer />
+    </>
+  );
+}

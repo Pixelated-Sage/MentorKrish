@@ -48,30 +48,22 @@ export default function Login() {
       setErrors(validationErrors);
       return;
     }
-
     setLoading(true);
 
     try {
       const result = await loginUser(formData);
+      if (!result || !result.token) throw new Error('No token in login response');
 
-      if (!result || !result.token) {
-        throw new Error('No token in login response');
-      }
-
-      // Save token and user
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userEmail', result.email);
       localStorage.setItem('userRole', result.role);
-
       await new Promise(r => setTimeout(r, 50)); // safety delay
 
-      // Routing logic
       if (result.role === 'ADMIN') {
         return router.push('/admin');
       } else {
         return router.push('/');
       }
-
     } catch (err) {
       if (err.message.includes('Email not verified')) {
         router.push(`/verifyotp?email=${encodeURIComponent(formData.email)}`);
@@ -81,79 +73,100 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <>
       <Navbar />
-      <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
-        <motion.form
-          initial="hidden"
-          animate="visible"
-          variants={formVariants}
-          onSubmit={handleSubmit}
-          className="max-w-md w-full bg-w1 rounded-3xl p-8 shadow-xl border border-w2"
-          noValidate
-        >
-          <h1 className="text-3xl font-bold text-g1 mb-8 text-center">Login to Your Account</h1>
-
-          {/* Email */}
-          <div className="mb-5">
-            <label htmlFor="email" className="block text-g1 mb-1 font-semibold">
-              Email <span className="text-r1">*</span>
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={loading}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
-              placeholder="you@example.com"
-              required
-            />
-            {errors.email && <p className="mt-1 text-xs text-r1">{errors.email}</p>}
-          </div>
-
-          {/* Password */}
-          <div className="mb-5">
-            <label htmlFor="password" className="block text-g1 mb-1 font-semibold">
-              Password <span className="text-r1">*</span>
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={loading}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
-              placeholder="Enter your password"
-              required
-            />
-            {errors.password && <p className="mt-1 text-xs text-r1">{errors.password}</p>}
-          </div>
-
-          {/* Server error */}
-          {serverError && <p className="mb-4 text-center text-r1 font-semibold">{serverError}</p>}
-
-          {/* Forgot password */}
-          <div className="mb-6 text-right">
-            <a href="/forgot-password" className="text-r1 font-medium text-sm hover:underline">
-              Forgot Password?
-            </a>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-r1 text-w1 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      <main className="bg-w2 min-h-[77vh] flex flex-col justify-center pb-12 pt-12 sm:pt-24">
+        <div className="flex flex-col items-center">
+          <motion.form
+            initial="hidden"
+            animate="visible"
+            variants={formVariants}
+            onSubmit={handleSubmit}
+            className="w-full max-w-sm sm:max-w-md lg:max-w-lg bg-white/95 rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-200"
+            style={{ marginTop: "2.5rem", boxShadow: "0 6px 36px 0 rgba(0,0,0,.09), 0 1.5px 2.5px -1px rgba(0,0,0,0.03)" }}
+            noValidate
           >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </motion.form>
+            <h1 className="text-2xl sm:text-3xl font-bold text-g1 mb-1 text-center tracking-tight">
+              Login to your account
+            </h1>
+            <p className="text-center text-g2 mb-6 text-sm sm:text-base">
+              Welcome back. Sign in to continue.
+            </p>
+
+            {/* Email */}
+            <div className="relative mb-5">
+              <input
+                type="email"
+                name="email"
+                id="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={loading}
+                className={`peer w-full bg-white/40 border ${errors.email ? 'border-r1' : 'border-gray-200'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition`}
+                placeholder="you@example.com"
+                required
+              />
+              <label
+                htmlFor="email"
+                className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                  peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                  peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+              >
+                Email <span className="text-r1">*</span>
+              </label>
+              {errors.email && <p className="mt-1 text-xs text-r1">{errors.email}</p>}
+            </div>
+
+            {/* Password */}
+            <div className="relative mb-5">
+              <input
+                type="password"
+                name="password"
+                id="password"
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+                className={`peer w-full bg-white/40 border ${errors.password ? 'border-r1' : 'border-gray-200'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 placeholder-transparent transition`}
+                placeholder="Enter your password"
+                required
+              />
+              <label
+                htmlFor="password"
+                className="absolute left-4 top-3 text-g2 text-base font-semibold transition-all duration-200 pointer-events-none
+                  peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                  peer-focus:-top-3 peer-focus:text-xs peer-focus:text-r1 bg-white/95 px-1 rounded"
+              >
+                Password <span className="text-r1">*</span>
+              </label>
+              {errors.password && <p className="mt-1 text-xs text-r1">{errors.password}</p>}
+            </div>
+
+            {/* Server error */}
+            {serverError && <p className="mb-4 text-center text-r1 font-semibold">{serverError}</p>}
+
+            {/* Forgot password */}
+            <div className="mb-7 text-right">
+              <a href="/forgot-password" className="text-r1 font-medium text-sm hover:underline hover:text-r2 transition">
+                Forgot Password?
+              </a>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-r1 text-white py-3 rounded-full font-bold text-lg shadow-lg hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </motion.form>
+          <div className="h-10" />
+        </div>
       </main>
       <Footer />
     </>

@@ -91,6 +91,16 @@ const Navbar = () => {
     setDropdownOpen(null);
   };
 
+const [isAuthenticated, setIsAuthenticated] = useState(false);
+// const [isAdmin, setIsAdmin] = useState(false);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("authToken");
+    const role = localStorage.getItem("userRole");
+    setIsAuthenticated(!!token);
+    setIsAdmin(role === "ADMIN");
+  }
+}, []);
   // Items configuration with section mapping
   const navItems = [
     {
@@ -112,9 +122,16 @@ const Navbar = () => {
     { label: "Gallery", href: "/gallery" },
     { label: "Contact", href: "/contact" },
     { label: "Trial", href: "/trial" },
-    { label: "Login", href: "/login" },
+    ...(isAuthenticated ? [] : [{ label: "Login", href: "/login" }]),
   ];
-  if (isAdmin) navItems.push({ label: "Admin Panel", href: "/admin" });
+
+  if (isAuthenticated) {
+  navItems.push(
+    isAdmin
+      ? { label: "Admin Panel", href: "/admin" }
+      : { label: "Profile", href: "/profile" }
+  );
+}
 
   return (
     <motion.nav
