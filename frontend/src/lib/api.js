@@ -234,5 +234,24 @@ export async function resendOtp({ email }) {
 }
 
 
+export async function fetchUserProfile() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile`, {
+    method: "GET",
+    headers: { ...getAuthHeaders() },
+  });
+  if (!res.ok) throw new Error("Failed to fetch user profile");
+  return await res.json();
+}
 
-
+export async function updateUserProfile(data) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update profile");
+  return await res.json();
+}

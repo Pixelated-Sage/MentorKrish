@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { apiFetchWithAuth } from "../lib/api"; // You can create this helper to include auth headers
+import { fetchUserProfile, updateUserProfile } from "../lib/api";
 import { motion } from "framer-motion";
 
 export default function Profile() {
@@ -15,26 +15,20 @@ export default function Profile() {
     address2: "",
     address3: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
+    profilePicture: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
   const [updating, setUpdating] = useState(false);
 
-  // Fetch user profile on mount
   useEffect(() => {
     async function loadUser() {
       setLoading(true);
       try {
-        // Adjust API path accordingly
-        const res = await apiFetchWithAuth("/users/me"); 
-        // example: /users/me returns the current user profile data
-        if (!res.ok) throw new Error("Failed to load profile");
-        const data = await res.json();
+        const data = await fetchUserProfile();
         setUser(data);
-
-        // Prepare formatted address lines
         const addresses = (data.address || "").split("\n");
         setFormData({
           fullName: data.fullName || "",
@@ -42,10 +36,11 @@ export default function Profile() {
           address2: addresses[1] || "",
           address3: addresses[2] || "",
           email: data.email || "",
-          phone: data.phone || "",
+          phoneNumber: data.phoneNumber || "",
+          profilePicture: data.profilePicture || "",
         });
       } catch (err) {
-        setServerError(err.message);
+        setServerError(err.message || "Failed to load profile.");
       } finally {
         setLoading(false);
       }
@@ -53,26 +48,17 @@ export default function Profile() {
     loadUser();
   }, []);
 
-  // Validate input
   function validate() {
     const errs = {};
     if (!formData.fullName.trim()) errs.fullName = "Name is required";
-    if (!formData.phone.trim()) errs.phone = "Phone number is required";
-    // Add more validations if needed, but email read-only
+    if (!formData.phoneNumber.trim()) errs.phoneNumber = "Phone number is required";
     return errs;
   }
 
-  // Handle input changes
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  // Cancel button — navigate back
-  function handleCancel() {
-    router.back();
-  }
-
-  // Update button — send updated info
   async function handleUpdate(e) {
     e.preventDefault();
     setErrors({});
@@ -90,46 +76,50 @@ export default function Profile() {
 
       const payload = {
         fullName: formData.fullName,
-        phone: formData.phone,
+        phoneNumber: formData.phoneNumber,
         address: addressCombined,
-        // email is readonly, not sending any email updates 
+        profilePicture: formData.profilePicture,
       };
 
-      const res = await apiFetchWithAuth(`/users/${user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("Failed to update profile");
+      await updateUserProfile(payload);
 
       alert("Profile updated successfully!");
-      router.reload(); // refresh profile data
+      router.reload();
     } catch (err) {
-      setServerError(err.message);
+      setServerError(err.message || "Failed to update profile.");
     } finally {
       setUpdating(false);
     }
   }
 
-  if (loading) {
-    return (
-      <>
-        <Navbar />
-        <main className="min-h-[75vh] flex items-center justify-center text-lg text-g2">Loading Profile...</main>
-        <Footer />
-      </>
-    );
+  function handleLogout() {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    // Optionally remove more keys...
+    router.push("/login");
   }
 
-  if (!user) {
+  if (loading)
     return (
       <>
         <Navbar />
-        <main className="min-h-[75vh] flex items-center justify-center text-lg text-r1">Failed to load profile</main>
+        <main className="min-h-[75vh] flex items-center justify-center text-lg text-g2">
+          Loading Profile...
+        </main>
         <Footer />
       </>
     );
-  }
+  if (serverError)
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-[75vh] flex items-center justify-center text-lg text-r1">
+          {serverError}
+        </main>
+        <Footer />
+      </>
+    );
 
   return (
     <>
@@ -139,22 +129,34 @@ export default function Profile() {
           onSubmit={handleUpdate}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl bg-white rounded-3xl shadow-xl border border-gray-200 p-8 flex gap-12 w-full mx-4"
+          className="relative max-w-4xl bg-white rounded-3xl shadow-xl border border-gray-200 p-8 flex gap-12 w-full mx-4"
         >
+          {/* Logout Button */}
+          <button
+            type="button"
+            className="absolute right-8 top-8 bg-gray-100 text-g1 hover:bg-r1 hover:text-white px-5 py-1.5 rounded-full font-semibold border border-gray-200 transition"
+            onClick={handleLogout}
+            disabled={updating}
+          >
+            Logout
+          </button>
+
           {/* Left: Profile Picture */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex flex-col items-center gap-4 justify-start w-48">
             <img
-              src={user.profilePicture || "/default-profile.png"} // fallback profile pic
-              alt={user.fullName}
-              className="w-40 h-40 rounded-full object-cover shadow-md"
+              src={formData.profilePicture || "/default-profile.png"}
+              alt={formData.fullName}
+              className="w-36 h-36 sm:w-40 sm:h-40 rounded-full object-cover shadow-md border border-gray-200"
             />
+            {/* Optionally: upload support */}
           </div>
-          {/* Right: Form Fields */}
+
+          {/* Right: Profile Details */}
           <div className="flex-grow">
             {/* Name */}
             <div className="mb-6">
               <label htmlFor="fullName" className="block mb-1 font-semibold text-g1">
-                Full Name
+                Name
               </label>
               <input
                 type="text"
@@ -169,6 +171,7 @@ export default function Profile() {
               />
               {errors.fullName && <p className="mt-1 text-r1">{errors.fullName}</p>}
             </div>
+
             {/* Address */}
             <div className="mb-6 space-y-3">
               <label className="block mb-1 font-semibold text-g1">Address</label>
@@ -200,6 +203,7 @@ export default function Profile() {
                 className="w-full rounded-xl border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition"
               />
             </div>
+
             {/* Email - readonly */}
             <div className="mb-6">
               <label htmlFor="email" className="block mb-1 font-semibold text-g1">
@@ -215,26 +219,25 @@ export default function Profile() {
                 className="w-full rounded-xl border border-gray-300 p-3 bg-gray-100 text-gray-600 cursor-not-allowed"
               />
             </div>
-            {/* Phone */}
+            {/* Phone Number */}
             <div className="mb-8">
-              <label htmlFor="phone" className="block mb-1 font-semibold text-g1">
+              <label htmlFor="phoneNumber" className="block mb-1 font-semibold text-g1">
                 Phone Number
               </label>
               <input
-                type="text"
-                id="phone"
-                name="phone"
-                value={formData.phone}
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
                 onChange={handleChange}
                 disabled={updating}
                 className={`w-full rounded-xl border p-3 text-lg ${
-                  errors.phone ? "border-r1" : "border-gray-300"
+                  errors.phoneNumber ? "border-r1" : "border-gray-300"
                 } focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 transition`}
               />
-              {errors.phone && <p className="mt-1 text-r1">{errors.phone}</p>}
+              {errors.phoneNumber && <p className="mt-1 text-r1">{errors.phoneNumber}</p>}
             </div>
-
-            {/* Buttons */}
+            {/* Action buttons */}
             <div className="flex gap-4 justify-end">
               <button
                 type="button"

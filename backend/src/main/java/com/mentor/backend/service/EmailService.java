@@ -31,7 +31,7 @@ public class EmailService {
 
         Map<String, Object> payload = Map.of(
                 "sender", Map.of("email", senderEmail, "name", senderName),
-                "to", List.of(Map.of("email", toEmail)),
+                "to", List.of(Map.of("email", toEmail, "name", "User")),
                 "subject", subject,
                 "htmlContent", htmlContent
         );
@@ -41,9 +41,11 @@ public class EmailService {
         headers.set("api-key", brevoApiKey.trim());
 
         // 🔎 Debugging logs
+        System.out.println("[Brevo] Payload: " + payload);
         System.out.println("[Brevo] Sending to: " + toEmail);
         System.out.println("[Brevo] Sender: " + senderEmail + " (" + senderName + ")");
         System.out.println("[Brevo] API Key starts with: " + brevoApiKey.substring(0, 8));
+
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
 
