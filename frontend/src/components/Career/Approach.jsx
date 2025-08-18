@@ -30,7 +30,7 @@ const approachSteps = [
 
 const Approach = () => {
   return (
-    <section className="bg-w1 py-16 px-3 sm:px-4">
+    <section className="bg-w1 py-16 px-3 sm:px-4" id="our-approach">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Heading */}
         <div className="flex items-center gap-3 mb-10 px-1 sm:px-0">

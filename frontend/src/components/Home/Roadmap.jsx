@@ -90,7 +90,7 @@ const chevron =
 
 const Roadmap = () => {
   return (
-    <section className="bg-w1 py-20 px-2 sm:px-8 md:px-16">
+    <section className="bg-w1 py-20 px-2 sm:px-8 md:px-16"  id = "roadmap">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         <h2 className="text-3xl md:text-4xl font-extrabold text-g1 mb-14 text-center">
           Our Proven Path to Student Success

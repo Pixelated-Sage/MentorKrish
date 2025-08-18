@@ -114,7 +114,7 @@ export default function HomeTestimonial() {
 	}, []);
 
 	return (
-		<section className="px-0 py-8 md:py-14 bg-w1">
+		<section className="px-0 py-8 md:py-14 bg-w1" id="testimonials">
 			<div className="max-w-7xl px-2 sm:px-6 mx-auto">
 				<h2 className="text-center text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-g1">
 					Alumni Success Stories

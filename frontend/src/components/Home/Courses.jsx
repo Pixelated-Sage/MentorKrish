@@ -91,7 +91,7 @@ const RoundsDashboard = () => {
   }, [filter]);
 
   return (
-    <div className="min-h-screen bg-w1 py-8 px-2 sm:px-4 md:px-0">
+    <div className="min-h-screen bg-w1 py-8 px-2 sm:px-4 md:px-0" id = "courses">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8 sm:mb-10 text-center">
