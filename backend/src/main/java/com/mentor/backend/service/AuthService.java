@@ -2,7 +2,7 @@ package com.mentor.backend.service;
 
 import java.util.Optional;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mentor.backend.dto.LoginRequest;
@@ -18,12 +18,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final OtpService otpService;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     public User registerUser(RegisterRequest request) {
         Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
-            return existing.get(); // already registered
+            throw new RuntimeException("User already exists with this email.");
         }
 
         User user = User.builder()
@@ -41,7 +41,7 @@ public class AuthService {
         User saved = userRepository.save(user);
 
         try {
-            otpService.generateAndSendOtp(saved.getEmail());
+            otpService.sendOtp(saved.getEmail());
         } catch (Exception e) {
             throw new RuntimeException("Failed to send OTP: " + e.getMessage(), e);
         }
@@ -60,7 +60,7 @@ public class AuthService {
 
         if (userOpt.isPresent() && !userOpt.get().isEmailVerified()) {
             try {
-                otpService.generateAndSendOtp(userOpt.get().getEmail());
+                otpService.resendOtp(userOpt.get().getEmail());
             } catch (Exception e) {
                 throw new RuntimeException("Email not verified and OTP resend failed: " + e.getMessage(), e);
             }
