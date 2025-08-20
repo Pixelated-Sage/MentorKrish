@@ -31,6 +31,20 @@ public class User {
     private boolean phoneVerified;
 
     private String role; // USER, ADMIN, etc.
+
     @Column(nullable = true)
     private String password;
+
+    // === New Profile Fields ===
+    @Column(name = "date_of_birth")
+    private String dateOfBirth;
+
+    @Column(name = "address_line1")
+    private String addressLine1;
+
+    @Column(name = "address_line2")
+    private String addressLine2;
+
+    @Column(name = "address_line3")
+    private String addressLine3;
 }
