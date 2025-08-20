@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { scroller } from "react-scroll";
 
@@ -21,94 +20,113 @@ const careerSections = [
   { name: "Success Stories", id: "success-stories" },
   { name: "FAQs", id: "faqs" },
 ];
-const psycohmetricSections = [
+const psycoSections = [
   { name: "Why Psychometric Testing", id: "why-testing" },
-  { name: "What We Offer", id: "what-we-offer-psycohmetric" },
-  { name: "Our Approach", id: "our-approachs-psycohmetric" },
-  { name: "Book a Session", id: "book-a-session-psycohmetric" },
-  { name: "Success Stories", id: "success-stories-psycohmetric" },
-  { name: "FAQs", id: "faqs-psycohmetric" },
+  { name: "What We Offer", id: "what-we-offer-psyco" },
+  { name: "Our Approach", id: "our-approach-psyco" },
+  { name: "Book a Session", id: "book-a-session-psyco" },
+  { name: "Success Stories", id: "success-stories-psyco" },
+  { name: "FAQs", id: "faqs-psyco" },
 ];
 
-const navItems = [
+const baseNavItems = [
   { label: "Home", href: "/", sections: homeSections },
   { label: "Career", href: "/career", sections: careerSections },
-  { label: "Psychometric", href: "/psycohmetric", sections: psycohmetricSections },
+  { label: "Psychometric", href: "/psyco", sections: psycoSections },
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
   { label: "Trial", href: "/trial" },
-  { label: "Login", href: "/login" },
-  // Optionally add Admin Panel/Profile with auth (see previous answers)
 ];
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(null); // {label: string|null}
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+
   const router = useRouter();
 
+  // Update scroll status for navbar style
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Scroll to anchor if exists in sessionStorage after navigation
+  // Check login & role on mount and route changes
   useEffect(() => {
-    const target = sessionStorage.getItem("scrollToSection");
-    if (target && typeof window !== "undefined" && document.getElementById(target)) {
-      scroller.scrollTo(target, {
-        duration: 800,
-        delay: 0,
-        smooth: "easeInOutQuart",
-        offset: -120,
-      });
-      sessionStorage.removeItem("scrollToSection");
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("authToken");
+      const role = localStorage.getItem("userRole");
+      setIsLoggedIn(!!token);
+      setUserRole(role);
     }
   }, [router.pathname]);
 
-  // Handle section jump navigation
-  const goToSection = async (pageHref, sectionId) => {
-    setIsOpen(false);
-    setSidebarOpen(false);
+  // Combine base navItems with auth-dependent items
+  const navItems = [...baseNavItems];
+  if (isLoggedIn) {
+    if (userRole === "ADMIN") {
+      navItems.push({ label: "Admin Panel", href: "/admin" });
+    } else {
+      navItems.push({ label: "Profile", href: "/profile" });
+    }
+  } else {
+    navItems.push({ label: "Login", href: "/login" });
+  }
+
+  // Scroll to section logic on navigation
+  useEffect(() => {
+    const target = sessionStorage.getItem("scrollToSection");
+    if (target && typeof window !== "undefined") {
+      const el = document.getElementById(target);
+      if (el) {
+        scroller.scrollTo(target, {
+          duration: 800,
+          smooth: "easeInOutQuart",
+          offset: -120,
+        });
+        sessionStorage.removeItem("scrollToSection");
+      }
+    }
+  }, [router.pathname]);
+
+  const goToSection = (href, sectionId) => {
+    setMobileMenuOpen(false);
     setDropdownOpen(null);
-    if (router.pathname === pageHref) {
+    if (router.pathname === href) {
       scroller.scrollTo(sectionId, {
         duration: 800,
-        delay: 0,
         smooth: "easeInOutQuart",
         offset: -120,
       });
     } else {
       sessionStorage.setItem("scrollToSection", sectionId);
-      router.push(pageHref);
+      router.push(href);
     }
   };
 
-  // Handle main page nav + close menus
-  const handleMainNav = (href) => {
-    setIsOpen(false);
-    setSidebarOpen(false);
+  const handleNavClick = (href) => {
+    setMobileMenuOpen(false);
     setDropdownOpen(null);
     router.push(href);
   };
 
   return (
     <>
-      {/* Navbar */}
+      {/* Top Navbar */}
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          scrolled ? "bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5" : "bg-white/70 backdrop-blur-md"
+          scrolled
+            ? "bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg"
+            : "bg-white/70 backdrop-blur-md"
         }`}
-        style={{
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-        }}
+        style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}
       >
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           {/* Logo */}
@@ -116,7 +134,7 @@ const Navbar = () => {
             className="text-2xl font-bold cursor-pointer select-none"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            onClick={() => handleMainNav("/")}
+            onClick={() => router.push("/")}
           >
             <span className="flex gap-1 text-inherit">
               <span className="text-red-600 drop-shadow-sm">Mentor</span>
@@ -124,7 +142,7 @@ const Navbar = () => {
             </span>
           </motion.div>
 
-          {/* Desktop Top Menu */}
+          {/* Desktop Menu */}
           <div className="hidden md:flex space-x-7 items-center relative">
             {navItems.map((item) =>
               item.sections ? (
@@ -135,25 +153,25 @@ const Navbar = () => {
                   onMouseLeave={() => setDropdownOpen(null)}
                 >
                   <span
-                    className="text-gray-700 hover:text-gray-900 transition-all duration-200 font-medium text-sm tracking-wide cursor-pointer px-2"
-                    onClick={() => handleMainNav(item.href)}
+                    className="text-gray-700 hover:text-gray-900 transition px-2 py-1 font-medium text-sm tracking-wide cursor-pointer select-none"
+                    onClick={() => handleNavClick(item.href)}
                   >
                     {item.label}
                   </span>
-                  {/* Dropdown */}
+
                   <AnimatePresence>
                     {dropdownOpen === item.label && (
                       <motion.div
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
-                        className="absolute left-1/2 -translate-x-1/2 mt-2 min-w-[180px] bg-white shadow-2xl rounded-xl z-40 py-2 border border-gray-50"
+                        className="absolute left-1/2 -translate-x-1/2 mt-2 w-44 bg-white border border-gray-100 rounded-xl shadow-lg z-40"
                       >
                         {item.sections.map((section) => (
                           <button
                             key={section.id}
                             onClick={() => goToSection(item.href, section.id)}
-                            className="w-full text-left px-4 py-2 hover:bg-r1/10 text-g2 text-sm rounded transition whitespace-nowrap"
+                            className="w-full text-left px-4 py-2 text-gray-600 hover:bg-red-50 rounded-tl-lg rounded-tr-lg last:rounded-bl-lg last:rounded-br-lg focus:outline-none focus:bg-red-100"
                           >
                             {section.name}
                           </button>
@@ -163,119 +181,167 @@ const Navbar = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                <span
+                <button
                   key={item.label}
-                  className="text-gray-700 hover:text-gray-900 transition-all duration-200 font-medium text-sm tracking-wide cursor-pointer px-2"
-                  onClick={() => handleMainNav(item.href)}
+                  onClick={() => handleNavClick(item.href)}
+                  className={`text-gray-700 hover:text-red-600 transition font-medium text-sm tracking-wide px-2 py-1 cursor-pointer select-none`}
                 >
                   {item.label}
-                </span>
+                </button>
               )
             )}
-            <motion.a
+
+            <a
               href="tel:+919999999999"
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 10px 25px rgba(220, 38, 38, 0.3)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-full font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-red-500/20 cursor-pointer ml-2"
+              className="ml-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl transition select-none whitespace-nowrap"
             >
               Book Now
-            </motion.a>
+            </a>
           </div>
 
-          {/* Mobile Hamburger Button */}
+          {/* Mobile Hamburger */}
           <div className="md:hidden">
-            <motion.button
-              onClick={() => setSidebarOpen(true)}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-xl bg-white/50 backdrop-blur-sm border border-white/30 shadow-lg"
-              aria-label="Open mobile menu"
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open menu"
+              className="p-2 rounded-xl bg-white/70 backdrop-blur-sm border border-white/30 shadow-lg"
             >
               <Menu size={26} className="text-gray-700" />
-            </motion.button>
+            </button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
-        {sidebarOpen && (
+        {isMobileMenuOpen && (
           <>
-            {/* Dark screen overlay */}
+            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.6 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSidebarOpen(false)}
               className="fixed inset-0 bg-black z-40 md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
             />
-            {/* Sidebar */}
+
+            {/* Drawer */}
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 400, damping: 32 }}
-              className="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 flex flex-col"
-              style={{ minHeight: "100dvh" }}
+              className="fixed top-0 left-0 z-50 h-[100dvh] w-64 bg-white shadow-2xl flex flex-col"
+              role="dialog"
+              aria-modal="true"
             >
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-                <span className="font-bold text-lg text-r1">Mentor Krish</span>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <span className="text-xl font-extrabold text-red-600 select-none">Mentor Krish</span>
                 <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close menu"
+                  className="p-2 rounded hover:bg-gray-200 transition"
                 >
                   <X size={24} />
                 </button>
               </div>
-              <nav className="flex-1 px-0 py-4 overflow-y-auto">
-                {navItems.map((item) =>
-                  item.sections ? (
-                    <div key={item.label} className="mb-2">
-                      {/* Main nav link */}
-                      <div
-                        className="flex items-center justify-between px-5 py-2 font-semibold text-g1 text-base cursor-pointer hover:bg-w2 rounded-lg transition"
-                        onClick={() => handleMainNav(item.href)}
-                      >
-                        {item.label}
-                        <ChevronRight size={18} />
-                      </div>
-                      {/* Section buttons */}
-                      <div className="pl-5">
+
+              <nav className="flex-1 overflow-y-auto pt-6 px-4">
+                <button
+                  className="flex items-center gap-2 px-4 py-2 mb-4 text-gray-700 font-semibold rounded-lg hover:bg-red-50 w-full"
+                  onClick={() => {
+                    router.push("/");
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <ChevronRight size={18} /> Home
+                </button>
+
+                {navItems.map((item) => (
+                  <div key={item.label} className="mb-4">
+                    <button
+                      className="flex items-center justify-between w-full px-4 py-2 font-semibold text-gray-700 rounded-lg hover:bg-gray-100"
+                      onClick={() => {
+                        handleNavClick(item.href);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      {item.label}
+                      {item.sections && (
+                        <ChevronRight
+                          size={18}
+                          className="transform rotate-0 transition-transform group-hover:rotate-90"
+                        />
+                      )}
+                    </button>
+
+                    {item.sections && (
+                      <div className="pl-6 mt-2">
                         {item.sections.map((section) => (
                           <button
                             key={section.id}
-                            className="block w-full text-left px-5 py-1.5 mb-1 rounded hover:bg-r1/10 text-g2 text-sm"
-                            onClick={() => goToSection(item.href, section.id)}
+                            className="block w-full px-4 py-1 text-gray-600 rounded hover:bg-red-50 text-sm text-left"
+                            onClick={() => {
+                              goToSection(item.href, section.id);
+                              setMobileMenuOpen(false);
+                            }}
                           >
                             {section.name}
                           </button>
                         ))}
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      key={item.label}
-                      className="px-5 py-2 font-semibold text-g1 text-base cursor-pointer hover:bg-w2 rounded-lg transition"
-                      onClick={() => handleMainNav(item.href)}
-                    >
-                      {item.label}
-                    </div>
-                  )
+                    )}
+                  </div>
+                ))}
+
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      if (userRole === "ADMIN") router.push("/admin");
+                      else router.push("/profile");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full px-4 py-2 mt-6 text-center bg-red-600 text-white rounded-lg font-semibold shadow hover:bg-red-700"
+                  >
+                    {userRole === "ADMIN" ? "Admin Panel" : "Profile"}
+                  </button>
                 )}
-              </nav>
-              <div className="px-6 pb-4 mt-auto">
+
+                {!isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      router.push("/login");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full px-4 py-2 mt-6 text-center bg-red-600 text-white rounded-lg font-semibold shadow hover:bg-red-700"
+                  >
+                    Login
+                  </button>
+                )}
+
+                {/* Logout Button */}
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("authToken");
+                      localStorage.removeItem("userRole");
+                      localStorage.removeItem("userEmail");
+                      router.push("/");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full px-4 py-2 mt-2 text-center bg-gray-200 text-gray-700 rounded-lg font-semibold shadow hover:bg-gray-300"
+                  >
+                    Logout
+                  </button>
+                )}
+
                 <a
                   href="tel:+919999999999"
-                  className="block w-full text-center bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 rounded-full font-semibold text-base shadow hover:from-red-700 hover:to-red-900 transition-all duration-300"
+                  className="block mt-8 bg-gradient-to-r from-red-600 to-red-700 text-white py-3 rounded-full font-semibold shadow-lg hover:shadow-xl text-center select-none"
                 >
                   Book Now
                 </a>
-              </div>
+              </nav>
             </motion.div>
           </>
         )}

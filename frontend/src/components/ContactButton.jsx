@@ -35,13 +35,13 @@ const defaultMenuItems = [
 ];
 
 const adTexts = [
-  "Book your FREE trial!",
-  "Login for smarter counseling",
-  "Register now for exclusive updates",
-  "Get started with Mentor Krish",
+  "Book a free trial",
+  "Login for counseling",
+  "Register today",
+  "Get started now",
 ];
 
-const typingSpeed = 50; // ms per character
+const typingSpeed = 75; // slower typing for minimal effect
 
 export default function ReachButton({ menuItems = defaultMenuItems }) {
   const [open, setOpen] = useState(false);
@@ -53,7 +53,7 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const handleResize = () => setWindowWidth(window.innerWidth);
-      handleResize(); // initial
+      handleResize();
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
     }
@@ -63,7 +63,7 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
     if (!open) {
       const timer = setInterval(() => {
         setAdIndex((i) => (i + 1) % adTexts.length);
-      }, 5000);
+      }, 7000); // longer interval for less frequent changes
       return () => clearInterval(timer);
     }
   }, [open]);
@@ -71,7 +71,7 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
   useEffect(() => {
     if (open) {
       setTypedText("");
-      return; // no typing animation when open
+      return; // no typing animation on open
     }
 
     let currentChar = 0;
@@ -87,8 +87,8 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
     return () => clearInterval(typingInterval);
   }, [adIndex, open]);
 
-  // Layout for vertical stacked buttons upwards with space
-  const buttonSpacing = 64; // vertical space between buttons
+  // Vertical stack spacing reduced for a tighter look
+  const buttonSpacing = 56;
 
   const buttonVariants = {
     closed: {
@@ -99,26 +99,23 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
     },
     open: (i) => ({
       scale: 1,
-      x: -140, // left offset of buttons (fixed)
-      y: -i * buttonSpacing, // vertical spacing
+      x: -140,
+      y: -i * buttonSpacing,
       opacity: 1,
       transition: {
-        delay: i * 0.06,
+        delay: i * 0.04, // shorter delay for faster pop-out
         type: "spring",
-        stiffness: 450,
-        damping: 28,
+        stiffness: 300,
+        damping: 22,
       },
     }),
   };
 
-  // Calculate button width based on typed text length, max 220px
+  // Width calculation capped and smooth
   const closedWidthDynamic = Math.min(
-    Math.max(typedText.length * (windowWidth && windowWidth < 640 ? 8 : 9), 140),
-    220
+    Math.max(typedText.length * (windowWidth && windowWidth < 640 ? 7 : 8), 130),
+    190
   );
-
-  // To prevent button height growth, set min and max heights & allow multiline with scroll if needed via styles
-  // We'll wrap the typing text container inside a scrollable div with max height.
 
   return (
     <div
@@ -141,8 +138,8 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
                   setOpen(false);
                   item.action();
                 }}
-                className={`absolute rounded-lg px-4 py-2 sm:px-5 sm:py-2 font-semibold shadow-lg text-sm sm:text-base min-w-[120px] flex items-center gap-2 whitespace-nowrap border border-w2 ${item.color}`}
-                style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.15)", right: 0, bottom: 0 }}
+                className={`absolute rounded-md px-4 py-2 sm:px-5 sm:py-2 font-semibold shadow-md text-sm sm:text-base min-w-[110px] flex items-center gap-2 whitespace-nowrap border border-w2 ${item.color}`}
+                style={{ boxShadow: "0 3px 10px rgba(0,0,0,0.12)", right: 0, bottom: 0 }}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -160,11 +157,16 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
               ? closedWidthDynamic
               : Math.min(closedWidthDynamic, 180),
             height: 56,
-            borderRadius: open ? 20 : 28,
+            borderRadius: open ? 18 : 24,
           }}
-          transition={{ type: "spring", stiffness: 350, damping: 26 }}
-          className="flex items-center justify-center font-bold text-w1 bg-r1 shadow-lg border border-r2 overflow-hidden cursor-pointer"
-          style={{ fontSize: windowWidth && windowWidth < 640 ? 14 : 16, paddingLeft: open ? 0 : 10, paddingRight: open ? 0 : 10 }}
+          transition={{ type: "spring", stiffness: 300, damping: 22 }}
+          className="flex items-center justify-center font-bold text-w1 bg-r1 shadow-md border border-r2 overflow-hidden cursor-pointer hover:bg-r2 transition-colors focus:outline-none focus:ring-2 focus:ring-r1 focus:ring-opacity-50"
+          style={{
+            fontSize: windowWidth && windowWidth < 640 ? 14 : 16,
+            paddingLeft: open ? 0 : 12,
+            paddingRight: open ? 0 : 12,
+            whiteSpace: "nowrap",
+          }}
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? "Close quick actions" : "Open quick actions"}
         >
@@ -178,17 +180,17 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
                 transition={{ duration: 0.2 }}
                 className="flex items-center justify-center w-full h-full"
               >
-                <X size={28} />
+                <X size={26} />
               </motion.div>
             ) : (
               <motion.div
                 key="ad"
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3, type: "spring", stiffness: 200, damping: 22 }}
-                className="flex items-center justify-center px-4 whitespace-pre-wrap text-center"
-                style={{ maxHeight: 56, overflowY: "auto", lineHeight: '1.2' }}
+                exit={{ opacity: 0, x: -16 }}
+                transition={{ duration: 0.25, type: "spring", stiffness: 160, damping: 20 }}
+                className="flex items-center justify-center px-3 whitespace-pre-wrap text-center"
+                style={{ maxHeight: 56, overflowY: "hidden", lineHeight: "1.3" }}
               >
                 {typedText}
                 <span className="blinking-cursor">|</span>
@@ -197,18 +199,20 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
           </AnimatePresence>
         </motion.button>
       </div>
+
       <style>{`
+        /* Subtle blinking cursor */
         .blinking-cursor {
-          font-weight: 100;
+          font-weight: 300;
           font-size: 16px;
           color: #fff;
-          animation: blink 1.2s infinite;
+          animation: blink 1.4s step-start infinite;
           margin-left: 2px;
           user-select: none;
         }
         @keyframes blink {
-          0%, 50% { opacity: 1; }
-          50.01%, 100% { opacity: 0; }
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
         }
       `}</style>
     </div>
