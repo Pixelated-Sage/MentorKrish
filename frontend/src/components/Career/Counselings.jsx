@@ -57,7 +57,7 @@ const whyPoints = [
 
 const Counselings = () => {
   return (
-    <section className="relative bg-w1 py-16 px-2 sm:px-4">
+    <section className="relative bg-w1 py-16 px-2 sm:px-4" id = "why-career-counselling">
       <div className="mx-auto max-w-7xl w-full">
         <div className="mb-12 text-center px-2 sm:px-0">
           <div className="flex items-center gap-3 justify-center mb-2">

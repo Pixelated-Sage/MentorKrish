@@ -19,7 +19,7 @@ const fadeIn = {
 
 const WhyChooseUs = () => {
   return (
-    <section className="bg-w1 py-16 px-3 sm:px-4">
+    <section className="bg-w1 py-16 px-3 sm:px-4" id = "book-a-session-psycohmetric">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Heading & Description */}
         <motion.h2

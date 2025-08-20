@@ -35,7 +35,7 @@ const fadeIn = {
 
 const WhatWeOffer = () => {
   return (
-    <section className="relative bg-w1 py-20 px-3 sm:px-6">
+    <section className="relative bg-w1 py-20 px-3 sm:px-6" id = "what-we-offer-psycohmetric">
       <div className="max-w-7xl mx-auto w-full">
         {/* Heading + Intro */}
         <div className="mb-14 text-center max-w-3xl mx-auto px-2 sm:px-0">

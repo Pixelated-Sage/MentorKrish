@@ -57,7 +57,7 @@ const whyPoints = [
 
 const Why_psychometric = () => {
   return (
-    <section className="relative bg-w1 py-16 px-2 sm:px-4">
+    <section className="relative bg-w1 py-16 px-2 sm:px-4" id= "why-testing">
       <div className="mx-auto max-w-7xl w-full">
         {/* Heading */}
         <div className="mb-12 text-center px-2 sm:px-0">

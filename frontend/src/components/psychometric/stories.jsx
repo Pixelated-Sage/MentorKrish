@@ -25,7 +25,7 @@ const fadeIn = {
 
 const Stories = () => {
   return (
-    <section className="bg-w1 py-12 px-3 sm:px-4">
+    <section className="bg-w1 py-12 px-3 sm:px-4" id = "success-stories-psycohmetric">
       <div className="max-w-7xl mx-auto w-full">
         {/* Section Heading */}
         <motion.h2

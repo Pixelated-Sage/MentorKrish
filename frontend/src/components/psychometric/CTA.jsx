@@ -2,7 +2,7 @@ import React from "react";
 
 const CTA = () => {
   return (
-    <section className="bg-w1 py-12 px-2 sm:px-4">
+    <section className="bg-w1 py-12 px-2 sm:px-4" >
       <div className="max-w-7xl mx-auto w-full flex flex-col items-center">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-g1 mb-4 text-center">
           Ready to unlock your strengths?

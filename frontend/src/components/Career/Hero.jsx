@@ -2,7 +2,7 @@ import React from 'react'
 
 const Hero = () => {
   return (
-      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex flex-col justify-center items-center bg-w2 pt-20 pb-12 overflow-hidden">
+      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex flex-col justify-center items-center bg-w2 pt-20 pb-12 overflow-hidden" id= "career">
         <div className="absolute inset-0 z-0 pointer-events-none" style={{
           backgroundImage: `
             linear-gradient(to right, rgba(200,200,200,0.14) 1px, transparent 2px),

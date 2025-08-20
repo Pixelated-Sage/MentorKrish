@@ -32,7 +32,7 @@ const AboutSection = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white py-16 px-4 flex flex-col items-center relative overflow-hidden">
+    <div className="bg-gradient-to-br from-gray-50 to-white py-16 px-4 flex flex-col items-center relative overflow-hidden" id = "about">
       {/* Floating Background Elements */}
       <div className="absolute top-10 left-10 w-32 h-32 bg-red-100 rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute top-1/3 right-20 w-24 h-24 bg-blue-100 rounded-full opacity-30"></div>
