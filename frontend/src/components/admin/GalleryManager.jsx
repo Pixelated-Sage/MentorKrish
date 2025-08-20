@@ -1,56 +1,63 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { fetchGalleryAdmin, uploadGalleryItem, deleteGalleryItem } from '../../lib/apiAdmin';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  fetchGalleryAdmin,
+  uploadGalleryItem,
+  deleteGalleryItem,
+} from "../../lib/apiAdmin";
 
 export default function GalleryManager() {
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
-    title: '',
-    subtitle: '',
-    description: '',
-    tag: '',
-    layoutType: '',
+    title: "",
+    subtitle: "",
+    description: "",
+    tag: "",
+    layoutType: "",
   });
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
-  const fileInput = useRef();
+  const fileInput = React.useRef();
 
-  // Fetch gallery
   useEffect(() => {
     setLoading(true);
     fetchGalleryAdmin()
       .then(setGallery)
-      .catch(e => setError(e.message))
+      .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [refresh]);
 
-  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleFileChange = e => {
+  const handleFileChange = (e) => {
     const f = e.target.files[0];
     if (f) setFile(f);
   };
 
-  const handleDrop = e => {
+  const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
-    const f = e.dataTransfer.files[0];
+    const f = e.dataTransfer.files;
     if (f) setFile(f);
   };
 
-  const handleUpload = async e => {
+  const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return setError('Please select or drop a file.');
+    if (!file) {
+      setError("Please select or drop a file.");
+      return;
+    }
     setLoading(true);
-    setError('');
+    setError("");
     try {
       await uploadGalleryItem(form, file);
-      setForm({ title: '', subtitle: '', description: '', tag: '', layoutType: '' });
+      setForm({ title: "", subtitle: "", description: "", tag: "", layoutType: "" });
       setFile(null);
-      fileInput.current.value = '';
-      setRefresh(r => r + 1);
+      fileInput.current.value = "";
+      setRefresh((r) => r + 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,31 +65,12 @@ export default function GalleryManager() {
     }
   };
 
-  // Helper to determine row span for masonry layout
-  const getSizeClass = (size) => {
-    return `
-      ${size === 'small' ? 'row-span-2' :
-        size === 'medium' ? 'row-span-3' :
-        size === 'large' ? 'row-span-4' :
-        size === 'wide' ? 'row-span-3' :
-        size === 'tall' ? 'row-span-4' : 'row-span-3'}
-      sm:${
-        size === 'small' ? 'row-span-2' :
-        size === 'medium' ? 'row-span-3' :
-        size === 'large' ? 'row-span-4' :
-        size === 'wide' ? 'row-span-3' :
-        size === 'tall' ? 'row-span-4' : 'row-span-3'
-      }
-      xs:row-span-2
-    `;
-  };
-
-  const handleDelete = async id => {
-    if (!window.confirm('Delete this gallery item?')) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this gallery item?")) return;
     setLoading(true);
     try {
       await deleteGalleryItem(id);
-      setRefresh(r => r + 1);
+      setRefresh((r) => r + 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -91,23 +79,52 @@ export default function GalleryManager() {
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Gallery Management</h1>
-      {error && <div className="mb-3 text-red-600">{error}</div>}
+    <div className="max-w-4xl mx-auto py-12 px-6">
+      <h1 className="text-3xl font-extrabold mb-8">Gallery Management</h1>
 
-      <form onSubmit={handleUpload} className="mb-8 p-4 border rounded bg-white space-y-3">
-        <div className="grid md:grid-cols-2 gap-4">
-          <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="border rounded px-3 py-2" required />
-          <input name="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Subtitle" className="border rounded px-3 py-2" />
-          <input name="tag" value={form.tag} onChange={handleChange} placeholder="Tag" className="border rounded px-3 py-2" />
+      {error && (
+        <div className="mb-6 rounded bg-red-100 text-red-700 p-4 border border-red-300">
+          {error}
+        </div>
+      )}
+
+      <form
+        onSubmit={handleUpload}
+        className="mb-10 space-y-6 bg-white p-6 rounded-lg shadow-md border border-gray-200"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <input
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            placeholder="Title"
+            required
+            className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <input
+            name="subtitle"
+            value={form.subtitle}
+            onChange={handleChange}
+            placeholder="Subtitle"
+            className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <input
+            name="tag"
+            value={form.tag}
+            onChange={handleChange}
+            placeholder="Tag"
+            className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
           <select
             name="layoutType"
             value={form.layoutType}
             onChange={handleChange}
             required
-            className="border rounded p-2"
+            className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <option value="" disabled>Select layout size</option>
+            <option value="" disabled>
+              Select layout size
+            </option>
             <option value="small">Small</option>
             <option value="medium">Medium</option>
             <option value="large">Large</option>
@@ -116,72 +133,122 @@ export default function GalleryManager() {
           </select>
         </div>
 
-        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="border rounded w-full px-3 py-2" />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="Description"
+          rows={3}
+          className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+        />
 
-        {/* Drag & Drop File */}
+        {/* Drag and Drop area */}
         <div
-          className={`border-2 border-dashed rounded p-4 text-center ${dragOver ? 'bg-gray-100' : ''}`}
-          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
           onClick={() => fileInput.current.click()}
-          style={{ cursor: 'pointer' }}
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
+            dragOver ? "bg-gray-100 border-red-400" : "border-gray-300"
+          }`}
         >
           {file ? (
-            <div>
-              <p>Selected: {file.name}</p>
-              {file.type.startsWith('image/') && <img src={URL.createObjectURL(file)} alt="Preview" className="mt-2 max-h-40 mx-auto" />}
-              {file.type.startsWith('video/') && <video src={URL.createObjectURL(file)} controls className="mt-2 max-h-40 mx-auto" />}
-            </div>
+            <>
+              <p className="mb-2">Selected File: {file.name}</p>
+              {file.type.startsWith("image/") && (
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="Preview"
+                  className="mx-auto h-40 rounded"
+                />
+              )}
+              {file.type.startsWith("video/") && (
+                <video
+                  src={URL.createObjectURL(file)}
+                  controls
+                  className="mx-auto h-40 rounded"
+                />
+              )}
+            </>
           ) : (
-            <div>
-              <p>Drag & drop image/video here, or click to choose</p>
-              <input type="file" accept="image/*,video/*" ref={fileInput} onChange={handleFileChange} style={{ display: 'none' }} />
-            </div>
+            <>
+              <p className="text-gray-600">Drag & drop an image or video here</p>
+              <p className="text-gray-600">or click to select file</p>
+            </>
           )}
+          <input
+            type="file"
+            accept="image/*,video/*"
+            onChange={handleFileChange}
+            ref={fileInput}
+            className="hidden"
+          />
         </div>
 
-        <button disabled={loading} className="bg-blue-600 text-white px-6 py-2 rounded" type="submit">
-          {loading ? "Uploading..." : "Upload to Gallery"}
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-red-700 disabled:opacity-50"
+        >
+          {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
 
       {/* Gallery Table */}
-      <div className="border rounded bg-white shadow">
-        <table className="min-w-full text-left">
-          <thead>
+      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="px-3 py-2 border-b">Media</th>
-              <th className="px-3 py-2 border-b">Title</th>
-              <th className="px-3 py-2 border-b">Subtitle</th>
-              <th className="px-3 py-2 border-b">Tag</th>
-              <th className="px-3 py-2 border-b">Layout</th>
-              <th className="px-3 py-2 border-b">Actions</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Media</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Subtitle</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Tag</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Layout</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {gallery.map(g => (
-              <tr key={g.id} className="border-b">
-                <td className="px-3 py-2">
-                  {g.imageUrl.endsWith('.mp4') ? (
-                    <video src={`${process.env.NEXT_PUBLIC_API_URL}${g.imageUrl}`} controls className="h-16 w-16 object-cover rounded" />
-                  ) : (
-                    <img src={`${process.env.NEXT_PUBLIC_API_URL}${g.imageUrl}`} alt={g.title} className="h-16 w-16 object-cover rounded" />
-                  )}
-                </td>
-                <td className="px-3 py-2">{g.title}</td>
-                <td className="px-3 py-2">{g.subtitle}</td>
-                <td className="px-3 py-2">{g.tag}</td>
-                <td className="px-3 py-2">{g.layoutType}</td>
-                <td className="px-3 py-2">
-                  <button onClick={() => handleDelete(g.id)} className="text-red-600 underline">Delete</button>
-                </td>
-              </tr>
-            ))}
-            {gallery.length === 0 && (
+          <tbody className="divide-y divide-gray-200">
+            {gallery.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No gallery items</td>
+                <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
+                  No gallery items found.
+                </td>
               </tr>
+            ) : (
+              gallery.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {item.imageUrl.endsWith(".mp4") ? (
+                      <video
+                        src={`${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`}
+                        controls
+                        className="h-16 w-16 object-cover rounded"
+                      />
+                    ) : (
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`}
+                        alt={item.title}
+                        className="h-16 w-16 object-cover rounded"
+                      />
+                    )}
+                  </td>
+                  <td className="px-4 py-3">{item.title}</td>
+                  <td className="px-4 py-3">{item.subtitle}</td>
+                  <td className="px-4 py-3">{item.tag}</td>
+                  <td className="px-4 py-3">{item.layoutType}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

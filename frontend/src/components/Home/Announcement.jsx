@@ -31,51 +31,60 @@ export default function AnnouncementsSection() {
   if (loading) {
     return (
       <section className="py-10 bg-w1" id="announcements">
-        <div className="max-w-7xl mx-auto px-4 text-center">Loading announcements...</div>
+        <div className="max-w-7xl mx-auto px-4 text-center text-g2">
+          Loading announcements...
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="py-10 bg-w1" id="announcement">
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-g1 mb-2 text-center">
-          Latest Announcements
+    <section className="py-12 bg-w1" id="announcement">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <h2 className="text-2xl sm:text-3xl font-bold text-g1 mb-3 text-center">
+          📢 Latest Announcements
         </h2>
-        <p className="text-center text-g2 mb-6 max-w-lg mx-auto text-xs sm:text-base">
-          Stay updated with deadlines, new programs, and more from the Mentor Krish community.
+        <p className="text-center text-g2 mb-8 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+          Stay updated with deadlines, new programs, and exclusive opportunities from the Mentor Krish community.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {announcements.map((item, index) => (
             <div
               key={index}
-              className="bg-w2 rounded-xl shadow-lg overflow-hidden hover:scale-105 transition transform duration-300"
+              className="bg-w2 rounded-2xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300 border border-white/10"
             >
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-32 sm:h-40 object-cover"
+                className="w-full h-40 sm:h-48 object-cover"
                 loading="lazy"
               />
-              <div className="p-3 sm:p-5">
-                <h3 className="text-base sm:text-lg font-semibold text-g1 mb-1 sm:mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-g2 text-xs sm:text-sm mb-2 leading-snug">
-                  {item.description}
-                </p>
-                {item.timer && (
-                  <div className="bg-w1 text-r1 text-[10px] sm:text-xs px-2 py-1 inline-block rounded-full font-semibold mb-2 tracking-wide select-none">
-                    {item.timer} left
-                  </div>
-                )}
-                <a
-                  href={item.link}
-                  className="text-r1 hover:text-r2 hover:underline font-medium text-xs sm:text-sm"
-                >
-                  Know More →
-                </a>
+              <div className="p-5 flex flex-col justify-between min-h-[180px]">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-g1 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-g2 text-sm leading-relaxed line-clamp-3">
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="mt-4">
+                  {item.timer && (
+                    <div className="bg-w1 text-r1 text-[11px] sm:text-xs px-2 py-1 inline-block rounded-full font-semibold mb-3 tracking-wide select-none">
+                      ⏳ {item.timer} left
+                    </div>
+                  )}
+                  <a
+                    href={item.link}
+                    className="text-r1 hover:text-r2 hover:underline font-semibold text-sm"
+                  >
+                    Know More →
+                  </a>
+                </div>
               </div>
             </div>
           ))}

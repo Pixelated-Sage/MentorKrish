@@ -2,6 +2,7 @@ import React from 'react'
 import Hero from "../components/Home/hero/Hero"
 import Cards from "../components/Home/hero/cards"
 import Navbar from '../components/Navbar'
+import ContactButton from '../components/ContactButton'
 import About from '../components/Home/About'
 import Announcement from '../components/Home/Announcement'
 import USP from '../components/Home/USP'
@@ -14,6 +15,7 @@ const Home = () => {
   return (
     <div>
       <Navbar/>
+      <ContactButton/>
         <Hero/>
         <Cards/>
         <About id = "about"/>

@@ -13,8 +13,8 @@ export default function AdminAnnouncements() {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    image: null,       // store actual File
-    imageUrl: '',      // preview only
+    image: null,
+    imageUrl: '',
     date: '',
     time: ''
   });
@@ -33,23 +33,21 @@ export default function AdminAnnouncements() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Handle file drop
   const handleImageDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setForm((f) => ({ ...f, image: file, imageUrl: url }));
+      setForm(f => ({ ...f, image: file, imageUrl: url }));
     }
   };
 
-  // Handle file select
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setForm((f) => ({ ...f, image: file, imageUrl: url }));
+      setForm(f => ({ ...f, image: file, imageUrl: url }));
     }
   };
 
@@ -63,11 +61,11 @@ export default function AdminAnnouncements() {
           imageUrl: form.imageUrl // keep preview for update
         });
       } else {
-        await createAnnouncement(form); // send file + other data
+        await createAnnouncement(form);
       }
       setForm({ title: '', description: '', image: null, imageUrl: '', date: '', time: '' });
       setEditId(null);
-      setRefresh((r) => r + 1);
+      setRefresh(r => r + 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -80,7 +78,7 @@ export default function AdminAnnouncements() {
     setForm({
       title: a.title || '',
       description: a.description || '',
-      image: null, // reset file when editing
+      image: null,
       imageUrl: a.imageUrl || '',
       date: a.date || '',
       time: a.time || '',
@@ -88,33 +86,35 @@ export default function AdminAnnouncements() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this announcement?')) {
-      setLoading(true);
-      try {
-        await deleteAnnouncement(id);
-        setRefresh((r) => r + 1);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+    if (!window.confirm('Delete this announcement?')) return;
+    setLoading(true);
+    try {
+      await deleteAnnouncement(id);
+      setRefresh(r => r + 1);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <AdminRouteGuard>
-      <div className="max-w-2xl mx-auto py-12">
-        <h1 className="text-2xl font-bold mb-6">Manage Announcements</h1>
-        {error && <div className="text-red-500 mb-2">{error}</div>}
+      <div className="max-w-4xl mx-auto py-12 px-4">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">Manage Announcements</h1>
 
-        <form onSubmit={handleSubmit} className="mb-6 space-y-3 border p-4 rounded-lg shadow bg-w1">
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-400 text-red-700 rounded">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mb-8 bg-white rounded-lg p-6 shadow-md space-y-5 border border-gray-200">
           <input
             name="title"
             value={form.title}
             onChange={handleChange}
             placeholder="Title"
-            className="w-full px-3 py-2 border rounded"
             required
+            className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           />
           <textarea
             name="description"
@@ -122,20 +122,37 @@ export default function AdminAnnouncements() {
             onChange={handleChange}
             placeholder="Description"
             rows={2}
-            className="w-full px-3 py-2 border rounded"
             required
+            className="w-full rounded-md border border-gray-300 p-2 resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           />
 
-          {/* Drag & Drop for Image */}
           <div
-            className={`border-2 border-dashed rounded p-4 text-center ${dragOver ? 'bg-gray-100' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition ${
+              dragOver ? 'bg-gray-100 border-gray-400' : 'border-gray-300'
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleImageDrop}
+            onClick={() => document.getElementById('imageInput').click()}
           >
-            <p>Drag & drop image here, or click to choose</p>
-            <input type="file" accept="image/*" onChange={handleImageSelect} className="mt-2" />
-            {form.imageUrl && <img src={form.imageUrl} alt="Preview" className="mt-2 max-h-40 mx-auto" />}
+            <p className="text-gray-600 select-none">Drag & drop image here, or click to choose</p>
+            <input
+              id="imageInput"
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            {form.imageUrl && (
+              <img
+                src={form.imageUrl}
+                alt="Preview"
+                className="mt-4 max-h-40 mx-auto rounded-md object-contain"
+              />
+            )}
           </div>
 
           <input
@@ -143,65 +160,89 @@ export default function AdminAnnouncements() {
             name="date"
             value={form.date}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded"
             required
+            className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           />
           <input
             type="time"
             name="time"
             value={form.time}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded"
             required
+            className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           />
 
-          <button
-            disabled={loading}
-            className="bg-r1 text-w1 px-5 py-2 rounded font-semibold mt-2"
-            type="submit"
-          >
-            {editId ? 'Update' : 'Create'}
-          </button>
-          {editId && (
+          <div className="flex items-center space-x-4">
             <button
-              type="button"
-              onClick={() => {
-                setForm({ title: '', description: '', image: null, imageUrl: '', date: '', time: '' });
-                setEditId(null);
-              }}
-              className="ml-4 text-sm text-gray-600 underline"
+              type="submit"
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-md shadow-md disabled:opacity-50"
             >
-              Cancel
+              {editId ? "Update" : "Create"}
             </button>
-          )}
+            {editId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setForm({ title: '', description: '', image: null, imageUrl: '', date: '', time: '' });
+                  setEditId(null);
+                }}
+                className="text-gray-600 underline rounded-md px-4 py-2 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
 
-        {loading ? <div>Loading...</div> : (
-          <table className="w-full text-left border">
-            <thead>
-              <tr>
-                <th className="p-2 border-b">Title</th>
-                <th className="p-2 border-b">Description</th>
-                <th className="p-2 border-b">Date</th>
-                <th className="p-2 border-b">Time</th>
-                <th className="p-2 border-b"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {announcements.map((a) => (
-                <tr key={a.id} className="border-b">
-                  <td className="p-2">{a.title}</td>
-                  <td className="p-2">{a.description}</td>
-                  <td className="p-2">{a.date}</td>
-                  <td className="p-2">{a.time}</td>
-                  <td className="p-2 flex gap-2">
-                    <button onClick={() => handleEdit(a)} className="text-blue-600 underline">Edit</button>
-                    <button onClick={() => handleDelete(a.id)} className="text-red-600 underline">Delete</button>
-                  </td>
+        {loading ? (
+          <div className="text-center py-6 text-gray-600">Loading announcements...</div>
+        ) : (
+          <div className="overflow-x-auto rounded-lg shadow ring-1 ring-black ring-opacity-5">
+            <table className="min-w-full divide-y divide-gray-200 bg-white rounded-lg">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Time</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {announcements.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-6 text-gray-500">
+                      No announcements found.
+                    </td>
+                  </tr>
+                ) : (
+                  announcements.map((a) => (
+                    <tr key={a.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 whitespace-nowrap">{a.title}</td>
+                      <td className="px-4 py-3 max-w-xs truncate">{a.description}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{a.date}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{a.time}</td>
+                      <td className="px-4 py-3 whitespace-nowrap flex gap-4">
+                        <button
+                          onClick={() => handleEdit(a)}
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(a.id)}
+                          className="text-red-600 hover:underline font-medium"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </AdminRouteGuard>

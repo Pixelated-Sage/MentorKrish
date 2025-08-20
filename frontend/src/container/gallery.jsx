@@ -113,7 +113,7 @@ const Gallery = () => {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-w2 mt-9 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
+      <main className="min-h-screen bg-w2 mt-18 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
         {/* Page header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-g1 mb-2">Gallery</h1>

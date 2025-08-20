@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import AdminRouteGuard from './AdminRouteGuard';
-import { fetchAboutLatest, createOrUpdateAbout, deleteAbout } from '../../lib/apiAdmin';
+import React, { useEffect, useState } from "react";
+import AdminRouteGuard from "./AdminRouteGuard";
+import {
+  fetchAboutLatest,
+  createOrUpdateAbout,
+  deleteAbout,
+} from "../../lib/apiAdmin";
 
 export default function AdminAbout() {
   const [form, setForm] = useState({
-    content: '',
-    founderName: '',
-    founderQuote: '',
+    content: "",
+    founderName: "",
+    founderQuote: "",
   });
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [id, setId] = useState(null);
 
   useEffect(() => {
@@ -19,18 +23,18 @@ export default function AdminAbout() {
 
   const loadData = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const data = await fetchAboutLatest();
       if (data) {
         setForm({
-          content: data.content || '',
-          founderName: data.founderName || '',
-          founderQuote: data.founderQuote || '',
+          content: data.content || "",
+          founderName: data.founderName || "",
+          founderQuote: data.founderQuote || "",
         });
         setId(data.id);
       } else {
-        setForm({ content: '', founderName: '', founderQuote: '' });
+        setForm({ content: "", founderName: "", founderQuote: "" });
         setId(null);
       }
     } catch (err) {
@@ -47,12 +51,12 @@ export default function AdminAbout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      await createOrUpdateAbout(form); // Always POST
-      alert('About section saved!');
-      await loadData(); // Refresh after save
+      await createOrUpdateAbout(form);
+      alert("About section saved!");
+      await loadData();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -62,12 +66,12 @@ export default function AdminAbout() {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (!window.confirm('Are you sure you want to delete About section?')) return;
-    setError('');
+    if (!window.confirm("Are you sure you want to delete the About section?")) return;
+    setError("");
     setLoading(true);
     try {
       await deleteAbout(id);
-      alert('Deleted successfully');
+      alert("Deleted successfully");
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -78,69 +82,75 @@ export default function AdminAbout() {
 
   return (
     <AdminRouteGuard>
-      <div className="max-w-3xl mx-auto py-10 px-4">
-        <h1 className="text-2xl font-bold mb-6">Manage About Section</h1>
+      <div className="max-w-2xl mx-auto py-12 px-4">
+        <h1 className="text-3xl font-extrabold mb-6 text-gray-900">Manage About Section</h1>
 
-        {error && <div className="text-red-600 mb-4">{error}</div>}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
         {loading ? (
-          <p>Loading...</p>
+          <p className="text-center text-gray-700">Loading...</p>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 border p-6 bg-white rounded-lg shadow"
-          >
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg shadow-md p-6 border border-gray-200">
             <div>
-              <label className="block mb-1 font-medium">Content</label>
+              <label htmlFor="content" className="block text-sm font-medium mb-2 text-gray-700">Content</label>
               <textarea
+                id="content"
                 name="content"
                 value={form.content}
                 onChange={handleChange}
                 rows={6}
-                className="w-full border rounded p-2"
                 required
+                className="w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                placeholder="Write about your institution, mission, etc."
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Founder Name</label>
+              <label htmlFor="founderName" className="block text-sm font-medium mb-2 text-gray-700">Founder Name</label>
               <input
+                type="text"
+                id="founderName"
                 name="founderName"
                 value={form.founderName}
                 onChange={handleChange}
-                type="text"
-                className="w-full border rounded p-2"
                 required
+                className="w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter founder’s full name"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Founder Quote</label>
+              <label htmlFor="founderQuote" className="block text-sm font-medium mb-2 text-gray-700">Founder Quote</label>
               <input
+                type="text"
+                id="founderQuote"
                 name="founderQuote"
                 value={form.founderQuote}
                 onChange={handleChange}
-                type="text"
-                className="w-full border rounded p-2"
                 required
+                className="w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="Inspirational quote from the founder"
               />
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-red-600 text-white px-6 py-2 rounded-md font-semibold shadow hover:bg-red-700 transition"
               >
                 Save
               </button>
-
               {id && (
                 <button
                   type="button"
                   onClick={handleDelete}
                   disabled={loading}
-                  className="bg-red-600 text-white px-4 py-2 rounded"
+                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-semibold shadow hover:bg-gray-300 transition"
                 >
                   Delete
                 </button>

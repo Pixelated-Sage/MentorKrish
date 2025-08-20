@@ -56,11 +56,11 @@ const cardData = [
 const CardRevealSection = () => {
   return (
     <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10" id = "cards">
-      <div className="max-w-8xl mx-auto flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+      <div className="max-w-8xl mx-auto flex flex-wrap justify-center items-stretch gap-6 md:gap-8 px-4 sm:px-6 lg:px-0">
         {cardData.map((card, index) => (
           <div
             key={index}
-            className="bg-r1 text-w1 rounded-3xl shadow-2xl p-4 md:p-5 w-full lg:w-2/6 xl:w-1/5 min-h-[300px] flex flex-col justify-between hover:scale-[1.05] hover:shadow-3xl transition-all duration-300 ease-in-out border border-white/10"
+            className="bg-r1 text-w1 rounded-3xl shadow-2xl p-4 md:p-5 w-full max-w-sm mx-auto lg:mx-0 lg:w-2/6 xl:w-1/5 min-h-[300px] flex flex-col justify-between hover:scale-[1.05] hover:shadow-3xl transition-all duration-300 ease-in-out border border-white/10"
           >
             {/* Header Section */}
             <div className="space-y-2 mb-4">

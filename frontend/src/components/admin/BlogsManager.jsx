@@ -1,24 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import AdminRouteGuard from './AdminRouteGuard';
+import React, { useEffect, useMemo, useState } from "react";
+import AdminRouteGuard from "../../components/admin/AdminRouteGuard";
 import {
   fetchBlogsAdmin,
   createBlog,
   updateBlog,
   deleteBlog,
-} from '../../lib/apiAdmin';
+} from "../../lib/apiAdmin";
 
 export default function AdminBlogs() {
-  const emptyForm = { title: '', slug: '', author: '', content: '', published: false };
+  const courses = ['SAT', 'PSAT', 'ACT', 'IELTS', 'TOEFL'];
+  const emptyForm = { title: "", slug: "", author: "", content: "", published: false };
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
 
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  // local UX: search and simple client-side pagination
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
@@ -35,9 +35,9 @@ export default function AdminBlogs() {
     if (!q) return blogs;
     return blogs.filter(
       (b) =>
-        (b.title || '').toLowerCase().includes(q) ||
-        (b.slug || '').toLowerCase().includes(q) ||
-        (b.author || '').toLowerCase().includes(q)
+        (b.title || "").toLowerCase().includes(q) ||
+        (b.slug || "").toLowerCase().includes(q) ||
+        (b.author || "").toLowerCase().includes(q)
     );
   }, [blogs, search]);
 
@@ -50,17 +50,17 @@ export default function AdminBlogs() {
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     try {
       const payload = {
         title: form.title,
-        slug: form.slug || undefined, // optional; backend generates if missing
-        author: form.author || '',
+        slug: form.slug || undefined,
+        author: form.author || "",
         content: form.content,
         published: !!form.published,
       };
@@ -71,28 +71,28 @@ export default function AdminBlogs() {
       }
       setForm(emptyForm);
       setEditingId(null);
-      setRefresh((r) => r + 1);
       setPage(1);
+      setRefresh((r) => r + 1);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const onEdit = (b) => {
-    setEditingId(b.id);
+  const onEdit = (blog) => {
+    setEditingId(blog.id);
     setForm({
-      title: b.title || '',
-      slug: b.slug || '',
-      author: b.author || '',
-      content: b.content || '',
-      published: !!b.published,
+      title: blog.title || "",
+      slug: blog.slug || "",
+      author: blog.author || "",
+      content: blog.content || "",
+      published: !!blog.published,
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const onDelete = async (id) => {
-    if (!confirm('Delete this blog?')) return;
-    setError('');
+    if (!confirm("Delete this blog?")) return;
+    setError("");
     try {
       await deleteBlog(id);
       setRefresh((r) => r + 1);
@@ -101,91 +101,115 @@ export default function AdminBlogs() {
     }
   };
 
-  const onCancelEdit = () => {
+  const onCancel = () => {
     setEditingId(null);
     setForm(emptyForm);
   };
 
   return (
     <AdminRouteGuard>
-      <div className="max-w-5xl mx-auto py-10 px-4">
-        <h1 className="text-2xl font-bold mb-6">Manage Blogs</h1>
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">Manage Blogs</h1>
 
-        {error && <div className="mb-4 text-red-600">{error}</div>}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
-        {/* Create / Edit form */}
-        <form onSubmit={onSubmit} className="bg-white border rounded-lg shadow p-4 mb-8 space-y-3">
-          <div className="grid md:grid-cols-2 gap-3">
+        {/* Blog Form */}
+        <form
+          onSubmit={onSubmit}
+          className="mb-8 bg-white rounded-lg p-6 shadow-sm border border-gray-200 space-y-6"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
+              <label className="block mb-2 font-semibold text-gray-700">
+                Title <span className="text-red-600">*</span>
+              </label>
               <input
+                type="text"
                 name="title"
                 value={form.title}
                 onChange={onChange}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Blog title"
                 required
+                className={`w-full rounded-md p-2 border focus:outline-none focus:ring-2 focus:ring-red-500 ${
+                  form.title === "" ? "border-red-300" : "border-gray-300"
+                }`}
+                placeholder="Blog title"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium mb-1">Slug (optional)</label>
+              <label className="block mb-2 font-semibold text-gray-700">Slug</label>
               <input
+                type="text"
                 name="slug"
                 value={form.slug}
                 onChange={onChange}
-                className="w-full border rounded px-3 py-2"
-                placeholder="auto-generated if empty"
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="auto generated if blank"
               />
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Author</label>
+              <label className="block mb-2 font-semibold text-gray-700">Author</label>
               <input
+                type="text"
                 name="author"
                 value={form.author}
                 onChange={onChange}
-                className="w-full border rounded px-3 py-2"
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Author name"
               />
             </div>
-            <div className="flex items-center gap-2 mt-6 md:mt-7">
+
+            <div className="flex items-center space-x-2 mt-6 md:mt-0">
               <input
                 id="published"
                 type="checkbox"
                 name="published"
                 checked={form.published}
                 onChange={onChange}
+                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
               />
-              <label htmlFor="published" className="text-sm">Published</label>
+              <label htmlFor="published" className="font-semibold text-gray-700">
+                Published
+              </label>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Content</label>
+            <label className="block mb-2 font-semibold text-gray-700">
+              Content <span className="text-red-600">*</span>
+            </label>
             <textarea
               name="content"
               value={form.content}
               onChange={onChange}
-              className="w-full border rounded px-3 py-2 min-h-[160px]"
-              placeholder="Write blog content..."
               required
+              rows={6}
+              className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              placeholder="Write blog content here..."
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex space-x-4">
             <button
-              className="bg-r1 text-white px-4 py-2 rounded font-semibold"
               type="submit"
+              disabled={!form.title || !form.content}
+              className="px-6 py-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700 disabled:opacity-50"
             >
-              {editingId ? 'Update Blog' : 'Create Blog'}
+              {editingId ? "Update Blog" : "Create Blog"}
             </button>
+
             {editingId && (
               <button
                 type="button"
-                onClick={onCancelEdit}
-                className="px-4 py-2 rounded border"
+                onClick={onCancel}
+                className="px-6 py-2 border rounded-md font-semibold hover:bg-gray-100"
               >
                 Cancel
               </button>
@@ -193,80 +217,92 @@ export default function AdminBlogs() {
           </div>
         </form>
 
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+        {/* Search and Pagination Controls */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-3 md:space-y-0">
           <input
+            type="text"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="border rounded px-3 py-2 w-full md:w-64"
-            placeholder="Search title/slug/author"
+            placeholder="Search blogs by title, slug, or author"
+            className="w-full md:w-64 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           />
-          <div className="text-sm text-gray-600">
-            {filtered.length} results • Page {page} of {totalPages}
+          <div className="text-gray-600 text-sm">
+            {filtered.length} results &bull; Page {page} of {totalPages}
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div>Loading...</div>
-          ) : (
-            <table className="min-w-full text-left bg-white border rounded-lg overflow-hidden">
-              <thead className="bg-gray-50">
+        {/* Blogs Table */}
+        <div className="overflow-x-auto rounded-md shadow-sm">
+          <table className="min-w-full bg-white divide-y divide-gray-200 rounded-md table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Slug</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Author</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {loading ? (
                 <tr>
-                  <th className="p-3 border-b">Title</th>
-                  <th className="p-3 border-b">Slug</th>
-                  <th className="p-3 border-b">Author</th>
-                  <th className="p-3 border-b">Published</th>
-                  <th className="p-3 border-b">Published At</th>
-                  <th className="p-3 border-b w-40">Actions</th>
+                  <td colSpan={6} className="text-center p-6 text-gray-500">
+                    Loading...
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {paginated.map((b) => (
-                  <tr key={b.id} className="border-b">
-                    <td className="p-3">{b.title}</td>
-                    <td className="p-3">{b.slug}</td>
-                    <td className="p-3">{b.author || '-'}</td>
-                    <td className="p-3">{b.published ? 'Yes' : 'No'}</td>
-                    <td className="p-3">{b.publishedAt || '-'}</td>
-                    <td className="p-3">
-                      <div className="flex gap-3">
-                        <button onClick={() => onEdit(b)} className="text-blue-600 underline">Edit</button>
-                        <button onClick={() => onDelete(b.id)} className="text-red-600 underline">Delete</button>
-                      </div>
+              ) : paginated.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center p-6 text-gray-500">
+                    No blogs found.
+                  </td>
+                </tr>
+              ) : (
+                paginated.map((b) => (
+                  <tr key={b.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{b.title}</td>
+                    <td className="px-4 py-3">{b.slug}</td>
+                    <td className="px-4 py-3">{b.author || "-"}</td>
+                    <td className="px-4 py-3">{b.published ? "Yes" : "No"}</td>
+                    <td className="px-4 py-3">{b.publishedAt || "-"}</td>
+                    <td className="px-4 py-3 space-x-4">
+                      <button
+                        onClick={() => onEdit(b)}
+                        className="text-blue-600 font-semibold hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDelete(b.id)}
+                        className="text-red-600 font-semibold hover:underline"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
-                ))}
-                {paginated.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="p-6 text-center text-gray-500">
-                      No blogs found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center gap-2 justify-end mt-4">
+        {/* Pagination Controls */}
+        <div className="flex justify-end space-x-2 mt-6">
           <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            disabled={page === 1}
+            className="px-4 py-2 rounded border border-gray-300 disabled:opacity-50"
           >
-            Prev
+            Previous
           </button>
-          <span className="text-sm">Page {page} / {totalPages}</span>
+          <span className="px-4 py-2">{`Page ${page} of ${totalPages}`}</span>
           <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
+            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+            disabled={page === totalPages}
+            className="px-4 py-2 rounded border border-gray-300 disabled:opacity-50"
           >
             Next
           </button>

@@ -1,20 +1,13 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/router';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { registerUser } from '../lib/api';
+import React, { useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { useRouter } from "next/router";
+import { registerUser } from "../lib/api";
 
 const courses = ['SAT', 'PSAT', 'ACT', 'IELTS', 'TOEFL'];
 
-const formVariants = {
-  visible: { opacity: 1, y: 0 },
-  hidden: { opacity: 0, y: -20 }
-};
-
 export default function Register() {
   const router = useRouter();
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,7 +15,6 @@ export default function Register() {
     course: courses[0],
     password: ''
   });
-
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -31,30 +23,27 @@ export default function Register() {
     const errs = {};
     if (!formData.name.trim()) errs.name = 'Name is required';
     if (!formData.email.trim()) errs.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Email is invalid';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email address';
     if (!formData.password.trim()) errs.password = 'Password is required';
     if (formData.phone && !/^\d{7,15}$/.test(formData.phone)) errs.phone = 'Enter a valid phone number';
     if (!formData.course) errs.course = 'Please select a course';
     return errs;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setErrors({});
     setServerError('');
-
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     setSubmitting(true);
-
     try {
       await registerUser({
         firebaseUid: null,
@@ -63,10 +52,9 @@ export default function Register() {
         phoneNumber: formData.phone,
         loginMethod: "EMAIL",
         emailVerified: false,
-        password: formData.password
+        password: formData.password,
+        course: formData.course,
       });
-
-      // redirect to verify page immediately
       router.push(`/verifyotp?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
       setServerError(err.message);
@@ -78,108 +66,112 @@ export default function Register() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
-        <motion.form
-          initial="hidden"
-          animate="visible"
-          variants={formVariants}
+      <main className="min-h-screen flex flex-col justify-center items-center bg-w2 pt-20 px-4 sm:px-6">
+        <form
           onSubmit={handleSubmit}
-          className="max-w-md w-full bg-w1 rounded-3xl p-8 shadow-xl border border-w2 space-y-5"
+          className="max-w-xl w-full space-y-6"
           noValidate
         >
-          <h1 className="text-3xl font-bold text-center mb-8">Register</h1>
+          <h1 className="text-3xl font-bold text-center text-g1 mb-6 tracking-tight">Register</h1>
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-g1 mb-1 font-semibold">Name <span className="text-r1">*</span></label>
+            <label htmlFor="name" className="block mb-1 font-semibold text-g1">Name <span className="text-r1">*</span></label>
             <input
-              name="name"
               id="name"
+              name="name"
+              type="text"
               value={formData.name}
               onChange={handleChange}
               disabled={submitting}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
               placeholder="Your full name"
+              className={`w-full bg-transparent border-b border-w2 py-2 text-g3 placeholder-g2 focus:outline-none focus:border-r1 transition ${errors.name ? 'border-r1' : ''}`}
               required
             />
-            {errors.name && <p className="text-r1 text-xs mt-1">{errors.name}</p>}
+            {errors.name && <p className="mt-1 text-xs text-r1">{errors.name}</p>}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-g1 mb-1 font-semibold">Email <span className="text-r1">*</span></label>
+            <label htmlFor="email" className="block mb-1 font-semibold text-g1">Email <span className="text-r1">*</span></label>
             <input
-              name="email"
               id="email"
+              name="email"
+              type="email"
               value={formData.email}
               onChange={handleChange}
               disabled={submitting}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
-              placeholder="your.email@example.com"
+              placeholder="you@example.com"
+              className={`w-full bg-transparent border-b border-w2 py-2 text-g3 placeholder-g2 focus:outline-none focus:border-r1 transition ${errors.email ? 'border-r1' : ''}`}
               required
             />
-            {errors.email && <p className="text-r1 text-xs mt-1">{errors.email}</p>}
+            {errors.email && <p className="mt-1 text-xs text-r1">{errors.email}</p>}
           </div>
 
           {/* Phone */}
           <div>
-            <label htmlFor="phone" className="block text-g1 mb-1 font-semibold">Phone</label>
+            <label htmlFor="phone" className="block mb-1 font-semibold text-g1">Phone</label>
             <input
-              name="phone"
               id="phone"
+              name="phone"
+              type="tel"
               value={formData.phone}
               onChange={handleChange}
               disabled={submitting}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
-              placeholder="Enter digits only, e.g., 9999999999"
+              placeholder="Digits only, e.g., 9999999999"
+              className={`w-full bg-transparent border-b border-w2 py-2 text-g3 placeholder-g2 focus:outline-none focus:border-r1 transition ${errors.phone ? 'border-r1' : ''}`}
             />
-            {errors.phone && <p className="text-r1 text-xs mt-1">{errors.phone}</p>}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-g1 mb-1 font-semibold">Password <span className="text-r1">*</span></label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={submitting}
-              className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-r1' : 'border-w2'} focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1`}
-              placeholder="Choose a password"
-              required
-            />
-            {errors.password && <p className="text-r1 text-xs mt-1">{errors.password}</p>}
+            {errors.phone && <p className="mt-1 text-xs text-r1">{errors.phone}</p>}
           </div>
 
           {/* Course */}
           <div>
-            <label htmlFor="course" className="block text-g1 mb-1 font-semibold">Interested Course <span className="text-r1">*</span></label>
+            <label htmlFor="course" className="block mb-1 font-semibold text-g1">Interested Course <span className="text-r1">*</span></label>
             <select
-              name="course"
               id="course"
+              name="course"
               value={formData.course}
               onChange={handleChange}
               disabled={submitting}
-              className="w-full px-4 py-3 rounded-lg border border-w2 focus:outline-none focus:ring-2 focus:ring-r1 focus:border-r1 bg-white text-g1"
+              className="w-full bg-white border-b border-w2 py-2 text-g1 focus:outline-none focus:border-r1 transition"
               required
             >
-              {courses.map(c => <option key={c} value={c}>{c}</option>)}
+              {courses.map(course => (
+                <option key={course} value={course}>{course}</option>
+              ))}
             </select>
-            {errors.course && <p className="text-r1 text-xs mt-1">{errors.course}</p>}
+            {errors.course && <p className="mt-1 text-xs text-r1">{errors.course}</p>}
           </div>
 
-          {serverError && <p className="text-center text-r1 font-semibold">{serverError}</p>}
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block mb-1 font-semibold text-g1">Password <span className="text-r1">*</span></label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              disabled={submitting}
+              placeholder="Choose a password"
+              className={`w-full bg-transparent border-b border-w2 py-2 text-g3 placeholder-g2 focus:outline-none focus:border-r1 transition ${errors.password ? 'border-r1' : ''}`}
+              required
+            />
+            {errors.password && <p className="mt-1 text-xs text-r1">{errors.password}</p>}
+          </div>
+
+          {serverError && (
+            <p className="text-center text-r1 font-semibold">{serverError}</p>
+          )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-r1 text-w1 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-r1 text-white py-3 rounded-full font-semibold text-lg shadow-md hover:bg-r2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? "Registering..." : "Register"}
           </button>
-        </motion.form>
+        </form>
       </main>
       <Footer />
     </>
