@@ -29,9 +29,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         Optional<User> userOpt = authService.loginUser(request);
-        if (userOpt.isEmpty()) return ResponseEntity.status(401).build();
+       if (userOpt.isEmpty()) return ResponseEntity.status(401).build();
 
-        User user = userOpt.get();
+       User user = userOpt.get();
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
         return ResponseEntity.ok(new LoginResponse(token, user.getId(), user.getEmail(), user.getFullName(), user.getRole()));
     }
