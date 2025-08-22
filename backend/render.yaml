@@ -2,16 +2,22 @@ services:
   - type: web
     name: springboot-backend
     env: docker
-    plan: free   # or starter/pro based on your needs
+    plan: free
     branch: main
     autoDeploy: true
     healthCheckPath: /
     envVars:
-      - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://<your-db-host>:5432/<your-db-name>
-      - key: SPRING_DATASOURCE_USERNAME
-        value: <your-db-username>
-      - key: SPRING_DATASOURCE_PASSWORD
-        value: <your-db-password>
+      - key: DB_URL
+        value: jdbc:postgresql://dpg-d2kdan75r7bs73enfed0-a:5432/mentor_db_7v0f
+      - key: DB_USER
+        value: mentor_user
+      - key: DB_PASS
+        value: aPC43Sy8hsD4QI5oGIRtKOYPnlc3yaUs
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
+      - key: JWT_SECRET
+        value: neelam123!vaibhav456@abhishek789#
+      - key: SENDER_EMAIL
+        value: noreplymentorkrish@gmail.com
+      - key: BREVO_API_KEY
+        value: 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
