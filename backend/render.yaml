@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: springboot-backend
+    env: docker
+    plan: free   # or starter/pro based on your needs
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://<your-db-host>:5432/<your-db-name>
+      - key: SPRING_DATASOURCE_USERNAME
+        value: <your-db-username>
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: <your-db-password>
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update

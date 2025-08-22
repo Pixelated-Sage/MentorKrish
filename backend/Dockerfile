@@ -1,14 +1,28 @@
-# Step 1: Use an official OpenJDK image as base
-FROM openjdk:24-jdk-slim
+# Step 1: Use Maven to build the JAR
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 
-# Step 2: Set working directory
+# Set working directory
 WORKDIR /app
 
-# Step 3: Copy built jar file into container
-COPY target/*.jar app.jar
+# Copy pom.xml and download dependencies (cached layer)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Step 4: Expose port (same as in application.properties)
+# Copy source code and build
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Step 2: Use a lightweight JDK image to run
+FROM eclipse-temurin:17-jdk-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy JAR from builder
+COPY --from=builder /app/target/*.jar app.jar
+
+# Expose port (Spring Boot default is 8080)
 EXPOSE 8080
 
-# Step 5: Run jar
+# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
