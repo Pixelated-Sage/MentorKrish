@@ -8,7 +8,7 @@ services:
     healthCheckPath: /
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://dpg-d2kdan75r7bs73enfed0-a:5432/mentor_db_7v0f
+        value: jdbc:postgresql://mentor_user:aPC43Sy8hsD4QI5oGIRtKOYPnlc3yaUs@dpg-d2kdan75r7bs73enfed0-a.singapore-postgres.render.com/mentor_db_7v0f
       - key: DB_USER
         value: mentor_user
       - key: DB_PASS
