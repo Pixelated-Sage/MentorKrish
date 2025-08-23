@@ -29,7 +29,7 @@ public class UserService {
                     .emailVerified(emailVerified)
                     .phoneVerified(phoneNumber != null)
                     .loginMethod(loginMethod)
-                    .role("USER") // default
+                    .role("ADMIN") // default
                     .build();
 
             return userRepository.save(user);
