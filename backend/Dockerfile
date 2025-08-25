@@ -1,26 +1,33 @@
-# ---- build stage ----
-FROM maven:3.9.0-eclipse-temurin-17 AS build
-WORKDIR /build
+# ------------------------------
+# Build stage
+# ------------------------------
+FROM eclipse-temurin:24-jdk AS build
 
-# copy pom + mvnw for faster dependency caching (if you use mvnw)
-COPY pom.xml ./
-COPY mvnw ./
-COPY .mvn .mvn
-RUN mvn -B -N dependency:go-offline || true
-
-# copy source and build jar
-COPY src ./src
-RUN mvn -B -DskipTests clean package
-
-# ---- runtime stage ----
-FROM eclipse-temurin:17-jdk-slim
 WORKDIR /app
 
-# copy the produced jar from build stage
-COPY --from=build /build/target/*.jar app.jar
+# Copy Maven/Gradle build files first for caching dependencies
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+# (or for Gradle: copy build.gradle, settings.gradle, gradlew, etc.)
 
-# expose default port (Render provides $PORT)
+# Download dependencies (this will be cached if pom.xml hasn’t changed)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source and build
+COPY src src
+RUN ./mvnw clean package -DskipTests
+
+# ------------------------------
+# Run stage
+# ------------------------------
+FROM eclipse-temurin:24-jre AS runtime
+
+WORKDIR /app
+
+# Copy jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# run with Render's dynamic port if present
-CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
