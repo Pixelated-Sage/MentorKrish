@@ -1,28 +1,26 @@
-# Step 1: Use Maven to build the JAR
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+# ---- build stage ----
+FROM maven:3.9.0-eclipse-temurin-17 AS build
+WORKDIR /build
 
-# Set working directory
-WORKDIR /app
+# copy pom + mvnw for faster dependency caching (if you use mvnw)
+COPY pom.xml ./
+COPY mvnw ./
+COPY .mvn .mvn
+RUN mvn -B -N dependency:go-offline || true
 
-# Copy pom.xml and download dependencies (cached layer)
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source code and build
+# copy source and build jar
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -B -DskipTests clean package
 
-# Step 2: Use a lightweight JDK image to run
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory
+# ---- runtime stage ----
+FROM eclipse-temurin:17-jdk-slim
 WORKDIR /app
 
-# Copy JAR from builder
-COPY --from=builder /app/target/*.jar app.jar
+# copy the produced jar from build stage
+COPY --from=build /build/target/*.jar app.jar
 
-# Expose port (Spring Boot default is 8080)
+# expose default port (Render provides $PORT)
 EXPOSE 8080
 
-# Run the app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# run with Render's dynamic port if present
+CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
