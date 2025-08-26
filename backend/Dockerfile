@@ -1,28 +1,33 @@
-# Step 1: Use Maven to build the JAR
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+# ------------------------------
+# Build stage
+# ------------------------------
+FROM eclipse-temurin:24-jdk AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached layer)
+# Copy Maven/Gradle build files first for caching dependencies
+COPY mvnw .
+COPY .mvn .mvn
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+# (or for Gradle: copy build.gradle, settings.gradle, gradlew, etc.)
 
-# Copy source code and build
-COPY src ./src
-RUN mvn clean package -DskipTests
+# Download dependencies (this will be cached if pom.xml hasn’t changed)
+RUN ./mvnw dependency:go-offline -B
 
-# Step 2: Use a lightweight JDK image to run
-FROM eclipse-temurin:17-jdk-alpine
+# Copy source and build
+COPY src src
+RUN ./mvnw clean package -DskipTests
 
-# Set working directory
+# ------------------------------
+# Run stage
+# ------------------------------
+FROM eclipse-temurin:24-jre AS runtime
+
 WORKDIR /app
 
-# Copy JAR from builder
-COPY --from=builder /app/target/*.jar app.jar
+# Copy jar from build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Expose port (Spring Boot default is 8080)
 EXPOSE 8080
 
-# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
