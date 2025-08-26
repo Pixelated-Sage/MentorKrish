@@ -18,25 +18,25 @@ import com.google.firebase.auth.FirebaseAuth;
 @Configuration
 public class FirebaseConfig {
 
-    @PostConstruct
-    public void initializeFirebase() throws IOException {
-        try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-config.json")) {
-            if (serviceAccount == null) {
-                throw new FileNotFoundException("firebase-config.json not found in classpath");
-            }
+   @PostConstruct
+   public void initializeFirebase() throws IOException {
+       try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-config.json")) {
+           if (serviceAccount == null) {
+               throw new FileNotFoundException("firebase-config.json not found in classpath");
+           }
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
+           FirebaseOptions options = FirebaseOptions.builder()
+                   .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                   .build();
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-            }
-        }
-    }
+           if (FirebaseApp.getApps().isEmpty()) {
+               FirebaseApp.initializeApp(options);
+           }
+       }
+   }
 
-    @Bean
-    public FirebaseAuth firebaseAuth() {
-        return FirebaseAuth.getInstance();
-    }
+   @Bean
+   public FirebaseAuth firebaseAuth() {
+       return FirebaseAuth.getInstance();
+   }
 }
