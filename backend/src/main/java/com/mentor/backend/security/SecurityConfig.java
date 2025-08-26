@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000" , "https://mentor-krish.vercel.app/"));
+                    config.setAllowedOrigins(List.of("http://localhost:3000", "https://mentor-krish.vercel.app/"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     return config;
@@ -39,13 +39,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public access to auth endpoints (including OTP)
+                        // Public auth endpoints
                         .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/forgot-password",
                                 "/api/auth/send-otp",
                                 "/api/auth/resend-otp",
                                 "/api/auth/verify-otp",
-                                "/api/auth/register",
-                                "/api/auth/login"
+                                "/api/auth/reset-password"
                         ).permitAll()
 
                         // Public GET endpoints
@@ -54,48 +56,32 @@ public class SecurityConfig {
                                 "/api/announcements/**",
                                 "/api/gallery/**",
                                 "/api/about/**",
-                                "/uploads/**" // Allow public access to uploaded files
+                                "/uploads/**"
                         ).permitAll()
 
-                        // Public POST endpoints (forms)
+                        // Blog CRUD restricted to ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMIN")
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Contact form & trial form (public submission)
                         .requestMatchers(HttpMethod.POST,
                                 "/api/contact",
                                 "/api/trials"
                         ).permitAll()
 
-                        // Admin-only mutations (currently set to permitAll for testing)
-                        .requestMatchers(HttpMethod.POST,
-                                "/api/blogs/**",
-                                "/api/announcements/**",
-                                "/api/gallery/**",
-                                "/api/about/**"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.PUT,
-                                "/api/blogs/**",
-                                "/api/announcements/**",
-                                "/api/gallery/**",
-                                "/api/about/**"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.DELETE,
-                                "/api/blogs/**",
-                                "/api/announcements/**",
-                                "/api/gallery/**",
-                                "/api/about/**"
-                        ).permitAll()
+                        // Admin-only access to trial listings
+                        .requestMatchers(HttpMethod.GET, "/api/trials").hasRole("ADMIN")
 
-                        // Admin-only GET listing
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/trials"
-                        ).hasRole("ADMIN")
-                        // Profile endpoints
+                        // Profile endpoints require login
                         .requestMatchers("/api/profile/**").authenticated()
 
                         // All other requests require authentication
                         .anyRequest().authenticated()
-
-
                 )
-                // Register the JWT filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

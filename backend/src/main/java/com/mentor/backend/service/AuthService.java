@@ -20,6 +20,9 @@ public class AuthService {
     private final OtpService otpService;
     private final PasswordEncoder passwordEncoder;
 
+    // =======================
+    // REGISTER USER
+    // =======================
     public User registerUser(RegisterRequest request) {
         Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
@@ -48,6 +51,9 @@ public class AuthService {
         return saved;
     }
 
+    // =======================
+    // LOGIN USER
+    // =======================
     public Optional<User> loginUser(LoginRequest request) {
         Optional<User> userOpt = Optional.empty();
 
@@ -70,6 +76,9 @@ public class AuthService {
         return userOpt;
     }
 
+    // =======================
+    // VERIFY EMAIL OTP
+    // =======================
     public boolean verifyEmailOtp(String email, String otp) {
         boolean verified = otpService.verifyOtp(email, otp);
         if (verified) {
@@ -81,11 +90,53 @@ public class AuthService {
         return verified;
     }
 
+    // =======================
+    // RESEND OTP
+    // =======================
     public void resendOtp(String email) {
         try {
             otpService.resendOtp(email);
         } catch (Exception e) {
             throw new RuntimeException("Failed to resend OTP: " + e.getMessage(), e);
         }
+    }
+
+    // =======================
+    // FORGOT PASSWORD FLOW
+    // =======================
+
+    /**
+     * Step 1 - User requests password reset (send OTP to email)
+     */
+    public void initiatePasswordReset(String email) {
+        userRepository.findByEmail(email).orElseThrow(() ->
+                new RuntimeException("No user found with email " + email));
+
+        try {
+            otpService.sendOtp(email);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send OTP: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Step 2 - Verify OTP for password reset
+     */
+    public boolean verifyPasswordResetOtp(String email, String otp) {
+        return otpService.verifyOtp(email, otp);
+    }
+
+    /**
+     * Step 3 - Reset password after successful OTP verification
+     */
+    public boolean resetPassword(String email, String otp, String newPassword) {
+        boolean verified = otpService.verifyOtp(email, otp);
+        if (!verified) return false;
+
+        userRepository.findByEmail(email).ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(u);
+        });
+        return true;
     }
 }
