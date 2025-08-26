@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/router'; // ✅ Import Next.js router
+import { useRouter } from 'next/router';
 import MapBg from './Mapbg';
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../../lib/firebase"; // Adjust path if needed
 
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const router = useRouter(); // ✅ Get router instance
+  const router = useRouter();
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -15,12 +16,29 @@ const Hero = () => {
     });
   };
 
-  const handleRegisterClick = () => {
-    router.push('/register'); // ✅ Navigate to /register page
+  const handleRegisterClick = async () => {
+    // Analytics Event
+    if (analytics) logEvent(analytics, "click_register_button", { location: "hero" });
+
+    // Firestore Logging of event
+    if (db) {
+      try {
+        await addDoc(collection(db, "user_events"), {
+          event: "click_register_button",
+          location: "hero",
+          user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+          timestamp: serverTimestamp(),
+          path: typeof window !== "undefined" ? window.location.pathname : "server",
+        });
+      } catch (e) {
+        console.error("Failed to log event to Firestore", e);
+      }
+    }
+    router.push("/register");
   };
 
   return (
-    <section className="relative min-h-screen px-4 md:px-10 py-12 flex flex-col items-center justify-center bg-w1 overflow-hidden" id = "hero">
+    <section className="relative min-h-screen px-4 md:px-10 py-12 flex flex-col items-center justify-center bg-w1 overflow-hidden" id="hero">
       <MapBg />
       <motion.div
         className="text-center max-w-7xl space-y-6 sm:space-y-8 mb-28 sm:mb-36"
@@ -88,7 +106,7 @@ const Hero = () => {
           <motion.button
             className="relative inline-block px-8 sm:px-10 py-3 sm:py-4 font-bold text-base sm:text-lg overflow-hidden border-2 border-r2 text-black rounded-full bg-w2 shadow-lg hover:shadow-xl transition-all duration-300"
             onMouseMove={handleMouseMove}
-            onClick={handleRegisterClick} // ✅ Navigate when clicked
+            onClick={handleRegisterClick}
             whileHover={{ scale: 1.05, backgroundColor: "#D84040", color: "#ffffff" }}
             whileTap={{ scale: 0.95 }}
           >
