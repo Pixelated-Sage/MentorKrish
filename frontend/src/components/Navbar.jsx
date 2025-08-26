@@ -32,7 +32,8 @@ const psycoSections = [
 const baseNavItems = [
   { label: "Home", href: "/", sections: homeSections },
   { label: "Career", href: "/career", sections: careerSections },
-  { label: "Psychometric", href: "/psyco", sections: psycoSections },
+  { label: "Courses", href: "/courses" },
+  { label: "Psychometric", href: "/psycometric", sections: psycoSections },
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
