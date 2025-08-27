@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col h-screen bg-gray-50">
         <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
-        <main className="flex-grow p-6 overflow-auto bg-w1 max-w-full">
+        <main className="flex-grow  p-18 overflow-auto max-w-full">
           <ActiveComponent />
         </main>
       </div>

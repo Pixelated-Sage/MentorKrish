@@ -1,4 +1,6 @@
 import React from 'react';
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../../lib/firebase"; // Adjust path if needed
+import { useRouter } from 'next/router';
 
 const cardData = [
   {
@@ -8,7 +10,7 @@ const cardData = [
     description: "Comprehensive test preparation programs designed to unlock opportunities at world-class universities and institutions.",
     button: {
       label: "Book Consultation",
-      link: "/trial" // ✅ changed
+      link: "/trial"
     },
     contact: {
       phone: "+91-9999999999",
@@ -23,7 +25,7 @@ const cardData = [
     description: "End-to-end career counseling with personalized profile building and comprehensive placement support for global opportunities.",
     button: {
       label: "Get Expert Guidance",
-      link: "/contact" // ✅ changed
+      link: "/contact"
     },
     icon: ""
   },
@@ -34,7 +36,7 @@ const cardData = [
     description: "Join the 6.3% who are confident about their career path. Take our scientifically-designed career assessment test.",
     button: {
       label: "Discover Your Path",
-      link: "/register" // ✅ changed
+      link: "/register"
     },
     stats: "93.7% students need career clarity",
     icon: ""
@@ -47,15 +49,50 @@ const cardData = [
     description: "Experience authentic SAT preparation with our advanced digital platform featuring real-time analytics and adaptive learning.",
     button: {
       label: "Start Free Trial",
-      link: "/trial" // ✅ changed
+      link: "/trial"
     },
     icon: ""
   }
 ];
 
 const CardRevealSection = () => {
+  const router = useRouter();
+
+  // Unified click handler for all card buttons
+  const handleCardButtonClick = async (card, index) => {
+    // Analytics event for Google
+    if (analytics) {
+      logEvent(analytics, "card_button_click", {
+        card_title: card.title,
+        button_label: card.button.label,
+        location: "home_cards",
+      });
+    }
+
+    // Firestore event for advanced analytics
+    if (db) {
+      try {
+        await addDoc(collection(db, "user_events"), {
+          event: "card_button_click",
+          card_title: card.title,
+          button_label: card.button.label,
+          card_index: index,
+          location: "home_cards",
+          user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+          timestamp: serverTimestamp(),
+          path: typeof window !== "undefined" ? window.location.pathname : "server",
+        });
+      } catch (e) {
+        console.error("Failed to log card event to Firestore", e);
+      }
+    }
+
+    // Navigate to button link
+    router.push(card.button.link);
+  };
+
   return (
-    <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10" id = "cards">
+    <section className="relative -mt-[13rem] bg-transparent pb-32 pt-16 z-10" id="cards">
       <div className="max-w-8xl mx-auto flex flex-wrap justify-center items-stretch gap-6 md:gap-8 px-4 sm:px-6 lg:px-0">
         {cardData.map((card, index) => (
           <div
@@ -99,12 +136,13 @@ const CardRevealSection = () => {
             </div>
             {/* Footer Section */}
             <div className="space-y-2">
-              <a
-                href={card.button.link}
+              <button
+                type="button"
                 className="block w-full bg-accent text-black font-bold py-2 px-4 rounded-xl hover:bg-w1 hover:scale-[1.02] transition-all duration-200 ease-in-out text-center shadow-lg hover:shadow-xl border-2 border-transparent hover:border-accent text-xs sm:text-sm"
+                onClick={() => handleCardButtonClick(card, index)}
               >
                 {card.button.label}
-              </a>
+              </button>
               {card.contact && (
                 <div className="bg-white/5 rounded-lg p-2 border border-white/10">
                   <div className="flex flex-col space-y-1 text-center">

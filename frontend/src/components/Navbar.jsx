@@ -4,6 +4,8 @@ import { Menu, X, ChevronRight } from "lucide-react";
 import { useRouter } from "next/router";
 import { scroller } from "react-scroll";
 
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../lib/firebase"; // Adjust lib path
+
 const homeSections = [
   { name: "Home", id: "hero" },
   { name: "About Us", id: "about" },
@@ -33,7 +35,7 @@ const baseNavItems = [
   { label: "Home", href: "/", sections: homeSections },
   { label: "Career", href: "/career", sections: careerSections },
   { label: "Courses", href: "/courses" },
-  { label: "Psychometric", href: "/psycometric", sections: psycoSections },
+  { label: "Psychometric", href: "/psycohmetric", sections: psycoSections },
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
@@ -49,7 +51,7 @@ const Navbar = () => {
 
   const router = useRouter();
 
-  // Update scroll status for navbar style
+  // Scroll detection for navbar styling
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
@@ -78,22 +80,28 @@ const Navbar = () => {
     navItems.push({ label: "Login", href: "/login" });
   }
 
-  // Scroll to section logic on navigation
-  useEffect(() => {
-    const target = sessionStorage.getItem("scrollToSection");
-    if (target && typeof window !== "undefined") {
-      const el = document.getElementById(target);
-      if (el) {
-        scroller.scrollTo(target, {
-          duration: 800,
-          smooth: "easeInOutQuart",
-          offset: -120,
-        });
-        sessionStorage.removeItem("scrollToSection");
+  // Helper for logging events (fire and forget)
+  const trackNavClick = async (label, extra = {}) => {
+    try {
+      if (analytics) {
+        logEvent(analytics, "navbar_click", { label, ...extra });
       }
+      if (db) {
+        await addDoc(collection(db, "user_events"), {
+          event: "navbar_click",
+          label,
+          ...extra,
+          user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+          path: typeof window !== "undefined" ? window.location.pathname : "server",
+          timestamp: serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      console.error("Navbar analytics tracking failed", e);
     }
-  }, [router.pathname]);
+  };
 
+  // Scroll to section or navigate to another page logic
   const goToSection = (href, sectionId) => {
     setMobileMenuOpen(false);
     setDropdownOpen(null);
@@ -103,16 +111,24 @@ const Navbar = () => {
         smooth: "easeInOutQuart",
         offset: -120,
       });
+      // Track section view as navbar click with section
+      trackNavClick(`section_${sectionId}`, { page: href });
     } else {
       sessionStorage.setItem("scrollToSection", sectionId);
-      router.push(href);
+      router.push(href).then(() => {
+        // Track page navigation
+        trackNavClick(`navigate_${href}`, { section: sectionId });
+      });
     }
   };
 
-  const handleNavClick = (href) => {
+  // Navigation click handler
+  const handleNavClick = (href, label) => {
     setMobileMenuOpen(false);
     setDropdownOpen(null);
-    router.push(href);
+    router.push(href).then(() => {
+      trackNavClick(label || href);
+    });
   };
 
   return (
@@ -135,7 +151,9 @@ const Navbar = () => {
             className="text-2xl font-bold cursor-pointer select-none"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            onClick={() => router.push("/")}
+            onClick={() => {
+              handleNavClick("/");
+            }}
           >
             <span className="flex gap-1 text-inherit">
               <span className="text-red-600 drop-shadow-sm">Mentor</span>
@@ -155,7 +173,7 @@ const Navbar = () => {
                 >
                   <span
                     className="text-gray-700 hover:text-gray-900 transition px-2 py-1 font-medium text-sm tracking-wide cursor-pointer select-none"
-                    onClick={() => handleNavClick(item.href)}
+                    onClick={() => handleNavClick(item.href, item.label)}
                   >
                     {item.label}
                   </span>
@@ -184,8 +202,8 @@ const Navbar = () => {
               ) : (
                 <button
                   key={item.label}
-                  onClick={() => handleNavClick(item.href)}
-                  className={`text-gray-700 hover:text-red-600 transition font-medium text-sm tracking-wide px-2 py-1 cursor-pointer select-none`}
+                  onClick={() => handleNavClick(item.href, item.label)}
+                  className="text-gray-700 hover:text-red-600 transition font-medium text-sm tracking-wide px-2 py-1 cursor-pointer select-none"
                 >
                   {item.label}
                 </button>
@@ -228,10 +246,10 @@ const Navbar = () => {
 
             {/* Drawer */}
             <motion.div
-              initial={{ x: "-100%" }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 400, damping: 32 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
               className="fixed top-0 left-0 z-50 h-[100dvh] w-64 bg-white shadow-2xl flex flex-col"
               role="dialog"
               aria-modal="true"
@@ -251,7 +269,7 @@ const Navbar = () => {
                 <button
                   className="flex items-center gap-2 px-4 py-2 mb-4 text-gray-700 font-semibold rounded-lg hover:bg-red-50 w-full"
                   onClick={() => {
-                    router.push("/");
+                    handleNavClick("/");
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -263,7 +281,7 @@ const Navbar = () => {
                     <button
                       className="flex items-center justify-between w-full px-4 py-2 font-semibold text-gray-700 rounded-lg hover:bg-gray-100"
                       onClick={() => {
-                        handleNavClick(item.href);
+                        handleNavClick(item.href, item.label);
                         setMobileMenuOpen(false);
                       }}
                     >

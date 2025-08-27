@@ -26,18 +26,30 @@ public class AuthService {
             throw new RuntimeException("User already exists with this email.");
         }
 
-        User user = User.builder()
+        User.UserBuilder builder = User.builder()
                 .firebaseUid(request.getFirebaseUid())
                 .email(request.getEmail())
                 .fullName(request.getFullName())
                 .phoneNumber(request.getPhoneNumber())
-                .emailVerified(false)
+                .emailVerified(request.isEmailVerified())
                 .phoneVerified(false)
                 .loginMethod(request.getLoginMethod())
-                .role("USER")
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+                .role("USER");
 
+        if ("EMAIL".equalsIgnoreCase(request.getLoginMethod())) {
+            if (request.getPassword() == null || request.getPassword().isEmpty()) {
+                throw new RuntimeException("Password is required for email registration.");
+            }
+            builder.password(passwordEncoder.encode(request.getPassword()));
+        } else if ("GOOGLE".equalsIgnoreCase(request.getLoginMethod())) {
+            // Allow null password for Google users
+            builder.password(null);
+        } else {
+            // For other login methods, handle accordingly
+            builder.password(null);
+        }
+
+        User user = builder.build();
         User saved = userRepository.save(user);
 
         try {

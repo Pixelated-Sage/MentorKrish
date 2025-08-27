@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { fetchAnnouncements } from "../../lib/api";
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../lib/firebase"; // Adjust path if needed
+import { useRouter } from "next/router";
 
 export default function AnnouncementsSection() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadData() {
@@ -12,6 +15,7 @@ export default function AnnouncementsSection() {
 
       // Map backend fields → UI format
       const mapped = data.map((item) => ({
+        id: item.id || item._id || index, // add announcement id for analytics
         title: item.title,
         image: item.imageUrl
           ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`
@@ -27,6 +31,39 @@ export default function AnnouncementsSection() {
 
     loadData();
   }, []);
+
+  // Track click on "Know More"
+  const handleKnowMoreClick = async (announcement, index) => {
+    // Firebase Analytics tracking
+    if (analytics) {
+      logEvent(analytics, "announcement_click", {
+        announcement_id: announcement.id,
+        announcement_title: announcement.title,
+        location: "homepage_announcements",
+      });
+    }
+
+    // Firestore tracking
+    if (db) {
+      try {
+        await addDoc(collection(db, "user_events"), {
+          event: "announcement_click",
+          announcement_id: announcement.id,
+          announcement_title: announcement.title,
+          index,
+          location: "homepage_announcements",
+          user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+          timestamp: serverTimestamp(),
+          path: typeof window !== "undefined" ? window.location.pathname : "server",
+        });
+      } catch (e) {
+        console.error("Failed to log announcement click event to Firestore", e);
+      }
+    }
+
+    // Navigation
+    router.push(announcement.link);
+  };
 
   if (loading) {
     return (
@@ -78,12 +115,13 @@ export default function AnnouncementsSection() {
                       ⏳ {item.timer} left
                     </div>
                   )}
-                  <a
-                    href={item.link}
+                  <button
+                    type="button"
                     className="text-r1 hover:text-r2 hover:underline font-semibold text-sm"
+                    onClick={() => handleKnowMoreClick(item, index)}
                   >
                     Know More →
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
