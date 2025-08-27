@@ -1,4 +1,4 @@
-import Forgot from '../container/forgot'; // ADJUST IF YOUR src/ IS AT ROOT
+import Forgot from '../container/forgot';
 
 export default function forgot() {
   return <Forgot />;

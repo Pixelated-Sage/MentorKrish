@@ -1,54 +1,53 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 
-export default function ForgotPassword() {
+export default function Forgot() {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
+    setMsg("");
     setError("");
+    setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password?email=${encodeURIComponent(email)}`, {
-        method: "POST",
+      let res = await fetch(process.env.NEXT_PUBLIC_API_URL+'/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({email})
       });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to send reset email");
-      }
-      setMessage("Password reset email sent! Check your inbox.");
-    } catch (err) {
-      setError(err.message || "Error sending email");
+      if (!res.ok) throw new Error(await res.text());
+      setMsg('OTP sent to your email');
+      // Redirect to OTP verification for password reset
+      router.push(`/verifyotp?email=${encodeURIComponent(email)}&mode=reset`);
+    } catch(e) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
-      <form onSubmit={handleSubmit} className="max-w-md w-full space-y-6 bg-w1 p-8 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-4">Forgot Password</h1>
-        {message && <p className="text-green-600">{message}</p>}
+    <main className="min-h-[70vh] flex flex-col justify-center items-center p-6 bg-gray-50">
+      <form onSubmit={handleSubmit} className="max-w-md w-full space-y-6 p-6 bg-white rounded shadow-md">
+        <h1 className="text-xl font-semibold text-center">Forgot Password</h1>
+        {msg && <p className="text-green-600">{msg}</p>}
         {error && <p className="text-red-600">{error}</p>}
-        <label htmlFor="email" className="block font-semibold mb-1 text-g1">Email address</label>
         <input
-          id="email"
           type="email"
+          placeholder="Enter your email"
           required
+          className="w-full p-3 border rounded"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 border rounded focus:outline-none focus:border-r1 focus:ring-1 focus:ring-r1"
-          placeholder="your.email@example.com"
-        />
-        <button
-          type="submit"
+          onChange={e => setEmail(e.target.value)}
           disabled={loading}
-          className="w-full py-3 rounded-full bg-r1 text-w1 font-semibold hover:bg-r2 transition"
-        >
-          {loading ? "Sending..." : "Send Reset Email"}
+        />
+        <button type="submit" disabled={loading}
+          className="w-full bg-r1 text-white p-3 rounded disabled:opacity-50">
+          {loading ? 'Sending...' : 'Send OTP'}
         </button>
       </form>
     </main>
