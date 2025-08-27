@@ -16,11 +16,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 @Configuration
-public class FirebaseConfig {k
+public class FirebaseConfig {
 
    @PostConstruct
    public void initializeFirebase() throws IOException {
-       try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json")) {
+       try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-config.json")) {
            if (serviceAccount == null) {
                throw new FileNotFoundException("firebase-config.json not found in classpath");
            }
