@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 @Configuration
-public class FirebaseConfig {
+public class FirebaseConfig {k
 
    @PostConstruct
    public void initializeFirebase() throws IOException {

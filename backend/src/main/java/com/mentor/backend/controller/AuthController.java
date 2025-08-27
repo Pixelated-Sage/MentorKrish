@@ -29,9 +29,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         Optional<User> userOpt = authService.loginUser(request);
-       if (userOpt.isEmpty()) return ResponseEntity.status(401).build();
+        if (userOpt.isEmpty()) return ResponseEntity.status(401).build();
 
-       User user = userOpt.get();
+        User user = userOpt.get();
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
         return ResponseEntity.ok(new LoginResponse(token, user.getId(), user.getEmail(), user.getFullName(), user.getRole()));
     }
@@ -54,6 +54,28 @@ public class AuthController {
     public ResponseEntity<String> verifyOtp(@Valid @RequestBody OtpVerifyRequest req) {
         boolean ok = authService.verifyEmailOtp(req.getEmail(), req.getOtp());
         return ok ? ResponseEntity.ok("Email verified.")
+                : ResponseEntity.badRequest().body("Invalid or expired OTP.");
+    }
+
+    // === Forgot password flow ===
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
+        authService.initiatePasswordReset(req.getEmail());
+        return ResponseEntity.ok("OTP sent for password reset.");
+    }
+
+    @PostMapping("/forgot-password/verify-otp")
+    public ResponseEntity<String> verifyForgotPasswordOtp(@Valid @RequestBody OtpVerifyRequest req) {
+        boolean ok = authService.verifyEmailOtp(req.getEmail(), req.getOtp());
+        return ok ? ResponseEntity.ok("OTP verified, you can now reset your password.")
+                : ResponseEntity.badRequest().body("Invalid or expired OTP.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
+        boolean ok = authService.resetPassword(req.getEmail(), req.getOtp(), req.getNewPassword());
+        return ok ? ResponseEntity.ok("Password updated successfully.")
                 : ResponseEntity.badRequest().body("Invalid or expired OTP.");
     }
 }
