@@ -1,21 +1,19 @@
 package com.mentor.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentor.backend.dto.GalleryRequest;
 import com.mentor.backend.dto.GalleryResponse;
 import com.mentor.backend.entity.Gallery;
+import com.mentor.backend.service.CloudinaryService;
 import com.mentor.backend.service.GalleryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,6 +23,7 @@ import java.util.stream.Collectors;
 public class GalleryController {
 
     private final GalleryService galleryService;
+    private final CloudinaryService cloudinaryService;
 
     @GetMapping
     public ResponseEntity<List<GalleryResponse>> listAll() {
@@ -39,56 +38,18 @@ public class GalleryController {
             @RequestPart("meta") String metaJson,
             @RequestPart("file") MultipartFile file) throws IOException {
 
-        // Parse the JSON string manually to GalleryRequest
+        // Parse JSON metadata
         ObjectMapper mapper = new ObjectMapper();
         GalleryRequest meta = mapper.readValue(metaJson, GalleryRequest.class);
 
-        // Generate unique filename
-        String filename = UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
+        // Upload to Cloudinary
+        String imageUrl = cloudinaryService.uploadFile(file);
 
-        // Create upload directory if not exists
-        Path uploadPath = Paths.get("uploads");
-        Files.createDirectories(uploadPath);
-        Path filePath = uploadPath.resolve(filename);
+        // Save in DB
+        Gallery gallery = galleryService.create(meta, imageUrl);
 
-        // Save file
-        Files.write(filePath, file.getBytes());
-
-        // Determine media type (image/video)
-        String mediaType = file.getContentType(); // e.g., image/png, video/mp4
-
-        Gallery gallery = Gallery.builder()
-                .title(meta.getTitle())
-                .subtitle(meta.getSubtitle())
-                .description(meta.getDescription())
-                .filename(filename)
-                .tag(meta.getTag())
-                .layoutType(meta.getLayoutType())
-                .build();
-
-        gallery = galleryService.create(gallery);
         return ResponseEntity.ok(mapToResponse(gallery));
     }
-
-
-    private String getFileExtension(String name) {
-        return name.lastIndexOf(".") != -1 ? name.substring(name.lastIndexOf(".")) : "";
-    }
-
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
-        Gallery gallery = galleryService.getById(id);
-        Path imagePath = Paths.get("uploads").resolve(gallery.getFilename());
-        if (!Files.exists(imagePath)) {
-            return ResponseEntity.notFound().build();
-        }
-        byte[] imageBytes = Files.readAllBytes(imagePath);
-        String contentType = Files.probeContentType(imagePath);
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(imageBytes);
-    }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -106,8 +67,7 @@ public class GalleryController {
                 .layoutType(gallery.getLayoutType())
                 .createdAt(gallery.getCreatedAt())
                 .updatedAt(gallery.getUpdatedAt())
-                .imageUrl("/uploads/" + gallery.getFilename())
+                .imageUrl(gallery.getFilename()) // now stores Cloudinary URL
                 .build();
     }
-
 }
