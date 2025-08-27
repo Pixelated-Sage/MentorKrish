@@ -5,11 +5,10 @@ import fs from "fs";
 let serviceAccount;
 try {
   const keyPath = path.resolve(process.cwd(), "serviceAccountKey.json");
-  console.log("Reading Firebase key from", keyPath);
   serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf8"));
 } catch (err) {
   console.error("Failed to load Firebase service account key file:", err);
-  throw err; // expose error so server startup fails loudly
+  throw err;
 }
 
 if (!admin.apps.length) {
@@ -21,23 +20,67 @@ const db = admin.firestore();
 
 export default async function handler(req, res) {
   try {
-    // Aggregate event stats by event type
     const snapshot = await db.collection("user_events").get();
 
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 29 * 24 * 60 * 60 * 1000);
+
     const eventCounts = {};
-    snapshot.forEach(doc => {
+    const pageViews = {};
+    const courseViews = {};
+    const dailyTrends = {};
+
+    snapshot.forEach((doc) => {
       const data = doc.data();
-      const ev = data.event || "unknown";
-      eventCounts[ev] = (eventCounts[ev] || 0) + 1;
+
+      // Event type counts
+      const event = data.event || "unknown";
+      eventCounts[event] = (eventCounts[event] || 0) + 1;
+
+      // Aggregate page views by path
+      if (data.path && event === "page_view") {
+        pageViews[data.path] = (pageViews[data.path] || 0) + 1;
+      }
+
+      // Aggregate course views by course key
+      if (data.course && (event === "courses_page_view" || event === "course_tab_switch" || event === "course_enroll_click")) {
+        courseViews[data.course] = (courseViews[data.course] || 0) + 1;
+      }
+
+      // Daily event trend (last 30 days based on timestamp)
+      if (data.timestamp) {
+        const ts = data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp);
+        if (ts >= thirtyDaysAgo) {
+          const dayKey = ts.toISOString().slice(0, 10); // YYYY-MM-DD
+          dailyTrends[dayKey] = (dailyTrends[dayKey] || 0) + 1;
+        }
+      }
     });
 
-    // Turn into array for charts
-    const eventArray = Object.entries(eventCounts).map(([event, count]) => ({
-      name: event,
-      value: count,
-    }));
+    // Convert objects to arrays and sort for charts
+    const sortedPageViews = Object.entries(pageViews).map(([path, count]) => ({ path, count }))
+      .sort((a,b) => b.count - a.count).slice(0,10); // top 10 pages
 
-    res.status(200).json({ eventCounts: eventArray });
+    const sortedCourseViews = Object.entries(courseViews).map(([course, count]) => ({ course, count }))
+      .sort((a,b) => b.count - a.count);
+
+    // Generate filled dates for daily trends last 30 days
+    const dailyTrendArray = [];
+    for(let i=0; i<30; i++){
+      const date = new Date(thirtyDaysAgo.getTime() + i*24*60*60*1000);
+      const dayKey = date.toISOString().slice(0,10);
+      dailyTrendArray.push({ date: dayKey, count: dailyTrends[dayKey] || 0 });
+    }
+
+    const eventArray = Object.entries(eventCounts).map(([name, value]) => ({ name, value }));
+
+    res.status(200).json({
+      eventCounts: eventArray,
+      pageViews: sortedPageViews,
+      courseViews: sortedCourseViews,
+      dailyTrends: dailyTrendArray
+    });
+
   } catch (err) {
     console.error("Firestore fetch failed:", err);
     res.status(500).json({ error: "Failed to fetch analytics" });

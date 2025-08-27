@@ -153,20 +153,26 @@ export async function sendTrialBooking(payload) {
 }
 
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// REGISTER API
+// Register user (email/password or Google)
 export async function registerUser(payload) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+    // Sanitize password, backend expects null or string
+    if (!payload.password) {
+      payload.password = null;
+    }
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
+      const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to register user");
     }
+
     return await res.json();
   } catch (err) {
     console.error("Register API error:", err);
@@ -174,26 +180,38 @@ export async function registerUser(payload) {
   }
 }
 
-// LOGIN API (for when you build the login page)
+// Login user (email/password or Firebase)
 export async function loginUser(payload) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+    // For Firebase login, we expect :firebaseUid to be present, password optional
+    // For email login, email & password required
+    // Adjust accordingly on backend
+
+    const body = {};
+
+    if(payload.firebaseUid) {
+      // Firebase login
+      body.firebaseUid = payload.firebaseUid;
+    } else {
+      // Email login
+      body.email = payload.email;
+      body.password = payload.password;
+    }
+
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
       let errorMessage = "Login failed";
-
       try {
         const errorData = await res.json();
         errorMessage = errorData.message || errorMessage;
-      } catch (_) {
-        // fallback if server didn’t return JSON
+      } catch {
         errorMessage = `Login failed with status ${res.status}`;
       }
-
       throw new Error(errorMessage);
     }
 
@@ -203,6 +221,7 @@ export async function loginUser(payload) {
     throw err;
   }
 }
+
 
 
 

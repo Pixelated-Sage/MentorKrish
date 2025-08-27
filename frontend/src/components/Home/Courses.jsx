@@ -1,4 +1,6 @@
 import React from 'react';
+import { useRouter } from 'next/router';
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../../lib/firebase'; // Adjust path if needed
 
 const filterOptions = [
   { label: 'SAT', value: 'SAT' },
@@ -79,6 +81,7 @@ const roundsData = [
 const RoundsDashboard = () => {
   const [activeRound, setActiveRound] = React.useState(0);
   const [filter, setFilter] = React.useState('all');
+  const router = useRouter();
 
   const filteredRounds = filter === 'all'
     ? roundsData
@@ -90,8 +93,45 @@ const RoundsDashboard = () => {
     setActiveRound(0);
   }, [filter]);
 
+  // Track filter change (optional)
+  const handleFilter = (value) => {
+    setFilter(value);
+    // Track filter change
+    if (analytics) logEvent(analytics, "course_filter", { filter: value });
+    if (db) {
+      addDoc(collection(db, "user_events"), {
+        event: "course_filter",
+        filter: value,
+        location: "home_courses",
+        user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+        timestamp: serverTimestamp(),
+        path: typeof window !== "undefined" ? window.location.pathname : "server",
+      });
+    }
+  };
+
+  // Track round button click (Start ... Preparation)
+  const handleStartClick = async (courseKey) => {
+    // Track click to course page from home
+    if (analytics) logEvent(analytics, "start_course_preparation", { course: courseKey, location: "home_courses" });
+    if (db) {
+      await addDoc(collection(db, "user_events"), {
+        event: "start_course_preparation",
+        course: courseKey,
+        location: "home_courses",
+        user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
+        timestamp: serverTimestamp(),
+        path: typeof window !== "undefined" ? window.location.pathname : "server",
+      });
+    }
+    router.push({
+      pathname: '/courses',
+      query: { course: courseKey }
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-w1 py-8 px-2 sm:px-4 md:px-0" id = "courses">
+    <div className="min-h-screen bg-w1 py-8 px-2 sm:px-4 md:px-0" id="courses">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8 sm:mb-10 text-center">
@@ -111,7 +151,7 @@ const RoundsDashboard = () => {
           {filterOptions.map(opt => (
             <button
               key={opt.value}
-              onClick={() => setFilter(opt.value)}
+              onClick={() => handleFilter(opt.value)}
               className={`px-3 py-1 rounded-full border text-xs sm:text-sm font-medium transition-colors duration-150 whitespace-nowrap ${
                 filter === opt.value
                   ? 'bg-g1 text-w1 border-g1'
@@ -126,18 +166,14 @@ const RoundsDashboard = () => {
         {/* Main Card */}
         <main>
           {filteredRounds.length > 0 ? (
-            <div
-              className={`rounded-2xl shadow-lg border-2 ${filteredRounds[filteredActiveRound].borderColor} ${filteredRounds[filteredActiveRound].bgColor} p-4 sm:p-6 md:p-8 flex flex-col gap-5`}
-            >
+            <div className={`rounded-2xl shadow-lg border-2 ${filteredRounds[filteredActiveRound].borderColor} ${filteredRounds[filteredActiveRound].bgColor} p-4 sm:p-6 md:p-8 flex flex-col gap-5`}>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start">
                 <div className="text-4xl sm:text-5xl flex-shrink-0">{filteredRounds[filteredActiveRound].icon}</div>
                 <div className="flex-1">
                   <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-g1">
                     {filteredRounds[filteredActiveRound].course}
                   </h2>
-                  <div
-                    className={`inline-block mt-2 px-3 py-1 rounded-full font-semibold text-xs sm:text-sm ${filteredRounds[filteredActiveRound].color}`}
-                  >
+                  <div className={`inline-block mt-2 px-3 py-1 rounded-full font-semibold text-xs sm:text-sm ${filteredRounds[filteredActiveRound].color}`}>
                     {filteredRounds[filteredActiveRound].subtitle}
                   </div>
                   <p className="text-g2 text-xs sm:text-base mt-3 leading-relaxed">
@@ -168,12 +204,14 @@ const RoundsDashboard = () => {
                     <li>Test-oriented strategies & personalized attention</li>
                   </ul>
                 </div>
-                <a
-                  href="/register"
-                  className={`mt-4 md:mt-0 px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap text-center`}
-                >
-                  Start {filteredRounds[filteredActiveRound].subtitle} Preparation
-                </a>
+                <div className="mt-4 md:mt-0 flex justify-end">
+                  <button
+                    className={`px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap text-center`}
+                    onClick={() => handleStartClick(filteredRounds[filteredActiveRound].subtitle)}
+                  >
+                    Start {filteredRounds[filteredActiveRound].subtitle} Preparation
+                  </button>
+                </div>
               </div>
             </div>
           ) : (

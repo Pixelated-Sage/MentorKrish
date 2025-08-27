@@ -1,18 +1,28 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { Menu, X, Home } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  LayoutDashboard,
+  FileText,
+  Megaphone,
+  Info,
+  Image,
+} from "lucide-react";
 
 const items = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "blogs", label: "Manage Blogs" },
-  { id: "announcements", label: "Manage Announcements" },
-  { id: "about", label: "Manage About Section" },
-  { id: "gallery", label: "Manage Gallery Section" },
+  { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  { id: "blogs", label: "Manage Blogs", icon: <FileText size={20} /> },
+  { id: "announcements", label: "Manage Announcements", icon: <Megaphone size={20} /> },
+  { id: "about", label: "Manage About Section", icon: <Info size={20} /> },
+  { id: "gallery", label: "Manage Gallery Section", icon: <Image size={20} /> },
 ];
 
 export default function Sidebar({ activeView, setActiveView, children }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [openMobile, setOpenMobile] = useState(false);
+  const [collapsed, setCollapsed] = useState(true); // true: icon-only collapsed mode
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -22,95 +32,100 @@ export default function Sidebar({ activeView, setActiveView, children }) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar - desktop */}
-      <div className="hidden md:flex md:flex-col md:w-64 bg-white shadow-lg fixed inset-y-0 left-0 z-40">
-        {/* Top Navbar */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white sticky top-0 z-40">
-          <h1 className="text-xl font-extrabold text-r1 tracking-tight">
+    <div className="flex  bg-gray-50">
+      {/* Desktop Sidebar */}
+      <div
+        onMouseEnter={() => setCollapsed(false)}
+        onMouseLeave={() => setCollapsed(true)}
+        className={`hidden md:flex md:flex-col fixed inset-y-0 left-0 z-40 bg-white shadow-lg border-r border-gray-200 
+          transition-width duration-300 ease-in-out
+          ${collapsed ? "w-16" : "w-64"}`}
+        style={{ minWidth: collapsed ? 64 : 256 }}
+      >
+        {/* Header */}
+        <header className="flex items-center justify-between px-4 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white">
+          <h1
+            className={`text-xl font-extrabold text-r1 tracking-tight truncate ${
+              collapsed ? "hidden" : "block"
+            }`}
+          >
             Admin Panel
           </h1>
-          <button
-            onClick={handleLogout}
-            className="text-r1 font-semibold border border-r1 rounded-md px-3 py-1 hover:bg-r1 hover:text-w1 transition"
-            aria-label="Logout"
-          >
-            Logout
-          </button>
+          {!collapsed && (
+            <button
+              onClick={handleLogout}
+              className="text-r1 font-semibold border border-r1 rounded-md px-3 py-1 hover:bg-r1 hover:text-w1 transition"
+              aria-label="Logout"
+            >
+              Logout
+            </button>
+          )}
         </header>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 bg-w1">
+        <nav className="flex-1 overflow-y-auto">
           {/* Home button */}
           <button
             onClick={() => router.push("/")}
-            className="w-full flex items-center gap-2 text-left px-4 py-3 rounded-md font-semibold text-g1 hover:bg-r1/10 hover:text-r1 transition"
+            className={`group flex items-center gap-4 px-4 py-3 w-full font-semibold rounded-r-full transition-colors duration-200 ${
+              activeView === "home"
+                ? "bg-r1 text-w1"
+                : "text-g1 hover:bg-r1/20 hover:text-r1"
+            }`}
+            aria-label="Home"
+            title="Home"
           >
-            <Home size={18} />
-            Home
+            <Home size={20} />
+            {!collapsed && "Home"}
           </button>
 
-          {items.map(({ id, label }) => (
+          {items.map(({ id, label, icon }) => (
             <button
               key={id}
               onClick={() => setActiveView(id)}
-              className={`w-full text-left px-4 py-3 rounded-md font-semibold transition ${
+              className={`group flex items-center gap-4 px-4 py-3 w-full font-semibold rounded-r-full transition-colors duration-200 ${
                 activeView === id
-                  ? "bg-r1 text-w1 shadow-md"
-                  : "text-g1 hover:bg-r1/10 hover:text-r1"
+                  ? "bg-r1 text-w1"
+                  : "text-g1 hover:bg-r1/20 hover:text-r1"
               }`}
+              aria-label={label}
+              title={label}
             >
-              {label}
+              {icon}
+              {!collapsed && label}
             </button>
           ))}
         </nav>
       </div>
 
-      {/* Mobile navbar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 flex items-center justify-between px-4 py-3 shadow">
-        <h1 className="text-lg font-extrabold text-r1 tracking-tight">
-          Admin Panel
-        </h1>
-        <button
-          onClick={() => setOpen(!open)}
-          className="text-r1 focus:outline-none"
-        >
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      <div
-        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
-          open ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
-      >
+      {/* Mobile Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 md:hidden bg-white shadow-lg w-64 transform ${openMobile ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out`}>
         <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h1 className="text-xl font-extrabold text-r1 tracking-tight">
-            Admin Panel
-          </h1>
+          <h1 className="text-xl font-extrabold text-r1 tracking-tight">Admin Panel</h1>
           <button
-            onClick={handleLogout}
-            className="text-r1 font-semibold border border-r1 rounded-md px-3 py-1 hover:bg-r1 hover:text-w1 transition"
-            aria-label="Logout"
+            onClick={() => setOpenMobile(false)}
+            aria-label="Close menu"
+            className="p-2 rounded hover:bg-gray-200 transition"
           >
-            Logout
+            <X size={24} />
           </button>
         </header>
         <nav className="px-4 py-6 space-y-2 bg-w1 h-full overflow-y-auto">
           <button
-            onClick={() => router.push("/")}
-            className="w-full flex items-center gap-2 text-left px-4 py-3 rounded-md font-semibold text-g1 hover:bg-r1/10 hover:text-r1 transition"
+            onClick={() => {
+              router.push("/");
+              setOpenMobile(false);
+            }}
+            className="flex items-center gap-2 px-4 py-2 mb-4 text-gray-700 font-semibold rounded-lg hover:bg-red-50 w-full"
           >
-            <Home size={18} />
-            Home
+            <Home size={18} /> Home
           </button>
           {items.map(({ id, label }) => (
             <button
               key={id}
               onClick={() => {
                 setActiveView(id);
-                setOpen(false);
+                setOpenMobile(false);
               }}
               className={`w-full text-left px-4 py-3 rounded-md font-semibold transition ${
                 activeView === id
@@ -121,11 +136,20 @@ export default function Sidebar({ activeView, setActiveView, children }) {
               {label}
             </button>
           ))}
+          <button
+            onClick={handleLogout}
+            className="w-full mt-6 bg-r1 text-w1 font-semibold px-4 py-2 rounded-lg text-center shadow hover:bg-r2 transition"
+          >
+            Logout
+          </button>
         </nav>
       </div>
 
-      {/* Main content area */}
-      <main className="flex-1 ml-0 md:ml-64 mt-14 md:mt-0 p-6 overflow-y-auto">
+      {/* Content area with dynamic left margin */}
+      <main
+        className={`flex-1 md:pt-0 overflow-hidden transition-all duration-300 ease-in-out`}
+        style={{ marginLeft: collapsed ? 64 : 253 }}
+      >
         {children}
       </main>
     </div>
