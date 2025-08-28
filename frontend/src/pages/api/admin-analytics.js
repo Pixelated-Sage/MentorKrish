@@ -2,12 +2,11 @@ import admin from "firebase-admin";
 import path from "path";
 import fs from "fs";
 
-let serviceAccount;
 try {
-  const keyPath = path.resolve(process.cwd(), "serviceAccountKey.json");
-  serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf8"));
+  // Parse service account from ENV variable
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 } catch (err) {
-  console.error("Failed to load Firebase service account key file:", err);
+  console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT env var:", err);
   throw err;
 }
 

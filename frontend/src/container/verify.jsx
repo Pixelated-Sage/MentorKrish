@@ -23,7 +23,7 @@ export default function VerifyOtp() {
       setMsg("✅ OTP verified!");
 
       if (mode === "reset") {
-        setTimeout(() => router.push(`/reset?email=${encodeURIComponent(email)}`), 1500);
+        setTimeout(() => router.push(`/reset-password?email=${encodeURIComponent(email)}`), 1500);
       } else {
         setTimeout(() => router.push("/login"), 1500);
       }

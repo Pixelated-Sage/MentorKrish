@@ -74,24 +74,26 @@ export default function Register() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setSubmitting(true);
-    setServerError("");
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+const handleGoogleSignIn = async () => {
+  setSubmitting(true);
+  setServerError("");
 
-      if (analytics) logEvent(analytics, "register_google_sign_in", { uid: user.uid, email: user.email });
-      if (db) {
-        await addDoc(collection(db, "user_events"), {
-          event: "register_google_sign_in",
-          user: user.email || "guest",
-          uid: user.uid,
-          timestamp: serverTimestamp(),
-          path: typeof window !== "undefined" ? window.location.pathname : "server",
-        });
-      }
+  try {
+    const result = await signInPopup(auth, googleProvider);
+    const user = result.user;
 
+    if (analytics) logEvent(analytics, "register_google_sign_in", { uid: user.uid, email: user.email });
+
+    if (db) {
+      // Log analytics event
+      await addDoc(collection(db, "user_events"), {
+        event: "register_google_sign_in",
+        user: user.email || "guest",
+        uid: user.uid,
+        timestamp: serverTimestamp(),
+        path: window.location.pathname,
+      });
+    }
       // Call backend register / update user with Google info
       await registerUser({
         firebaseUid: user.uid,
@@ -100,11 +102,19 @@ export default function Register() {
         phoneNumber: user.phoneNumber || "",
         loginMethod: "GOOGLE",
         emailVerified: user.emailVerified,
-        password: null, // Password not required for Google auth
+        password: null,
         course: "",
       });
+      const loginResp = await loginUser({ firebaseUid: user.uid });
 
-      router.push("/");
+      if (loginResp?.token) {
+        localStorage.setItem('authToken', loginResp.token);
+        localStorage.setItem('userEmail', loginResp.email);
+        localStorage.setItem('userRole', loginResp.role);
+      }
+
+      // Redirect to profile page (logged in)
+      router.push('/profile');
     } catch (error) {
       setServerError(error.message || "Google Sign-in failed or Popup closed");
     } finally {

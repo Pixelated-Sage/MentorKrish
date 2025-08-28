@@ -60,24 +60,21 @@ const Navbar = () => {
 
   // Check login & role on mount and route changes
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
-      const role = localStorage.getItem("userRole");
+    // On mount & route change
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('authToken');
+      const role = localStorage.getItem('userRole');
       setIsLoggedIn(!!token);
       setUserRole(role);
     }
   }, [router.pathname]);
 
-  // Combine base navItems with auth-dependent items
+  // Conditionally show profile or login
   const navItems = [...baseNavItems];
   if (isLoggedIn) {
-    if (userRole === "ADMIN") {
-      navItems.push({ label: "Admin Panel", href: "/admin" });
-    } else {
-      navItems.push({ label: "Profile", href: "/profile" });
-    }
+    navItems.push(userRole === 'ADMIN' ? { label: 'Admin Panel', href: '/admin' } : { label: 'Profile', href: '/profile' });
   } else {
-    navItems.push({ label: "Login", href: "/login" });
+    navItems.push({ label: 'Login', href: '/login' });
   }
 
   // Helper for logging events (fire and forget)

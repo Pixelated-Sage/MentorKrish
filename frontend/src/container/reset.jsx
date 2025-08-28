@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-
 export default function Reset() {
   const router = useRouter();
-  const { email } = router.query;
+  const { email, otp } = router.query;
 
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -25,14 +24,24 @@ export default function Reset() {
       return;
     }
 
+    if (!otp) {
+      setError("Invalid or missing OTP");
+      return;
+    }
+
     setLoading(true);
     try {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: "", newPassword }),
+        body: JSON.stringify({ email, otp, newPassword }),
       });
-      if (!res.ok) throw new Error(await res.text());
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || "Failed to reset password");
+      }
+
       setMessage("Password updated successfully! Redirecting to login...");
       setTimeout(() => router.push("/login"), 3000);
     } catch (e) {
@@ -41,7 +50,7 @@ export default function Reset() {
       setLoading(false);
     }
   }
-
+  
   return (
     <main className="min-h-[70vh] flex flex-col justify-center items-center p-6 bg-gray-50">
       <form onSubmit={handleSubmit} className="max-w-md w-full space-y-6 p-6 bg-white rounded shadow-md">
