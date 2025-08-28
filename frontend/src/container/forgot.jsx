@@ -14,14 +14,13 @@ export default function Forgot() {
     setError("");
     setLoading(true);
     try {
-      let res = await fetch(process.env.NEXT_PUBLIC_API_URL+'/api/auth/forgot-password', {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({email})
       });
       if (!res.ok) throw new Error(await res.text());
       setMsg('OTP sent to your email');
-      // Redirect to OTP verification for password reset
       router.push(`/verifyotp?email=${encodeURIComponent(email)}&mode=reset`);
     } catch(e) {
       setError(e.message);
@@ -45,9 +44,8 @@ export default function Forgot() {
           onChange={e => setEmail(e.target.value)}
           disabled={loading}
         />
-        <button type="submit" disabled={loading}
-          className="w-full bg-r1 text-white p-3 rounded disabled:opacity-50">
-          {loading ? 'Sending...' : 'Send OTP'}
+        <button type="submit" className="w-full p-3 rounded bg-blue-600 text-white" disabled={loading}>
+          {loading ? "Sending..." : "Send OTP"}
         </button>
       </form>
     </main>

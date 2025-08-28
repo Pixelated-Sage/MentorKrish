@@ -220,7 +220,7 @@ export default function Profile() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-accent text-black rounded-md p-3 font-semibold hover:bg-yellow-500 transition"
+              className="w-full bg-r1 text-w1 rounded-md p-3 font-semibold transition"
             >
               {saving ? "Saving..." : "Save Profile"}
             </button>

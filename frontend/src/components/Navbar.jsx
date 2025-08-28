@@ -61,7 +61,7 @@ const Navbar = () => {
   // Check login & role on mount and route changes
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
       const role = localStorage.getItem("userRole");
       setIsLoggedIn(!!token);
       setUserRole(role);

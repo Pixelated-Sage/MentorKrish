@@ -72,11 +72,12 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setServerError("");
+
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // Log Google sign-in event
+      // Log analytics & save event
       if (analytics) logEvent(analytics, "login_google_sign_in", { uid: user.uid, email: user.email });
       if (db) {
         await addDoc(collection(db, "user_events"), {
@@ -88,11 +89,24 @@ export default function Login() {
         });
       }
 
-      // Optionally, backend user check/registration here
+      // Call backend login with firebase uid to get JWT and role
+      const loginResp = await loginUser({ firebaseUid: user.uid });
+      if (loginResp && loginResp.token) {
+        localStorage.setItem("authToken", loginResp.token);
+        localStorage.setItem("userEmail", loginResp.email);
+        localStorage.setItem("userRole", loginResp.role);
 
-      router.push("/");
-    } catch (error) {
-      setServerError(error.message || "Google Sign-in failed");
+        // Redirect based on role
+        if (loginResp.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/profile"); // redirect to profile by default
+        }
+      } else {
+        throw new Error("Failed to fetch user info");
+      }
+    } catch (err) {
+      setServerError(err.message || "Google sign-in failed");
     } finally {
       setLoading(false);
     }
