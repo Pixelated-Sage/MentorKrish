@@ -16,7 +16,7 @@ const cardData = [
 			phone: "+91-9999999999",
 			website: "www.mentorkrish.com"
 		},
-		image: "/assets/img/integrated.jpg", // <-- Add image for all cards
+		image: "/assets/img/dsat.jpg", // <-- Add image for all cards
 		icon: ""
 	},
 	{
@@ -28,7 +28,7 @@ const cardData = [
 			label: "Get Expert Guidance",
 			link: "/contact"
 		},
-		image: "/assets/img/profile.jpg", // <-- Add image for all cards
+		image: "/assets/img/dsat.jpg", // <-- Add image for all cards
 		icon: ""
 	},
 	{
@@ -41,7 +41,7 @@ const cardData = [
 			link: "/register"
 		},
 		stats: "93.7% students need career clarity",
-		image: "/assets/img/career.jpg", // <-- Add image for all cards
+		image: "/assets/img/dsat.jpg", // <-- Add image for all cards
 		icon: ""
 	},
 	{
