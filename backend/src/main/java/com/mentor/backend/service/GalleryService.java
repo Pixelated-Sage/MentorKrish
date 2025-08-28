@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -15,13 +16,14 @@ public class GalleryService {
 
     private final GalleryRepository galleryRepository;
 
-    public Gallery createWithImage(GalleryRequest req, byte[] imageBytes, String imageType) {
+    public Gallery create(GalleryRequest req, String imageUrl) {
         Gallery gallery = Gallery.builder()
                 .title(req.getTitle())
                 .subtitle(req.getSubtitle())
                 .description(req.getDescription())
                 .tag(req.getTag())
                 .layoutType(req.getLayoutType())
+                .filename(imageUrl) // store Cloudinary URL instead of local filename
                 .build();
         return galleryRepository.save(gallery);
     }
@@ -36,20 +38,18 @@ public class GalleryService {
                         "Gallery item not found with id: " + id));
     }
 
-    public Gallery update(Long id, GalleryRequest req) {
+    public Gallery update(Long id, GalleryRequest req, String imageUrl) {
         Gallery existing = getById(id);
         if (req.getTitle() != null) existing.setTitle(req.getTitle());
         if (req.getSubtitle() != null) existing.setSubtitle(req.getSubtitle());
         if (req.getDescription() != null) existing.setDescription(req.getDescription());
         if (req.getTag() != null) existing.setTag(req.getTag());
         if (req.getLayoutType() != null) existing.setLayoutType(req.getLayoutType());
+        if (imageUrl != null) existing.setFilename(imageUrl); // update Cloudinary image
         return galleryRepository.save(existing);
     }
 
     public void delete(Long id) {
         galleryRepository.delete(getById(id));
-    }
-    public Gallery create(Gallery gallery) {
-        return galleryRepository.save(gallery);
     }
 }

@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/blogs/**",
                                 "/api/announcements/**",
-                                "/api/gallery/**",
+                                "/api/gallery/**",   // ✅ Gallery visible to all
                                 "/api/about/**",
                                 "/uploads/**"
                         ).permitAll()
@@ -63,6 +63,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMIN")
+
+                        // ✅ Gallery CRUD restricted to ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/gallery/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/gallery/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasRole("ADMIN")
 
                         // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
