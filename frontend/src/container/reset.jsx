@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { useRouter } from "next/router";
+import React, { useState, useEffect } from "react";
+
 export default function Reset() {
   const router = useRouter();
   const { email, otp } = router.query;
@@ -9,6 +10,11 @@ export default function Reset() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Optional: Prevent showing form before query params ready
+  if (!email || !otp) {
+    return <p>Invalid or missing reset parameters.</p>;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -38,8 +44,8 @@ export default function Reset() {
       });
 
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Failed to reset password");
+        const text = await res.text();
+        throw new Error(text || "Failed to reset password");
       }
 
       setMessage("Password updated successfully! Redirecting to login...");
@@ -50,7 +56,7 @@ export default function Reset() {
       setLoading(false);
     }
   }
-  
+
   return (
     <main className="min-h-[70vh] flex flex-col justify-center items-center p-6 bg-gray-50">
       <form onSubmit={handleSubmit} className="max-w-md w-full space-y-6 p-6 bg-white rounded shadow-md">
