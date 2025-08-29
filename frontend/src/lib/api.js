@@ -3,10 +3,18 @@
 export async function fetchAnnouncements() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/announcements`);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch announcements: ${res.status}`);
-    }
-    return await res.json();
+    if (!res.ok) throw new Error(`Failed to fetch announcements: ${res.status}`);
+    const data = await res.json();
+
+    // Map backend fields to frontend structure
+    return data.map((item, index) => ({
+      id: item.id || index,
+      title: item.title,
+      image: item.imageUrl || "/assets/img/dsat.jpg",
+      description: item.description,
+      timer: null,
+      link: "/contact"
+    }));
   } catch (error) {
     console.error("Error fetching announcements:", error);
     return [];

@@ -84,16 +84,11 @@ public class AnnouncementService {
     }
 
     private AnnouncementResponse mapToResponse(Announcement announcement) {
-        String imagePath = null;
-        if (announcement.getImageUrl() != null && !announcement.getImageUrl().isBlank()) {
-            imagePath = "/uploads/" + announcement.getImageUrl();
-        }
-
         return AnnouncementResponse.builder()
                 .id(announcement.getId())
                 .title(announcement.getTitle())
                 .description(announcement.getDescription())
-                .imageUrl(imagePath)
+                .imageUrl(announcement.getImageUrl()) // full Cloudinary URL here
                 .date(announcement.getDate().toString())
                 .time(announcement.getTime().toString())
                 .createdAt(announcement.getCreatedAt())

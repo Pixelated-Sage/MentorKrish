@@ -8,48 +8,43 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.mentor.backend.service.CloudinaryService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/announcements")
 @RequiredArgsConstructor
 public class AnnouncementController {
 
-private final AnnouncementService announcementService;
+    private final AnnouncementService announcementService;
+    private final CloudinaryService cloudinaryService;
 
-@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<AnnouncementResponse> create(
-        @RequestParam String title,
-        @RequestParam String description,
-        @RequestParam(value = "image", required = false) MultipartFile imageFile,
-        @RequestParam String date,
-        @RequestParam String time) throws IOException {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AnnouncementResponse> create(
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            @RequestParam String date,
+            @RequestParam String time) throws IOException {
 
-    AnnouncementRequest request = new AnnouncementRequest();
-    request.setTitle(title);
-    request.setDescription(description);
-    request.setDate(date);
-    request.setTime(time);
+        AnnouncementRequest request = new AnnouncementRequest();
+        request.setTitle(title);
+        request.setDescription(description);
+        request.setDate(date);
+        request.setTime(time);
 
-    // Handle image upload if present
-    if (imageFile != null && !imageFile.isEmpty()) {
-        String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path uploadPath = Paths.get("uploads");
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Upload image to Cloudinary and get URL
+            String imageUrl = cloudinaryService.uploadFile(imageFile);
+            request.setImageUrl(imageUrl);
         }
-        Files.copy(imageFile.getInputStream(), uploadPath.resolve(filename));
-        request.setImageUrl(filename);
-    }
 
-    return ResponseEntity.ok(announcementService.create(request));
-}
+        return ResponseEntity.ok(announcementService.create(request));
+    }
 
 @GetMapping
 public ResponseEntity<List<AnnouncementResponse>> getAll() {
