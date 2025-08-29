@@ -79,7 +79,7 @@ const handleGoogleSignIn = async () => {
   setServerError("");
 
   try {
-    const result = await signInPopup(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
     if (analytics) logEvent(analytics, "register_google_sign_in", { uid: user.uid, email: user.email });
