@@ -6,7 +6,7 @@ const approachSteps = [
     title: "One-on-one counseling",
     description:
       "Personalized sessions tailored to each student's needs and aspirations. Build trust and clarity with direct interaction. We focus on understanding goals deeply and crafting a unique plan.",
-    icon: "/assets/icons/users.svg",
+    icon: "/assets/icons/user1.svg",
   },
   {
     title: "Psychometric tests",
@@ -30,7 +30,7 @@ const approachSteps = [
     title: "Progress tracking and support",
     description:
       "Ongoing check-ins, feedback, and mentorship to ensure steady advancement and agile correction. We’re with you throughout the journey for success.",
-    icon: "/assets/icons/arrow-trend-up.svg",
+    icon: "/assets/icons/arrow-up.svg",
   },
 ];
 

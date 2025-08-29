@@ -94,14 +94,18 @@ export async function fetchAbout() {
 export async function fetchAboutLatest() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/about/latest`);
   if (res.status === 204) return null;
-  if (!res.ok) throw new Error('Failed to fetch latest about data');
-  return res.json();
+  if (!res.ok) throw new Error('Failed to fetch about data');
+  return await res.json();
 }
 
 export async function createOrUpdateAbout(data) {
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken');
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/about`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
@@ -110,6 +114,7 @@ export async function createOrUpdateAbout(data) {
   }
   return res.json();
 }
+
 
 export async function updateAbout(id, data) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/about/${id}`, {

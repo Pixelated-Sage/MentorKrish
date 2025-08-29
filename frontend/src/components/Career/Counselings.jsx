@@ -14,7 +14,7 @@ const whyPoints = [
     helper: "See future options aligned to your natural abilities.",
   },
   {
-    icon: <img src="/assets/icons/decision.svg" alt="" className="w-8 h-8 sm:w-9 sm:h-9 mb-2" aria-hidden="true" />,
+    icon: <img src="/assets/icons/decision1.svg" alt="" className="w-10 h-10  sm:w-12 sm:h-12 mb-2" aria-hidden="true" />,
     title: "Informed Decisions, No Guesswork",
     detail: "Structured reports and consultations provide absolute clarity and direction.",
     helper: "Make choices backed by data, not chance.",
@@ -65,7 +65,7 @@ const Counselings = () => {
               }}
             >
               <div
-                className="rounded-full bg-g1/5 border border-g2 flex items-center justify-center mb-3"
+                className="rounded-full flex items-center justify-center mb-3"
                 style={{ width: 52, height: 52 }}
               >
                 {item.icon}

@@ -19,10 +19,8 @@ public class AboutController {
 
     @PostMapping
     public ResponseEntity<AboutResponse> createOrUpdate(@Valid @RequestBody AboutRequest request) {
-        // Always updates record with ID=1 (or creates it if missing)
-        return ResponseEntity.ok(aboutService.createAbout(request));
+        return ResponseEntity.ok(aboutService.createOrUpdate(request));
     }
-
 
     @GetMapping
     public ResponseEntity<List<AboutResponse>> getAll() {
@@ -43,8 +41,9 @@ public class AboutController {
 
     @GetMapping("/latest")
     public ResponseEntity<AboutResponse> getLatest() {
-        List<AboutResponse> all = aboutService.getAll();
-        if (all.isEmpty()) return ResponseEntity.noContent().build();
-        return ResponseEntity.ok(all.get(all.size() - 1));
+        AboutResponse latest = aboutService.getLatest();
+        if (latest == null)
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(latest);
     }
 }

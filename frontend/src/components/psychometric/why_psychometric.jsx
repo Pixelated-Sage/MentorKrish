@@ -32,7 +32,7 @@ const whyPoints = [
       <img
         src="/assets/icons/decision.svg"
         alt=""
-        className="w-9 h-9 mb-2"
+        className="w-12 h-12 mb-2"
         aria-hidden="true"
       />
     ),
@@ -45,7 +45,7 @@ const whyPoints = [
       <img
         src="/assets/icons/globe.svg"
         alt=""
-        className="w-9 h-9 mb-2"
+        className="w-12 h-12 mb-2"
         aria-hidden="true"
       />
     ),
@@ -100,7 +100,7 @@ const Why_psychometric = () => {
               }}
             >
               <div
-                className="rounded-full bg-g1/5 border border-g2 flex items-center justify-center mb-3"
+                className="rounded-full  flex items-center justify-center mb-3"
                 style={{ width: 56, height: 56 }}
               >
                 {item.icon}

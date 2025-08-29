@@ -10,17 +10,17 @@ const offerings = [
   {
     title: "Student-Parent Sessions",
     desc: "Joint sessions for clarity and family support in decision-making.",
-    icon: "/assets/icons/users.svg",
+    icon: "/assets/icons/user1.svg",
   },
   {
     title: "Academic & Extra-curricular Planning",
     desc: "Blueprints for balanced, successful profiles.",
-    icon: "/assets/icons/book-open.svg",
+    icon: "/assets/icons/open-book.svg",
   },
   {
     title: "Profile Building for College Admissions",
     desc: "Strategic storytelling and activity mapping for global admits.",
-    icon: "/assets/icons/graduation-cap.svg",
+    icon: "/assets/icons/graduation.svg",
   },
 ];
 

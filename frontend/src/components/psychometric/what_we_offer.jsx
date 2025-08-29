@@ -10,7 +10,7 @@ const offerings = [
   {
     title: "Personalized Career Counseling",
     desc: "Expert guidance to interpret your results, explore your aspirations, and turn insights into a clear, actionable plan.",
-    icon: "/assets/icons/users.svg",
+    icon: "/assets/icons/user1.svg",
   },
   {
     title: "Detailed Test Reports & Insights",
@@ -20,7 +20,7 @@ const offerings = [
   {
     title: "Actionable Roadmaps",
     desc: "Step-by-step strategies that align academic and career goals, created for both students and parents.",
-    icon: "/assets/icons/roadmap.svg",
+    icon: "/assets/icons/roadmap1.svg",
   },
 ];
 

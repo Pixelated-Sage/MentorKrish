@@ -17,15 +17,14 @@ public class AboutService {
 
     private final AboutRepository aboutRepository;
 
-    public AboutResponse createAbout(AboutRequest request) {
+    public AboutResponse createOrUpdate(AboutRequest request) {
         About about = aboutRepository.findById(1L).orElse(new About());
-        about.setId(1L);
+        about.setId(1L); // ensure fixed id for singleton
         about.setContent(request.getContent() != null ? request.getContent() : "");
         about.setFounderName(request.getFounderName() != null ? request.getFounderName() : "");
         about.setFounderQuote(request.getFounderQuote() != null ? request.getFounderQuote() : "");
-
         About saved = aboutRepository.save(about);
-        return mapToResponse(saved); // ✅ use your own mapper
+        return mapToResponse(saved);
     }
 
     public List<AboutResponse> getAll() {
