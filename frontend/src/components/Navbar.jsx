@@ -39,7 +39,7 @@ const baseNavItems = [
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
-  { label: "Trial", href: "/trial" },
+  // { label: "Trial", href: "/trial" },
 ];
 
 const Navbar = () => {
@@ -351,12 +351,15 @@ const Navbar = () => {
                   </button>
                 )}
 
-                <a
-                  href="tel:+919999999999"
+                <button
+                  onClick={() => {
+                    router.push("/trial")
+                  }}
+                  
                   className="block mt-8 bg-gradient-to-r from-red-600 to-red-700 text-white py-3 rounded-full font-semibold shadow-lg hover:shadow-xl text-center select-none"
                 >
                   Book Now
-                </a>
+                </button>
               </nav>
             </motion.div>
           </>

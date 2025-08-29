@@ -81,27 +81,32 @@ export async function fetchBlogBySlug(slug) {
 
 // gallary Api
 import sample from "../../public/assets/img/dsat.jpg"; // Sample image for fallback
-
 export async function fetchGallery(limit = null) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery`);
     if (!res.ok) throw new Error(`Failed to fetch gallery: ${res.status}`);
     const data = await res.json();
 
-    const mapped = data.map(item => ({
-      id: item.id,
-      type: 'image', // Always image, since imageEndpoint is not present
-      src: item.imageUrl  
-        ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}` 
-        : sample, // Fallback to sample image if no URL
-      title: item.title,
-      description: item.description,
-      category: item.tag || "uncategorized",
-      size: item.layoutType || "medium",
-      tags: item.tag ? item.tag.split(",").map(t => t.trim()) : []
-    }));
+    const mapped = data.map(item => {
+      // Check if imageUrl is already absolute URL (starts with http/https)
+      const src = item.imageUrl && /^https?:\/\//.test(item.imageUrl)
+        ? item.imageUrl
+        : `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`;
+
+      return {
+        id: item.id,
+        type: 'image', // Always image (or extend to detect video)
+        src: src,      
+        title: item.title,
+        description: item.description,
+        category: item.tag || "uncategorized",
+        size: item.layoutType || "medium",
+        tags: item.tag ? item.tag.split(",").map(t => t.trim()) : []
+      };
+    });
 
     return limit ? mapped.slice(0, limit) : mapped;
+
   } catch (err) {
     console.error("Error fetching gallery:", err);
     return [];
