@@ -8,7 +8,7 @@ let serviceAccount;
 try {
   // Parse service account from ENV variable
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  console.log("Using service account from env var" + (serviceAccount.project_id || ""));
+  console.log("Using service account from env var", process.env.FIREBASE_SERVICE_ACCOUNT ? "✅" : "❌");
 } catch (err) {
   console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT env var:", err);
   throw err;
