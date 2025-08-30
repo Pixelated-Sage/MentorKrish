@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000", "https://mentor-krish.vercel.app/"));
+                    config.setAllowedOrigins(List.of("http://localhost:3000", "https://mentor-krish.vercel.app/" , "https://www.mentorkrish.in/"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     return config;
