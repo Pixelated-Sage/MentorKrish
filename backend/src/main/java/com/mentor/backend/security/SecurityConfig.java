@@ -36,10 +36,12 @@ public class SecurityConfig {
                             "https://mentor-krish.vercel.app", // Vercel preview
                             "https://www.mentorkrish.in",     // main domain
                             "https://mentorkrish.in",         // root domain
-                            "https://mentorkrish-1.onrender.com" // Render fallback (backend direct)
+                            "https://mentorkrish-1.onrender.com",
+                            "https://www.mentorkrish.in/"// Render fallback (backend direct)
                     ));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
                     return config;
                 }))
                 .csrf(csrf -> csrf.disable())
