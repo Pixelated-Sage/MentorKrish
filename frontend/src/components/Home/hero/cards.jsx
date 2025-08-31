@@ -52,7 +52,7 @@ const cardData = [
 		description: "Experience authentic SAT preparation with our advanced digital platform featuring real-time analytics and adaptive learning.",
 		button: {
 			label: "Start Free Trial",
-			link: "/trial"
+			link: "https://prepsmart.mentorkrish.in/"
 		},
     image: "/assets/img/platform.jpg", 
 		icon: ""
