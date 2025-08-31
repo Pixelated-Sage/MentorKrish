@@ -2,53 +2,31 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight } from "lucide-react";
 
-const defaultMenuItems = [
-  {
-    label: "Login",
-    action: () => (window.location.href = "/login"),
-    color: "bg-g1 text-w1",
-    icon: <ChevronRight size={16} />,
-  },
-  {
-    label: "Register",
-    action: () => (window.location.href = "/register"),
-    color: "bg-r1 text-w1",
-    icon: <ChevronRight size={16} />,
-  },
-  {
-    label: "Book Trial",
-    action: () => (window.location.href = "/trial"),
-    color: "bg-accent text-g1",
-    icon: <ChevronRight size={16} />,
-  },
-  {
-    label: "Logout",
-    action: () => {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userEmail");
-      localStorage.removeItem("userRole");
-      window.location.href = "/";
-    },
-    color: "bg-g2 text-w1",
-    icon: <ChevronRight size={16} />,
-  },
-];
-
 const adTexts = [
   "Book a free trial",
   "Login for counseling",
   "Register today",
   "Get started now",
 ];
+const typingSpeed = 75;
 
-const typingSpeed = 75; // slower typing for minimal effect
-
-export default function ReachButton({ menuItems = defaultMenuItems }) {
+export default function ReachButton() {
   const [open, setOpen] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [windowWidth, setWindowWidth] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const containerRef = useRef(null);
+
+  // Detect login state on mount and when localStorage/auth changes
+  useEffect(() => {
+    function checkLogin() {
+      setIsLoggedIn(!!localStorage.getItem('authToken'));
+    }
+    checkLogin();
+    window.addEventListener('storage', checkLogin);
+    return () => window.removeEventListener('storage', checkLogin);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,7 +41,7 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
     if (!open) {
       const timer = setInterval(() => {
         setAdIndex((i) => (i + 1) % adTexts.length);
-      }, 7000); // longer interval for less frequent changes
+      }, 7000);
       return () => clearInterval(timer);
     }
   }, [open]);
@@ -71,51 +49,79 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
   useEffect(() => {
     if (open) {
       setTypedText("");
-      return; // no typing animation on open
+      return;
     }
-
     let currentChar = 0;
     const text = adTexts[adIndex];
     setTypedText("");
-
     const typingInterval = setInterval(() => {
       currentChar++;
       setTypedText(text.substring(0, currentChar));
       if (currentChar === text.length) clearInterval(typingInterval);
     }, typingSpeed);
-
     return () => clearInterval(typingInterval);
   }, [adIndex, open]);
 
-  // Vertical stack spacing reduced for a tighter look
-  const buttonSpacing = 56;
+  // Define menu items dynamically
+  const menuItems = isLoggedIn
+    ? [
+        {
+          label: "Profile",
+          action: () => (window.location.href = "/profile"),
+          color: "bg-g1 text-w1",
+          icon: <ChevronRight size={16} />,
+        },
+        {
+          label: "Book Trial",
+          action: () => (window.location.href = "/trial"),
+          color: "bg-accent text-g1",
+          icon: <ChevronRight size={16} />,
+        },
+        {
+          label: "Logout",
+          action: () => {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userRole");
+            window.location.href = "/";
+          },
+          color: "bg-g2 text-w1",
+          icon: <ChevronRight size={16} />,
+        },
+      ]
+    : [
+        {
+          label: "Login",
+          action: () => (window.location.href = "/login"),
+          color: "bg-g1 text-w1",
+          icon: <ChevronRight size={16} />,
+        },
+        {
+          label: "Register",
+          action: () => (window.location.href = "/register"),
+          color: "bg-r1 text-w1",
+          icon: <ChevronRight size={16} />,
+        },
+        {
+          label: "Book Trial",
+          action: () => (window.location.href = "/trial"),
+          color: "bg-accent text-g1",
+          icon: <ChevronRight size={16} />,
+        },
+      ];
 
+  const buttonSpacing = 56;
   const buttonVariants = {
-    closed: {
-      scale: 0,
-      x: 0,
-      y: 0,
-      opacity: 0,
-    },
+    closed: { scale: 0, x: 0, y: 0, opacity: 0 },
     open: (i) => ({
       scale: 1,
       x: -140,
       y: -i * buttonSpacing,
       opacity: 1,
-      transition: {
-        delay: i * 0.04, // shorter delay for faster pop-out
-        type: "spring",
-        stiffness: 300,
-        damping: 22,
-      },
+      transition: { delay: i * 0.04, type: "spring", stiffness: 300, damping: 22 },
     }),
   };
-
-  // Width calculation capped and smooth
-  const closedWidthDynamic = Math.min(
-    Math.max(typedText.length * (windowWidth && windowWidth < 640 ? 7 : 8), 130),
-    190
-  );
+  const closedWidthDynamic = Math.min(Math.max(typedText.length * (windowWidth && windowWidth < 640 ? 7 : 8), 130), 190);
 
   return (
     <div
@@ -170,7 +176,7 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? "Close quick actions" : "Open quick actions"}
         >
-          <AnimatePresence exitBeforeEnter>
+          <AnimatePresence mode="wait">
             {open ? (
               <motion.div
                 key="close"
@@ -199,7 +205,6 @@ export default function ReachButton({ menuItems = defaultMenuItems }) {
           </AnimatePresence>
         </motion.button>
       </div>
-
       <style>{`
         /* Subtle blinking cursor */
         .blinking-cursor {

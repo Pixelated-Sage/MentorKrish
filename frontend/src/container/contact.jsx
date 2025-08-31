@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { sendContactMessage } from "../lib/api";
 
 export default function Contact() {
   const [formData, setFormData] = useState({

@@ -12,15 +12,15 @@ const courses = [
 			content: `The PSAT (Preliminary SAT) is a standardized test for students in grades 8–11. It serves as a practice for the SAT and a qualifier for the National Merit Scholarship (for 11th graders).`,
 		},
 		why: {
-			heading: 'Why Choose PSAT?',
+			heading: 'Why Choose?',
 			content: `It builds foundational skills for the SAT, identifies academic strengths, and boosts confidence for future college entrance exams.`,
 		},
 		benefits: {
-			heading: 'Benefits of PSAT Course',
+			heading: 'Benefits of this Course',
 			content: `Early exposure to SAT-style questions.\nTargeted improvement in Math, Reading, and Writing.\nDiagnostic reports to track progress.\nPersonalized feedback and strategy sessions.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue PSAT?',
+			heading: 'Who Should Pursue this Course?',
 			content: `Students from Grade 8 to 11 aiming to build strong test-taking skills and secure a competitive edge for college admissions.`,
 		},
 		curriculum: {
@@ -38,15 +38,15 @@ const courses = [
 			content: `The SAT is a globally recognized standardized test used for college admissions, assessing students' readiness in Reading, Writing, and Math. It is accepted by universities across the world, especially in the U.S.`,
 		},
 		why: {
-			heading: 'Why Choose SAT?',
+			heading: 'Why Choose?',
 			content: `It opens doors to top global universities, scholarship opportunities, and builds strong academic and analytical skills essential for future success.`,
 		},
 		benefits: {
-			heading: 'Benefits of SAT Course',
+			heading: 'Benefits of this Course',
 			content: `In-depth practice on Digital SAT format.\nConcept-based learning with targeted drills.\nAI-driven performance tracking.\nExpert strategies for time and stress management.\nReal-time doubt-solving and detailed feedback.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue SAT?',
+			heading: 'Who Should Pursue this course?',
 			content: `Students in grades 10–12 aiming for undergraduate programs in top universities abroad, especially those targeting the U.S., Canada, or global scholarships.`,
 		},
 		curriculum: {
@@ -63,15 +63,15 @@ const courses = [
 			content: `The ACT is a standardized test used for college admissions in the U.S. and accepted by universities worldwide. It assesses skills in English, Math, Reading, and Science Reasoning, with an optional Writing section.`,
 		},
 		why: {
-			heading: 'Why Choose ACT?',
+			heading: 'Why Choose?',
 			content: `The ACT suits students who prefer straightforward questions and strong time management. It offers broader content coverage and includes a Science section, making it ideal for STEM-focused students.`,
 		},
 		benefits: {
-			heading: 'Benefits of ACT Course',
+			heading: 'Benefits of this Course',
 			content: `Covers all four core sections plus optional writing.\nEmphasis on speed, accuracy, and time-saving techniques.\nScience reasoning strategies unique to ACT.\nFull-length practice tests simulating real exam conditions.\nPersonalized performance analysis and feedback.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue ACT?',
+			heading: 'Who Should Pursue this course?',
 			content: `Students in grades 10–12 aiming to study in the U.S. or globally, especially those with strengths in science, fast-paced environments, or seeking an alternative to the SAT.`,
 		},
 		curriculum: {
@@ -90,15 +90,15 @@ const courses = [
 			content: `The IELTS (International English Language Testing System) is an English proficiency test required by universities, employers, and immigration authorities in English-speaking countries like the UK, Canada, Australia, and New Zealand.`,
 		},
 		why: {
-			heading: 'Why Choose IELTS?',
+			heading: 'Why Choose?',
 			content: `IELTS is accepted by over 11,000 institutions globally and evaluates real-life language skills through speaking, listening, reading, and writing tasks.`,
 		},
 		benefits: {
-			heading: 'Benefits of IELTS Course',
+			heading: 'Benefits of this Course',
 			content: `Comprehensive practice for Academic and General Training modules.\nPersonalized feedback on speaking and writing.\nVocabulary-building and grammar correction sessions.\nFull-length mock tests with scoring and analysis.\nTips to manage time and improve fluency.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue IELTS?',
+			heading: 'Who Should Pursue this course?',
 			content: `Students, professionals, or immigrants applying for higher education, job opportunities, or PR in countries like the UK, Australia, or Canada.`,
 		},
 		curriculum: {
@@ -117,15 +117,15 @@ const courses = [
 			content: `The TOEFL (Test of English as a Foreign Language) is a computer-based test accepted by universities and institutions worldwide, especially in the U.S. and Canada, to assess academic English proficiency.`,
 		},
 		why: {
-			heading: 'Why Choose TOEFL?',
+			heading: 'Why Choose?',
 			content: `TOEFL focuses on academic language and integrated skills, making it ideal for university readiness. It is preferred by U.S. institutions and has a structured online format.`,
 		},
 		benefits: {
-			heading: 'Benefits of TOEFL Course',
+			heading: 'Benefits of this Course',
 			content: `Training in integrated tasks (Reading + Speaking/Writing).\nPractice in academic listening and note-taking.\nAI-based speaking evaluations and writing reviews.\nReal-time mock test simulations.\nStrategic tips for navigating online format.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue TOEFL?',
+			heading: 'Who Should Pursue this course?',
 			content: `Students applying to U.S. and Canadian universities or seeking scholarships, especially where TOEFL is the preferred English language test.`,
 		},
 		curriculum: {
@@ -164,45 +164,45 @@ const wordVariants = {
 };
 
 const AnimatedContent = ({ heading, content }) => {
-	const lines = content.split('\n').map((line) => line.trim()).filter(Boolean);
+    const lines = content.split('\n').map((line) => line.trim()).filter(Boolean);
 
-	return (
-		<motion.div
-			initial="hidden"
-			animate="visible"
-			exit="hidden"
-			className="space-y-4"
-		>
-			<h3 className="flex items-center gap-3 text-2xl font-bold text-g1 mb-2">
-				<img
-					src="/assets/icons/square-bullet.svg"
-					alt=""
-					className="h-7 w-7"
-					aria-hidden="true"
-				/>
-				{heading}
-			</h3>
-			{lines.map((line, i) => (
-				<motion.div
-					key={i}
-					custom={i}
-					variants={lineVariants}
-					className="overflow-hidden text-g2 text-base leading-relaxed"
-				>
-					{line.split(' ').map((word, j) => (
-						<motion.span
-							key={j}
-							custom={j}
-							variants={wordVariants}
-							className="inline-block mr-1"
-						>
-							{word}
-						</motion.span>
-					))}
-				</motion.div>
-			))}
-		</motion.div>
-	);
+    return (
+        <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="space-y-6 py-3" // <-- Increased vertical spacing between sections
+        >
+            <h3 className="flex items-center gap-3 text-2xl font-bold text-g1 mb-4"> {/* <-- Increased bottom margin */}
+                <img
+                    src="/assets/icons/square-bullet.svg"
+                    alt=""
+                    className="h-7 w-7"
+                    aria-hidden="true"
+                />
+                {heading}
+            </h3>
+            {lines.map((line, i) => (
+                <motion.div
+                    key={i}
+                    custom={i}
+                    variants={lineVariants}
+                    className="overflow-hidden text-g2 text-base leading-relaxed mb-2" // <-- Added bottom margin
+                >
+                    {line.split(' ').map((word, j) => (
+                        <motion.span
+                            key={j}
+                            custom={j}
+                            variants={wordVariants}
+                            className="inline-block mr-1"
+                        >
+                            {word}
+                        </motion.span>
+                    ))}
+                </motion.div>
+            ))}
+        </motion.div>
+    );
 };
 
 const CoursesDetails = ({ selectedCourseKey }) => {
@@ -294,7 +294,7 @@ const CoursesDetails = ({ selectedCourseKey }) => {
 				))}
 			</div>
 			{/* Course Content Sections with typewriter animations */}
-			<div className="max-w-6xl mx-auto space-y-10">
+			<div className="max-w-6xl mx-auto space-y-12"> {/* <-- Increased spacing between content blocks */}
 				<AnimatePresence mode="wait" initial={false}>
 					<motion.div
 						key={activeCourse.key}
