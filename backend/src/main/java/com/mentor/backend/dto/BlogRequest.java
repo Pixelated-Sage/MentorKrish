@@ -2,7 +2,10 @@ package com.mentor.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -10,19 +13,19 @@ import lombok.*;
 @Builder
 public class BlogRequest {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank
     @Size(min = 3, max = 255)
     private String title;
 
-    // Optional: service will generate slug if missing
     private String slug;
 
-    @NotBlank(message = "Content is required")
+    @NotBlank
     private String content;
 
-    @Size(max = 255)
     private String author;
 
-    // publish now or keep draft
     private boolean published;
+
+    private String imageUrl; // URL string for frontend => backend
+
 }

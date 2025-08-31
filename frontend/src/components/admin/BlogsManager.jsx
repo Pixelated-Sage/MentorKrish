@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import AdminRouteGuard from "../../components/admin/AdminRouteGuard";
+import React, { useEffect, useState, useMemo } from "react";
+import AdminRouteGuard from "../../components/AdminRouteGuard";
 import {
   fetchBlogsAdmin,
   createBlog,
@@ -7,20 +7,23 @@ import {
   deleteBlog,
 } from "../../lib/apiAdmin";
 
-export default function AdminBlogs() {
-  const courses = ['SAT', 'PSAT', 'ACT', 'IELTS', 'TOEFL'];
-  const emptyForm = { title: "", slug: "", author: "", content: "", published: false };
+const emptyForm = {
+  title: "",
+  slug: "",
+  author: "",
+  content: "",
+  published: false,
+  image: null,
+  imagePreview: null,
+};
+
+export default function BlogsManager() {
+  const [blogs, setBlogs] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
-
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -30,51 +33,38 @@ export default function AdminBlogs() {
       .finally(() => setLoading(false));
   }, [refresh]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return blogs;
-    return blogs.filter(
-      (b) =>
-        (b.title || "").toLowerCase().includes(q) ||
-        (b.slug || "").toLowerCase().includes(q) ||
-        (b.author || "").toLowerCase().includes(q)
-    );
-  }, [blogs, search]);
-
-  const paginated = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filtered.slice(start, start + PAGE_SIZE);
-  }, [filtered, page]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-
   const onChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    const { name, value, type, checked, files } = e.target;
+    if (name === "image" && files.length > 0) {
+      setForm((f) => ({
+        ...f,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      }));
+    } else if (type === "checkbox") {
+      setForm((f) => ({ ...f, [name]: checked }));
+    } else {
+      setForm((f) => ({ ...f, [name]: value }));
+    }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
     try {
-      const payload = {
-        title: form.title,
-        slug: form.slug || undefined,
-        author: form.author || "",
-        content: form.content,
-        published: !!form.published,
-      };
       if (editingId) {
-        await updateBlog(editingId, payload);
+        await updateBlog(editingId, form);
       } else {
-        await createBlog(payload);
+        await createBlog(form);
       }
       setForm(emptyForm);
       setEditingId(null);
-      setPage(1);
       setRefresh((r) => r + 1);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,131 +75,123 @@ export default function AdminBlogs() {
       slug: blog.slug || "",
       author: blog.author || "",
       content: blog.content || "",
-      published: !!blog.published,
+      published: blog.published || false,
+      image: null,
+      imagePreview: blog.imageUrl || null,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const onCancel = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+  };
+
   const onDelete = async (id) => {
-    if (!confirm("Delete this blog?")) return;
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+    setLoading(true);
     setError("");
     try {
       await deleteBlog(id);
       setRefresh((r) => r + 1);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onCancel = () => {
-    setEditingId(null);
-    setForm(emptyForm);
-  };
+  const filteredBlogs = useMemo(() => blogs, [blogs]); // Implement search/filter as needed
 
   return (
     <AdminRouteGuard>
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">Manage Blogs</h1>
+      <div className="max-w-7xl mx-auto py-12 px-6">
+        <h1 className="text-3xl font-bold mb-6">Manage Blogs</h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
         )}
 
-        {/* Blog Form */}
-        <form
-          onSubmit={onSubmit}
-          className="mb-8 bg-white rounded-lg p-6 shadow-sm border border-gray-200 space-y-6"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-2 font-semibold text-gray-700">
-                Title <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={form.title}
-                onChange={onChange}
-                required
-                className={`w-full rounded-md p-2 border focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  form.title === "" ? "border-red-300" : "border-gray-300"
-                }`}
-                placeholder="Blog title"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-semibold text-gray-700">Slug</label>
-              <input
-                type="text"
-                name="slug"
-                value={form.slug}
-                onChange={onChange}
-                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="auto generated if blank"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-2 font-semibold text-gray-700">Author</label>
-              <input
-                type="text"
-                name="author"
-                value={form.author}
-                onChange={onChange}
-                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Author name"
-              />
-            </div>
-
-            <div className="flex items-center space-x-2 mt-6 md:mt-0">
-              <input
-                id="published"
-                type="checkbox"
-                name="published"
-                checked={form.published}
-                onChange={onChange}
-                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-              />
-              <label htmlFor="published" className="font-semibold text-gray-700">
-                Published
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700">
-              Content <span className="text-red-600">*</span>
-            </label>
-            <textarea
-              name="content"
-              value={form.content}
+        <form onSubmit={onSubmit} className="mb-8 space-y-6 bg-white p-6 rounded-lg shadow-md">
+          <div className="grid gap-6 md:grid-cols-2">
+            <input
+              name="title"
+              type="text"
+              placeholder="Title"
+              value={form.title}
               onChange={onChange}
               required
-              rows={6}
-              className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-              placeholder="Write blog content here..."
+              className="input"
             />
+            <input
+              name="slug"
+              type="text"
+              placeholder="Slug (auto-generated if left blank)"
+              value={form.slug}
+              onChange={onChange}
+              className="input"
+            />
+            <input
+              name="author"
+              type="text"
+              placeholder="Author"
+              value={form.author}
+              onChange={onChange}
+              className="input"
+            />
+            <div className="flex items-center space-x-2">
+              <input
+                id="published"
+                name="published"
+                type="checkbox"
+                checked={form.published}
+                onChange={onChange}
+                className="checkbox"
+              />
+              <label htmlFor="published" className="select-none">Published</label>
+            </div>
+          </div>
+
+          <textarea
+            name="content"
+            placeholder="Content"
+            rows={6}
+            value={form.content}
+            onChange={onChange}
+            required
+            className="textarea"
+          />
+
+          <div className="flex flex-col items-center border-2 border-dashed rounded-lg p-4 cursor-pointer"
+               onClick={() => document.getElementById('blog-image').click()}>
+            <input
+              id="blog-image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={onChange}
+              className="hidden"
+            />
+            {form.imagePreview ? (
+              <img src={form.imagePreview} alt="Preview" className="max-w-full max-h-48 rounded" />
+            ) : (
+              <p className="text-gray-500">Click or drag image here to upload</p>
+            )}
           </div>
 
           <div className="flex space-x-4">
             <button
               type="submit"
-              disabled={!form.title || !form.content}
-              className="px-6 py-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700 disabled:opacity-50"
+              disabled={!form.title || !form.content || loading}
+              className="btn-primary"
             >
               {editingId ? "Update Blog" : "Create Blog"}
             </button>
-
             {editingId && (
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-6 py-2 border rounded-md font-semibold hover:bg-gray-100"
+                className="btn-secondary"
               >
                 Cancel
               </button>
@@ -217,95 +199,39 @@ export default function AdminBlogs() {
           </div>
         </form>
 
-        {/* Search and Pagination Controls */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-3 md:space-y-0">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Search blogs by title, slug, or author"
-            className="w-full md:w-64 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-          <div className="text-gray-600 text-sm">
-            {filtered.length} results &bull; Page {page} of {totalPages}
-          </div>
-        </div>
-
-        {/* Blogs Table */}
-        <div className="overflow-x-auto rounded-md shadow-sm">
-          <table className="min-w-full bg-white divide-y divide-gray-200 rounded-md table-auto">
-            <thead className="bg-gray-50">
+        <div className="overflow-auto mt-8">
+          <table className="table-auto w-full border-collapse border border-gray-300">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Slug</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Author</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                <th className="border border-gray-300 px-4 py-2">Title</th>
+                <th className="border border-gray-300 px-4 py-2">Slug</th>
+                <th className="border border-gray-300 px-4 py-2">Author</th>
+                <th className="border border-gray-300 px-4 py-2">Published</th>
+                <th className="border border-gray-300 px-4 py-2">Published At</th>
+                <th className="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="text-center p-6 text-gray-500">
-                    Loading...
+            <tbody>
+              {filteredBlogs.map((blog) => (
+                <tr key={blog.id} className="hover:bg-gray-100 cursor-pointer">
+                  <td className="border border-gray-300 px-4 py-2">{blog.title}</td>
+                  <td className="border border-gray-300 px-4 py-2">{blog.slug}</td>
+                  <td className="border border-gray-300 px-4 py-2">{blog.author || "-"}</td>
+                  <td className="border border-gray-300 px-4 py-2">{blog.published ? "Yes" : "No"}</td>
+                  <td className="border border-gray-300 px-4 py-2">{blog.publishedAt ? new Date(blog.publishedAt).toLocaleString() : "-"}</td>
+                  <td className="border border-gray-300 px-4 py-2 space-x-3">
+                    <button onClick={() => onEdit(blog)} className="text-blue-600 hover:underline">Edit</button>
+                    <button onClick={() => onDelete(blog.id)} className="text-red-600 hover:underline">Delete</button>
                   </td>
                 </tr>
-              ) : paginated.length === 0 ? (
+              ))}
+              {filteredBlogs.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center p-6 text-gray-500">
-                    No blogs found.
-                  </td>
+                  <td colSpan="6" className="text-center p-4 text-gray-500">No blogs available.</td>
                 </tr>
-              ) : (
-                paginated.map((b) => (
-                  <tr key={b.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">{b.title}</td>
-                    <td className="px-4 py-3">{b.slug}</td>
-                    <td className="px-4 py-3">{b.author || "-"}</td>
-                    <td className="px-4 py-3">{b.published ? "Yes" : "No"}</td>
-                    <td className="px-4 py-3">{b.publishedAt || "-"}</td>
-                    <td className="px-4 py-3 space-x-4">
-                      <button
-                        onClick={() => onEdit(b)}
-                        className="text-blue-600 font-semibold hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => onDelete(b.id)}
-                        className="text-red-600 font-semibold hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
               )}
             </tbody>
           </table>
-        </div>
-
-        {/* Pagination Controls */}
-        <div className="flex justify-end space-x-2 mt-6">
-          <button
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            disabled={page === 1}
-            className="px-4 py-2 rounded border border-gray-300 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="px-4 py-2">{`Page ${page} of ${totalPages}`}</span>
-          <button
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-            disabled={page === totalPages}
-            className="px-4 py-2 rounded border border-gray-300 disabled:opacity-50"
-          >
-            Next
-          </button>
         </div>
       </div>
     </AdminRouteGuard>

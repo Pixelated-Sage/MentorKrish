@@ -1,12 +1,25 @@
 package com.mentor.backend.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "blogs")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,9 +33,9 @@ public class Blog {
     private String title;
 
     @Column(nullable = false, unique = true)
-    private String slug; // URL friendly identifier
+    private String slug;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     private String author;
@@ -32,7 +45,10 @@ public class Blog {
     private LocalDateTime publishedAt;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
+    private String imageUrl; // Add this field for image URL
 
     @PrePersist
     public void onCreate() {

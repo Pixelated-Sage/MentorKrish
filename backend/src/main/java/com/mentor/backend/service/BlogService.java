@@ -1,18 +1,20 @@
 package com.mentor.backend.service;
 
-import com.mentor.backend.dto.BlogRequest;
-import com.mentor.backend.entity.Blog;
-import com.mentor.backend.repository.BlogRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.mentor.backend.dto.BlogRequest;
+import com.mentor.backend.entity.Blog;
+import com.mentor.backend.exception.ResourceNotFoundException;
+import com.mentor.backend.repository.BlogRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -20,16 +22,26 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
+    private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+
+    private String generateSlug(String input) {
+        if (input == null) return null;
+        String noWhitespace = WHITESPACE.matcher(input).replaceAll("-");
+        String normalized = Normalizer.normalize(noWhitespace, Normalizer.Form.NFD);
+        String slug = NONLATIN.matcher(normalized).replaceAll("");
+        return slug.toLowerCase(Locale.ENGLISH);
+    }
+
     public Blog create(BlogRequest req) {
         String slug = (req.getSlug() == null || req.getSlug().isBlank())
                 ? generateSlug(req.getTitle())
                 : generateSlug(req.getSlug());
 
-        // ensure unique slug
-        String base = slug;
-        int suffix = 1;
+        String baseSlug = slug;
+        int counter = 1;
         while (blogRepository.existsBySlug(slug)) {
-            slug = base + "-" + suffix++;
+            slug = baseSlug + "-" + counter++;
         }
 
         Blog blog = Blog.builder()
@@ -39,6 +51,7 @@ public class BlogService {
                 .author(req.getAuthor())
                 .published(req.isPublished())
                 .publishedAt(req.isPublished() ? LocalDateTime.now() : null)
+                .imageUrl(req.getImageUrl()) // Set image URL
                 .build();
 
         return blogRepository.save(blog);
@@ -50,58 +63,51 @@ public class BlogService {
 
     public Blog getById(Long id) {
         return blogRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Blog", "id", id));
     }
 
     public Blog getBySlug(String slug) {
         return blogRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog not found with slug: " + slug));
+                .orElseThrow(() -> new ResourceNotFoundException("Blog", "slug", slug));
     }
 
     public Blog update(Long id, BlogRequest req) {
-        Blog existing = getById(id);
+        Blog blog = getById(id);
 
-        if (req.getTitle() != null && !req.getTitle().isBlank()) existing.setTitle(req.getTitle());
-        if (req.getContent() != null) existing.setContent(req.getContent());
-        if (req.getAuthor() != null) existing.setAuthor(req.getAuthor());
+        if (req.getTitle() != null && !req.getTitle().isBlank())
+            blog.setTitle(req.getTitle());
+        if (req.getContent() != null)
+            blog.setContent(req.getContent());
+        if (req.getAuthor() != null)
+            blog.setAuthor(req.getAuthor());
 
-        // handle slug update if provided
         if (req.getSlug() != null && !req.getSlug().isBlank()) {
             String newSlug = generateSlug(req.getSlug());
-            if (!newSlug.equals(existing.getSlug()) && blogRepository.existsBySlug(newSlug)) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Slug already in use");
+            if (!newSlug.equals(blog.getSlug()) && blogRepository.existsBySlug(newSlug)) {
+                throw new ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Slug already in use");
             }
-            existing.setSlug(newSlug);
+            blog.setSlug(newSlug);
         }
 
-        // published flag handling
-        if (req.isPublished() && !existing.isPublished()) {
-            existing.setPublished(true);
-            existing.setPublishedAt(LocalDateTime.now());
-        } else if (!req.isPublished() && existing.isPublished()) {
-            existing.setPublished(false);
-            existing.setPublishedAt(null);
+        if (!blog.isPublished() && req.isPublished()) {
+            blog.setPublished(true);
+            blog.setPublishedAt(LocalDateTime.now());
+        } else if (blog.isPublished() && !req.isPublished()) {
+            blog.setPublished(false);
+            blog.setPublishedAt(null);
         }
 
-        return blogRepository.save(existing);
+        if (req.getImageUrl() != null && !req.getImageUrl().isBlank()) {
+            blog.setImageUrl(req.getImageUrl());
+        }
+
+        return blogRepository.save(blog);
     }
 
     public void delete(Long id) {
         if (!blogRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog not found with id: " + id);
+            throw new ResourceNotFoundException("Blog", "id", id);
         }
         blogRepository.deleteById(id);
-    }
-
-    // --- helper: simple slug generator ---
-    private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
-    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-
-    private String generateSlug(String input) {
-        if (input == null) return null;
-        String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-        String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
-        String slug = NONLATIN.matcher(normalized).replaceAll("");
-        return slug.toLowerCase(Locale.ENGLISH);
     }
 }

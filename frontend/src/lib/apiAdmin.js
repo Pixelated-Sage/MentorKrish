@@ -57,30 +57,53 @@ export async function fetchBlogsAdmin() {
   return res.json();
 }
 
+// Create blog with image upload
 export async function createBlog(data) {
-  const res = await apiFetch('/api/blogs', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+  const formData = new FormData();
+  formData.append("title", data.title);
+  formData.append("content", data.content);
+  formData.append("author", data.author || "");
+  formData.append("published", data.published);
+  if (data.slug) formData.append("slug", data.slug);
+  if (data.image) formData.append("image", data.image);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs`, {
+    method: "POST",
+    body: formData,
   });
-  if (!res.ok) throw new Error('Failed to create blog');
+
+  if (!res.ok) throw new Error("Failed to create blog");
   return res.json();
 }
 
+// Update blog with optional image
 export async function updateBlog(id, data) {
-  const res = await apiFetch(`/api/blogs/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+  const formData = new FormData();
+  formData.append("title", data.title);
+  formData.append("content", data.content);
+  formData.append("author", data.author || "");
+  formData.append("published", data.published);
+  if (data.slug) formData.append("slug", data.slug);
+  if (data.image) formData.append("image", data.image);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${id}`, {
+    method: "PUT",
+    body: formData,
   });
-  if (!res.ok) throw new Error('Failed to update blog');
+
+  if (!res.ok) throw new Error("Failed to update blog");
   return res.json();
 }
 
+// Delete blog
 export async function deleteBlog(id) {
-  const res = await apiFetch(`/api/blogs/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete blog');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) throw new Error("Failed to delete blog");
 }
+
 
 
 
