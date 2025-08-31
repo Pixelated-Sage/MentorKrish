@@ -2,6 +2,7 @@ package com.mentor.backend.controller;
 
 import com.mentor.backend.dto.BlogRequest;
 import com.mentor.backend.dto.BlogResponse;
+import com.mentor.backend.service.CloudinaryService;
 import com.mentor.backend.entity.Blog;
 import com.mentor.backend.service.BlogService;
 import lombok.RequiredArgsConstructor;
