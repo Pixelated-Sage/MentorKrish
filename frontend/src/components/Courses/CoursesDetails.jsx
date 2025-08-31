@@ -271,7 +271,7 @@ const CoursesDetails = ({ selectedCourseKey }) => {
 			});
 		}
 		// Scroll to enroll form or route as needed
-		window.location.hash = "#enroll-form";
+		window.location.hash = "https://prepsmart.mentorkrish.in";
 	};
 
 	return (

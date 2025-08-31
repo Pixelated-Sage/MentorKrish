@@ -208,7 +208,7 @@ const Navbar = () => {
             )}
 
             <a
-              href="tel:+919999999999"
+              href="/trial"
               className="ml-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl transition select-none whitespace-nowrap"
             >
               Book Now

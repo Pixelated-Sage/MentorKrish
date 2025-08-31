@@ -14,11 +14,11 @@ export default function AnnouncementsSection() {
       const data = await fetchAnnouncements();
 
       // Map backend fields → UI format
-      const mapped = data.map((item) => ({
+      const mapped = data.map((item, index) => ({
         id: item.id || item._id || index, // add announcement id for analytics
         title: item.title,
-        image: item.imageUrl
-          ? `${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`
+        image: item.imageUrl && item.imageUrl.startsWith('http')
+          ? item.imageUrl
           : "/assets/img/dsat.jpg",
         description: item.description,
         timer: null,

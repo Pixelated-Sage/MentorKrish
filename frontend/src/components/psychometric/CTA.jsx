@@ -8,7 +8,7 @@ const CTA = () => {
           Ready to unlock your strengths?
         </h2>
         <a
-          href="/trial"
+          href="https://profile360.mentorkrish.in"
           className="
             bg-r1 text-w1
             text-base sm:text-lg font-semibold

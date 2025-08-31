@@ -11,7 +11,10 @@ export async function fetchAnnouncements() {
       id: item.id,
       title: item.title,
       description: item.description,
-      imageUrl: item.imageUrl || '/assets/default-image.jpg',
+      // Use Cloudinary URL as-is
+      imageUrl: item.imageUrl && item.imageUrl.startsWith('http')
+        ? item.imageUrl
+        : '/assets/default-image.jpg',
       date: item.date,
       time: item.time,
     }));
@@ -20,6 +23,7 @@ export async function fetchAnnouncements() {
     return [];
   }
 }
+
 
 
 

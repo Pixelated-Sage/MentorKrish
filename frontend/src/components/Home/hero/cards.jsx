@@ -9,8 +9,8 @@ const cardData = [
 		tagline: "IELTS • SAT • PSAT • ACT • TOEFL",
 		description: "Comprehensive test preparation programs designed to unlock opportunities at world-class universities and institutions.",
 		button: {
-			label: "Book Consultation",
-			link: "/trial"
+			label: "Checkout Courses",
+			link: "/courses"
 		},
 		contact: {
 			phone: "+91-9999999999",
@@ -38,7 +38,7 @@ const cardData = [
 		description: "Join the 6.3% who are confident about their career path. Take our scientifically-designed career assessment test.",
 		button: {
 			label: "Discover Your Path",
-			link: "/register"
+			link: "/career"
 		},
 		stats: "93.7% students need career clarity",
 		image: "/assets/img/discovery.jpg", // <-- Add image for all cards
