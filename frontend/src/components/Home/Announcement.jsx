@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { fetchAnnouncements } from "../../lib/api";
 import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../lib/firebase"; // Adjust path if needed
 import { useRouter } from "next/router";
+import Sample from "../../../public/assets/img/dsat.jpg"
 
 export default function AnnouncementsSection() {
   const [announcements, setAnnouncements] = useState([]);
@@ -19,7 +20,7 @@ export default function AnnouncementsSection() {
         title: item.title,
         image: item.imageUrl && item.imageUrl.startsWith('http')
           ? item.imageUrl
-          : "/assets/img/dsat.jpg",
+          : Sample,
         description: item.description,
         timer: null,
         link: "/contact",

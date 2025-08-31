@@ -14,64 +14,6 @@ import {
   Area,
 } from "recharts";
 
-// New Pie Chart Component
-const PIE_COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444"];
-function AnalyticsPieChart() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("https://mentorkrish.in/api/admin-analytics");
-      const json = await res.json();
-
-      // Example transformation: group raw clicks into categories
-      const grouped = {
-        Auth: (json.Login || 0) + (json.Register || 0),
-        Demo: (json.BookDemo || 0) + (json.Trial || 0),
-        Navigation: (json.Courses || 0) + (json.Contact || 0) + (json.Menu || 0),
-        Other: Object.values(json).reduce((acc, val) => acc + val, 0) -
-               ((json.Login || 0) + (json.Register || 0) + (json.BookDemo || 0) + (json.Trial || 0) + (json.Courses || 0) + (json.Contact || 0) + (json.Menu || 0))
-      };
-
-      // Convert to array for Recharts
-      const finalData = Object.keys(grouped).map(key => ({
-        name: key,
-        value: grouped[key]
-      }));
-
-      setData(finalData);
-    }
-    fetchData();
-  }, []);
-
-  return (
-    <div className="w-full h-[400px] flex items-center justify-center bg-white rounded-2xl shadow-md p-4">
-      <ResponsiveContainer>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={({ name, percent }) =>
-              `${name}: ${(percent * 100).toFixed(0)}%`
-            }
-            outerRadius={120}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
 const COLORS = ["#3B82F6", "#F59E0B", "#10B981", "#EF4444", "#8B5CF6", "#14B8A6"];
 
 export default function AnalyticsDashboard() {
@@ -207,13 +149,6 @@ export default function AnalyticsDashboard() {
               <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
-        </Card>
-      </section>
-
-      {/* Fourth Row (Custom Pie Chart Integration) */}
-      <section>
-        <Card title="Custom Event Category Distribution" description="Grouped user actions by category (Auth, Demo, Navigation, Other).">
-          <AnalyticsPieChart />
         </Card>
       </section>
     </div>
