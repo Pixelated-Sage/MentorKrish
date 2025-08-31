@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import AdminRouteGuard from "../../components/AdminRouteGuard";
+import AdminRouteGuard from "./AdminRouteGuard";
 import {
   fetchBlogsAdmin,
   createBlog,
