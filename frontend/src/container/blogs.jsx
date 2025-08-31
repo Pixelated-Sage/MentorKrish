@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchBlogs, fetchBlogBySlug } from "../lib/api";
-import Sample from "../../../public/assets/img/dsat.jpg"
+import Sample from "../../public/assets/img/dsat.jpg"
 // --- MOTION CONFIG ---
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
