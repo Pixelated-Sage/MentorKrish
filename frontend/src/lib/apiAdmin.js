@@ -67,14 +67,24 @@ export async function createBlog(data) {
   if (data.slug) formData.append("slug", data.slug);
   if (data.image) formData.append("image", data.image);
 
+  // GET TOKEN
+  const token = localStorage.getItem('authToken');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs`, {
     method: "POST",
     body: formData,
+    headers, // only Authorization -- do NOT add Content-Type
   });
 
-  if (!res.ok) throw new Error("Failed to create blog");
+  if (!res.ok) {
+    let msg = "Failed to create blog";
+    try { msg = await res.text(); } catch {}
+    throw new Error(msg);
+  }
   return res.json();
 }
+
 
 // Update blog with optional image
 export async function updateBlog(id, data) {

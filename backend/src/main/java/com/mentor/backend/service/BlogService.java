@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class BlogService {
 
     private final BlogRepository blogRepository;
+    
 
     private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
