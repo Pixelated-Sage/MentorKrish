@@ -25,6 +25,45 @@ const FAQ = () => {
 
   return (
     <section className="bg-w1 py-12" id="faqs">
+
+      <Head>
+      {/* ...other meta tags... */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "SAT",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "PSAT",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "ACT",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
+                }
+              }
+            ]
+          })
+        }}
+      />
+    </Head>
       <motion.h2 className="flex items-center gap-3 text-2xl md:text-3xl font-bold text-g1 mb-6 justify-center">
         <img src="/assets/icons/square-bullet.svg" alt="" className="h-7 w-7" aria-hidden="true" />
         FAQs
