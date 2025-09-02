@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import Head from "next/head";
-import { useRouter } from 'next/router';
-import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../../lib/firebase'; // Adjust path if needed
+import { useRouter } from "next/router";
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../../lib/firebase';
 
 const filterOptions = [
   { label: 'SAT', value: 'SAT' },
@@ -79,15 +79,29 @@ const roundsData = [
   }
 ];
 
+// Helper: Prepare Course JSON-LD for SEO
+const getCoursesJsonLd = (rounds) => ({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": rounds.map((round, i) => ({
+    "@type": "Course",
+    "name": round.course,
+    "description": round.description,
+    "provider": {
+      "@type": "Organization",
+      "name": "Mentor Krish",
+      "sameAs": "https://mentorkrish.in"
+    }
+  }))
+});
+
 const RoundsDashboard = () => {
   const [activeRound, setActiveRound] = React.useState(0);
   const [filter, setFilter] = React.useState('all');
   const router = useRouter();
-
   const filteredRounds = filter === 'all'
     ? roundsData
     : roundsData.filter(r => r.subtitle === filter);
-
   const filteredActiveRound = Math.min(activeRound, filteredRounds.length - 1);
 
   React.useEffect(() => {
@@ -97,7 +111,6 @@ const RoundsDashboard = () => {
   // Track filter change (optional)
   const handleFilter = (value) => {
     setFilter(value);
-    // Track filter change
     if (analytics) logEvent(analytics, "course_filter", { filter: value });
     if (db) {
       addDoc(collection(db, "user_events"), {
@@ -113,7 +126,6 @@ const RoundsDashboard = () => {
 
   // Track round button click (Start ... Preparation)
   const handleStartClick = async (courseKey) => {
-    // Track click to course page from home
     if (analytics) logEvent(analytics, "start_course_preparation", { course: courseKey, location: "home_courses" });
     if (db) {
       await addDoc(collection(db, "user_events"), {
@@ -134,40 +146,14 @@ const RoundsDashboard = () => {
   return (
     <>
       <Head>
-        {/* ...other meta tags... */}
+        <title>Courses | Mentor Krish</title>
+        <meta name="description" content="Discover Mentor Krish's wide range of SAT, PSAT, ACT, IELTS, and TOEFL courses, built for global excellence with personalized mentoring." />
+        <link rel="canonical" href="https://mentorkrish.in/courses" />
+        {/* Structured Data for Courses */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "SAT",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "PSAT",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "ACT",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "25–35 Hours of Classes; 250+ Topic Exercises; 50+ Sectional Tests; 15+ Mock Tests"
-                  }
-                }
-              ]
-            })
+            __html: JSON.stringify(getCoursesJsonLd(filteredRounds))
           }}
         />
       </Head>
@@ -182,7 +168,6 @@ const RoundsDashboard = () => {
               Structured coaching for leading standardized exams. Select a program to view course details.
             </p>
           </header>
-
           {/* Filter Controls */}
           <section className="flex flex-wrap justify-center md:justify-start gap-2 mb-6 sm:mb-8">
             <span className="font-medium text-g2 self-center mr-2 whitespace-nowrap text-xs sm:text-base">
@@ -202,7 +187,6 @@ const RoundsDashboard = () => {
               </button>
             ))}
           </section>
-
           {/* Main Card */}
           <main>
             {filteredRounds.length > 0 ? (
@@ -221,7 +205,6 @@ const RoundsDashboard = () => {
                     </p>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-w1 border border-w2 rounded-lg p-3 sm:p-5">
                     <div className="text-g2 text-xs uppercase font-bold mb-1">Focus Areas</div>
@@ -234,7 +217,6 @@ const RoundsDashboard = () => {
                     </div>
                   )}
                 </div>
-
                 <div className="flex flex-col md:flex-row md:justify-between gap-4 items-center">
                   <div>
                     <h3 className="font-medium text-g1 mb-2 text-xs sm:text-base">Why choose this?</h3>
