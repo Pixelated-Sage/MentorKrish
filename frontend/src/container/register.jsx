@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useRouter } from "next/router";
 import { registerUser } from "../lib/api";
+import Head from 'next/head'
 import {
   auth,
   googleProvider,
@@ -124,6 +125,12 @@ const handleGoogleSignIn = async () => {
 
   return (
     <>
+    <Head>
+      <title>Register | Mentor Krish</title>
+      <meta name="description" content="Create your account with Mentor Krish for exclusive student resources, test prep, and expert mentoring." />
+      <link rel="canonical" href="https://mentorkrish.in/register" />
+    </Head>
+
       <Navbar />
       <main className="min-h-screen flex flex-col justify-center items-center bg-w2 pt-20 px-4 sm:px-6">
         <form

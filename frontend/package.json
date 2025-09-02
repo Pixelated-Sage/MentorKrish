@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",
@@ -16,6 +17,7 @@
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.525.0",
     "next": "15.4.1",
+    "next-sitemap": "^4.2.3",
     "package.json": "^2.0.1",
     "postcss": "^8.5.6",
     "react": "^18.3.1",

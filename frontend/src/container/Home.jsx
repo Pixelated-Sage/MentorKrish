@@ -11,9 +11,15 @@ import Roadmap from '../components/Home/Roadmap'
 import Gallery from '../components/Home/Gallery'
 import HomeTestimonial from '../components/Home/Testimonial'
 import Footer from '../components/Footer'
+import Head from 'next/head'
 const Home = () => {
   return (
     <div>
+      <Head>
+        <title>Mentor Krish | Trusted Mentorship & Admission Guidance</title>
+        <meta name="description" content="Mentor Krish provides expert SAT/IELTS tutoring, psychometric analysis, and guaranteed university admission support. Book your consultation today!" />
+        <link rel="canonical" href="https://mentorkrish.in/" />
+      </Head>
       <Navbar/>
       <ContactButton/>
         <Hero/>

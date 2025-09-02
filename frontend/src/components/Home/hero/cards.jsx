@@ -51,7 +51,7 @@ const cardData = [
 		image: "/assets/img/dsat.jpg",
 		description: "Experience authentic SAT preparation with our advanced digital platform featuring real-time analytics and adaptive learning.",
 		button: {
-			label: "Start Free Trial",
+			label: "Explore DSAT Platform",
 			link: "https://prepsmart.mentorkrish.in/"
 		},
     image: "/assets/img/platform.jpg", 

@@ -1,18 +1,20 @@
 package com.mentor.backend.service;
 
-import com.mentor.backend.dto.AnnouncementRequest;
-import com.mentor.backend.dto.AnnouncementResponse;
-import com.mentor.backend.entity.Announcement;
-import com.mentor.backend.exception.ResourceNotFoundException;
-import com.mentor.backend.repository.AnnouncementRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.mentor.backend.dto.AnnouncementRequest;
+import com.mentor.backend.dto.AnnouncementResponse;
+import com.mentor.backend.entity.Announcement;
+import com.mentor.backend.exception.ResourceNotFoundException;
+import com.mentor.backend.repository.AnnouncementRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class AnnouncementService {
         Announcement announcement = Announcement.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
+                .content(request.getContent()) // <-- add this
                 .imageUrl(request.getImageUrl())
                 .date(parsedDate)
                 .time(parsedTime)
@@ -72,6 +75,7 @@ public class AnnouncementService {
 
         announcement.setTitle(request.getTitle());
         announcement.setDescription(request.getDescription());
+        announcement.setContent(request.getContent()); // <-- add this
         announcement.setImageUrl(request.getImageUrl());
 
         return mapToResponse(announcementRepository.save(announcement));
@@ -88,7 +92,8 @@ public class AnnouncementService {
                 .id(announcement.getId())
                 .title(announcement.getTitle())
                 .description(announcement.getDescription())
-                .imageUrl(announcement.getImageUrl()) // full Cloudinary URL here
+                .content(announcement.getContent()) // <-- add this
+                .imageUrl(announcement.getImageUrl())
                 .date(announcement.getDate().toString())
                 .time(announcement.getTime().toString())
                 .createdAt(announcement.getCreatedAt())

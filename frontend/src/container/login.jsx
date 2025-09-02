@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useRouter } from "next/router";
 import { loginUser } from "../lib/api";
+import Head from 'next/head'
 import {
   auth,
   googleProvider,
@@ -114,6 +115,13 @@ export default function Login() {
 
   return (
     <>
+
+    <Head>
+      <title>Login | Mentor Krish</title>
+      <meta name="description" content="Sign in to access personalized academic mentoring, SAT/IELTS resources, and student dashboard." />
+      <link rel="canonical" href="https://mentorkrish.in/login" />
+    </Head>
+
       <Navbar />
       <main className="min-h-screen flex flex-col justify-center items-center px-4 py-16 bg-w2 mt-18">
         <form onSubmit={handleSubmit} className="max-w-xl w-full space-y-6" noValidate>

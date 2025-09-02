@@ -1,12 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { fetchAnnouncements } from "../../lib/api";
-import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../lib/firebase"; // Adjust path if needed
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from "../../lib/firebase";
 import { useRouter } from "next/router";
-import Sample from "../../../public/assets/img/dsat.jpg"
+import Sample from "../../../public/assets/img/dsat.jpg";
+
+function AnnouncementModal({ announcement, onClose }) {
+  if (!announcement) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div className="bg-w1 rounded-2xl shadow-xl max-w-lg w-full p-6 relative border">
+        <button
+          className="absolute right-5 top-5 text-gray-500 text-3xl"
+          onClick={onClose}
+          aria-label="Close"
+        >×</button>
+        <img
+          src={announcement.image}
+          alt={announcement.title}
+          className="w-full h-44 object-cover rounded-lg mb-4"
+        />
+        <h2 className="text-xl font-bold mb-2">{announcement.title}</h2>
+        {announcement.timer && (
+          <div className="mb-2 bg-yellow-100 text-yellow-700 font-bold py-1 px-3 inline-block rounded">{announcement.timer}</div>
+        )}
+        <p className="text-g2 mb-3">{announcement.description}</p>
+        {announcement.content && (
+          <div className="mb-4 text-base whitespace-pre-line">{announcement.content}</div>
+        )}
+        <button
+          className="bg-r1 hover:bg-r2 text-white px-6 py-2 rounded font-semibold shadow mt-3"
+          onClick={() => window.location.href = '/contact'}
+        >
+          Contact
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function AnnouncementsSection() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalIndex, setModalIndex] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -14,28 +49,47 @@ export default function AnnouncementsSection() {
       setLoading(true);
       const data = await fetchAnnouncements();
 
-      // Map backend fields → UI format
-      const mapped = data.map((item, index) => ({
-        id: item.id || item._id || index, // add announcement id for analytics
+      const now = new Date();
+      const filtered = data.filter(item => {
+        if (!item.date || !item.time) return true;
+        const announcementTime = new Date(`${item.date}T${item.time}`);
+        return announcementTime >= now;
+      });
+
+      const mapped = filtered.map((item, index) => ({
+        id: item.id || item._id || index,
         title: item.title,
         image: item.imageUrl && item.imageUrl.startsWith('http')
           ? item.imageUrl
           : Sample,
         description: item.description,
-        timer: null,
+        content: item.content,
+        timer: (() => {
+          if (!item.date || !item.time) return null;
+          const end = new Date(`${item.date}T${item.time}`);
+          const diff = end - now;
+          if (diff <= 0) return null;
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+          const mins = Math.floor(diff / (1000 * 60)) % 60;
+          return `${
+            days > 0 ? days + "d " : ""}${
+            hours > 0 ? hours + "h " : ""
+          }${
+            mins > 0 ? mins + "m" : ""
+          } left`;
+        })(),
         link: "/contact",
       }));
 
       setAnnouncements(mapped);
       setLoading(false);
     }
-
     loadData();
   }, []);
 
-  // Track click on "Know More"
+  // Track click on "Know More" (for analytics)
   const handleKnowMoreClick = async (announcement, index) => {
-    // Firebase Analytics tracking
     if (analytics) {
       logEvent(analytics, "announcement_click", {
         announcement_id: announcement.id,
@@ -43,8 +97,6 @@ export default function AnnouncementsSection() {
         location: "homepage_announcements",
       });
     }
-
-    // Firestore tracking
     if (db) {
       try {
         await addDoc(collection(db, "user_events"), {
@@ -61,10 +113,10 @@ export default function AnnouncementsSection() {
         console.error("Failed to log announcement click event to Firestore", e);
       }
     }
-
-    // Navigation
-    router.push(announcement.link);
+    setModalIndex(index);
   };
+
+  const closeModal = () => setModalIndex(null);
 
   if (loading) {
     return (
@@ -92,7 +144,8 @@ export default function AnnouncementsSection() {
           {announcements.map((item, index) => (
             <div
               key={index}
-              className="bg-w2 rounded-2xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300 border border-white/10"
+              className="bg-w2 rounded-2xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300 border border-white/10 cursor-pointer"
+              onClick={() => handleKnowMoreClick(item, index)}
             >
               <img
                 src={item.image}
@@ -109,7 +162,6 @@ export default function AnnouncementsSection() {
                     {item.description}
                   </p>
                 </div>
-
                 <div className="mt-4">
                   {item.timer && (
                     <div className="bg-w1 text-r1 text-[11px] sm:text-xs px-2 py-1 inline-block rounded-full font-semibold mb-3 tracking-wide select-none">
@@ -119,7 +171,10 @@ export default function AnnouncementsSection() {
                   <button
                     type="button"
                     className="text-r1 hover:text-r2 hover:underline font-semibold text-sm"
-                    onClick={() => handleKnowMoreClick(item, index)}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleKnowMoreClick(item, index);
+                    }}
                   >
                     Know More →
                   </button>
@@ -129,6 +184,12 @@ export default function AnnouncementsSection() {
           ))}
         </div>
       </div>
+      {modalIndex !== null && (
+        <AnnouncementModal
+          announcement={announcements[modalIndex]}
+          onClose={closeModal}
+        />
+      )}
     </section>
   );
 }

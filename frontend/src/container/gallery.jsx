@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import { Play, Heart, Download, ExternalLink, Eye } from 'lucide-react';
 import { fetchGallery } from '../lib/api';
 import sample from "../../public/assets/img/dsat.jpg";
+import Head from 'next/head'
 
 const ITEMS_PER_PAGE = 12;
 
@@ -112,6 +113,12 @@ const Gallery = () => {
 
   return (
     <>
+    <Head>
+      <title>Gallery | Mentor Krish</title>
+      <meta name="description" content="Browse the Mentor Krish gallery for highlights from our mentoring journey, student success stories, and campus events." />
+      <link rel="canonical" href="https://mentorkrish.in/gallery" />
+    </Head>
+
       <Navbar />
       <main className="min-h-screen bg-w2 mt-18 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
         {/* Page header */}

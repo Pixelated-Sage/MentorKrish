@@ -35,6 +35,7 @@ const baseNavItems = [
   { label: "Home", href: "/", sections: homeSections },
   { label: "Career", href: "/career", sections: careerSections },
   { label: "Courses", href: "/courses" },
+  { label: "DSAT", href: "https://prepsmart.mentorkrish.in" },
   { label: "Psychometric", href: "/psycohmetric", sections: psycoSections },
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },

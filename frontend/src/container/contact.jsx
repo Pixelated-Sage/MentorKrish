@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { sendContactMessage } from "../lib/api";
+import Head from "next/head";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -56,6 +57,12 @@ export default function Contact() {
   if (success) {
     return (
       <>
+      <Head>
+        <title>Contact | Mentor Krish</title>
+        <meta name="description" content="Contact Mentor Krish for personalized academic mentoring, test prep, and university admission counseling. Reach us today for a free consultation." />
+        <link rel="canonical" href="https://mentorkrish.in/contact" />
+      </Head>
+
         <Navbar />
         <main className="min-h-[70vh] flex flex-col justify-center items-center px-6 py-20 bg-w2">
           <div className="max-w-md w-full text-center">

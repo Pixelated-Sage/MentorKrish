@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://mentorkrish.in
+
+# Sitemaps
+Sitemap: https://mentorkrish.in/sitemap.xml

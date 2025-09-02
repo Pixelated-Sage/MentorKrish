@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 public class AnnouncementResponse {
-
     private Long id;
     private String title;
     private String description;
+    private String content; // <-- add this
     private String imageUrl;
     private String date;
     private String time;

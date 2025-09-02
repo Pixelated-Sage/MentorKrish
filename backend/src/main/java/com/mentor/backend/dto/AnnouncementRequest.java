@@ -2,15 +2,15 @@ package com.mentor.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
 @Data
 public class AnnouncementRequest {
-
     @NotBlank(message = "Title is required")
     private String title;
 
     @NotBlank(message = "Description is required")
     private String description;
+
+    private String content; // <-- add this
 
     private String imageUrl;
 

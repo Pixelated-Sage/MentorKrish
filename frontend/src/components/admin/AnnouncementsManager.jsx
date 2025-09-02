@@ -125,6 +125,15 @@ export default function AdminAnnouncements() {
             required
             className="w-full rounded-md border border-gray-300 p-2 resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           />
+          <textarea
+            name="content"
+            value={form.content}
+            onChange={handleChange}
+            placeholder="Full announcement details..."
+            rows={4}
+            className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+          />
+
 
           <div
             className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition ${

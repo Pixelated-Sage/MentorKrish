@@ -41,16 +41,16 @@ const Footer = () => {
               Guiding Your Path to Success with Personalized Career Counseling
             </p>
             <div className="flex space-x-3">
-              <a href="#" onClick={() => trackClick('footer_social_click', 'Linkedin')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
+              <a href="https://www.linkedin.com/company/mentor-krish/?originalSubdomain=in" onClick={() => trackClick('footer_social_click', 'Linkedin')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
                 <Linkedin className="w-4 h-4 text-w1" />
               </a>
-              <a href="#" onClick={() => trackClick('footer_social_click', 'Instagram')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
+              <a href="https://www.instagram.com/mentor.krish?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" onClick={() => trackClick('footer_social_click', 'Instagram')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
                 <Instagram className="w-4 h-4 text-w1" />
               </a>
-              <a href="#" onClick={() => trackClick('footer_social_click', 'Facebook')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
+              <a href="https://www.facebook.com/mentorkrish1/" onClick={() => trackClick('footer_social_click', 'Facebook')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
                 <Facebook className="w-4 h-4 text-w1" />
               </a>
-              <a href="#" onClick={() => trackClick('footer_social_click', 'Youtube')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
+              <a href="https://youtube.com/@mentorkrish1977?si=yqHiR9nKgCepwy8j" onClick={() => trackClick('footer_social_click', 'Youtube')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
                 <Youtube className="w-4 h-4 text-w1" />
               </a>
             </div>
@@ -61,16 +61,16 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-w1 mb-4">Useful Links</h3>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-2">
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Home')} className="block text-g2 hover:text-r1 transition-colors text-sm">Home</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'About')} className="block text-g2 hover:text-r1 transition-colors text-sm">About</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Psychometric Test')} className="block text-g2 hover:text-r1 transition-colors text-sm">Psychometric Test</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Career Counseling')} className="block text-g2 hover:text-r1 transition-colors text-sm">Career Counseling</a>
+                <a href="/" onClick={() => trackClick('footer_link_click', 'Home')} className="block text-g2 hover:text-r1 transition-colors text-sm">Home</a>
+                <a href="/psycohmetric" onClick={() => trackClick('footer_link_click', 'Psychometric Test')} className="block text-g2 hover:text-r1 transition-colors text-sm">Psychometric Test</a>
+                <a href="/career" onClick={() => trackClick('footer_link_click', 'Career Counseling')} className="block text-g2 hover:text-r1 transition-colors text-sm">Career Counseling</a>
+                <a href="/courses" onClick={() => trackClick('footer_link_click', 'Courses')} className="block text-g2 hover:text-r1 transition-colors text-sm">Courses</a>
               </div>
               <div className="space-y-2">
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Courses')} className="block text-g2 hover:text-r1 transition-colors text-sm">Courses</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Prepsmart')} className="block text-g2 hover:text-r1 transition-colors text-sm">Prepsmart</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Gallery')} className="block text-g2 hover:text-r1 transition-colors text-sm">Gallery</a>
-                <a href="#" onClick={() => trackClick('footer_link_click', 'Contact')} className="block text-g2 hover:text-r1 transition-colors text-sm">Contact</a>
+                <a href="https://prepsmart.mentorkrish.in" onClick={() => trackClick('footer_link_click', 'Prepsmart')} className="block text-g2 hover:text-r1 transition-colors text-sm">Prepsmart</a>
+                <a href="/gallery" onClick={() => trackClick('footer_link_click', 'Gallery')} className="block text-g2 hover:text-r1 transition-colors text-sm">Gallery</a>
+                <a href="/blogs" onClick={() => trackClick('footer_link_click', 'Blogs')} className="block text-g2 hover:text-r1 transition-colors text-sm">Gallery</a>
+                <a href="/contact" onClick={() => trackClick('footer_link_click', 'Contact')} className="block text-g2 hover:text-r1 transition-colors text-sm">Contact</a>
               </div>
             </div>
           </div>

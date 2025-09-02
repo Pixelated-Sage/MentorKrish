@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchBlogs, fetchBlogBySlug } from "../lib/api";
+import Head from 'next/head'
 import Sample from "../../public/assets/img/dsat.jpg"
 // --- MOTION CONFIG ---
 const fadeIn = {
@@ -135,6 +136,13 @@ export default function Blog() {
 
   return (
     <>
+
+    <Head>
+      <title>Blog & Insights | Mentor Krish</title>
+      <meta name="description" content="Read the latest blogs and insights from Mentor Krish on education, test prep, admissions, and student success stories." />
+      <link rel="canonical" href="https://mentorkrish.in/blogs" />
+    </Head>
+
       <Navbar />
       {/* Hero */}
       <section className="relative min-h-[38vh] sm:min-h-[44vh] flex flex-col items-center justify-center bg-w2 pt-20 pb-12 overflow-hidden">

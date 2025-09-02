@@ -209,7 +209,7 @@ const RoundsDashboard = () => {
                     className={`px-5 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-lg transition-all duration-150 shadow ${filteredRounds[filteredActiveRound].color} hover:opacity-90 whitespace-nowrap text-center`}
                     onClick={() => handleStartClick(filteredRounds[filteredActiveRound].subtitle)}
                   >
-                    Start {filteredRounds[filteredActiveRound].subtitle} Preparation
+                    Explore {filteredRounds[filteredActiveRound].subtitle} program
                   </button>
                 </div>
               </div>
