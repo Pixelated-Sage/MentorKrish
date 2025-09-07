@@ -66,9 +66,9 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Blog CRUD restricted to ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasAuthority("ADMIN")
 
                         // ✅ Gallery CRUD restricted to ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/gallery/**").hasRole("ADMIN")
