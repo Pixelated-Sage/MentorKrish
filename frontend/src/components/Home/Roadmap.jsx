@@ -128,7 +128,7 @@ const Roadmap = () => {
 												<img
 													src={`/assets/icons/roadmap-home/${step.icon}`}
 													alt={`${step.title} icon`}
-													className="w-8 h-8 md:w-12 md:h-12"
+													className="w-6 h-6 md:w-9 md:h-9"
 													loading="lazy"
 												/>
 											</div>

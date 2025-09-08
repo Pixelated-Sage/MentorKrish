@@ -105,15 +105,20 @@ export default function BlogsManager() {
 
   return (
     <AdminRouteGuard>
-      <div className="max-w-7xl mx-auto py-12 px-6">
-        <h1 className="text-3xl font-bold mb-6">Manage Blogs</h1>
+      <div className="max-w-4xl mx-auto py-12 px-6">
+        <h1 className="text-3xl font-extrabold mb-8">Blog Management</h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
+          <div className="mb-6 rounded bg-red-100 text-red-700 p-4 border border-red-300">
+            {error}
+          </div>
         )}
 
-        <form onSubmit={onSubmit} className="mb-8 space-y-6 bg-white p-6 rounded-lg shadow-md">
-          <div className="grid gap-6 md:grid-cols-2">
+        <form
+          onSubmit={onSubmit}
+          className="mb-10 space-y-6 bg-white p-6 rounded-lg shadow-md border border-gray-200"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
               name="title"
               type="text"
@@ -121,7 +126,7 @@ export default function BlogsManager() {
               value={form.title}
               onChange={onChange}
               required
-              className="input"
+              className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <input
               name="slug"
@@ -129,7 +134,7 @@ export default function BlogsManager() {
               placeholder="Slug (auto-generated if left blank)"
               value={form.slug}
               onChange={onChange}
-              className="input"
+              className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <input
               name="author"
@@ -137,7 +142,7 @@ export default function BlogsManager() {
               placeholder="Author"
               value={form.author}
               onChange={onChange}
-              className="input"
+              className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <div className="flex items-center space-x-2">
               <input
@@ -146,9 +151,9 @@ export default function BlogsManager() {
                 type="checkbox"
                 checked={form.published}
                 onChange={onChange}
-                className="checkbox"
+                className="rounded border-gray-300 focus:ring-red-500"
               />
-              <label htmlFor="published" className="select-none">Published</label>
+              <label htmlFor="published" className="select-none text-gray-700">Published</label>
             </div>
           </div>
 
@@ -159,11 +164,13 @@ export default function BlogsManager() {
             value={form.content}
             onChange={onChange}
             required
-            className="textarea"
+            className="w-full rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
           />
 
-          <div className="flex flex-col items-center border-2 border-dashed rounded-lg p-4 cursor-pointer"
-               onClick={() => document.getElementById('blog-image').click()}>
+          <div
+            className="flex flex-col items-center border-2 border-dashed rounded-lg p-4 cursor-pointer transition hover:bg-gray-50"
+            onClick={() => document.getElementById('blog-image').click()}
+          >
             <input
               id="blog-image"
               name="image"
@@ -175,7 +182,7 @@ export default function BlogsManager() {
             {form.imagePreview ? (
               <img src={form.imagePreview} alt="Preview" className="max-w-full max-h-48 rounded" />
             ) : (
-              <p className="text-gray-500">Click or drag image here to upload</p>
+              <p className="text-gray-600">Click or drag image here to upload</p>
             )}
           </div>
 
@@ -183,7 +190,7 @@ export default function BlogsManager() {
             <button
               type="submit"
               disabled={!form.title || !form.content || loading}
-              className="btn-primary"
+              className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-red-700 disabled:opacity-50"
             >
               {editingId ? "Update Blog" : "Create Blog"}
             </button>
@@ -191,7 +198,7 @@ export default function BlogsManager() {
               <button
                 type="button"
                 onClick={onCancel}
-                className="btn-secondary"
+                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold shadow hover:bg-gray-300"
               >
                 Cancel
               </button>
@@ -199,36 +206,49 @@ export default function BlogsManager() {
           </div>
         </form>
 
-        <div className="overflow-auto mt-8">
-          <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead>
+        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="border border-gray-300 px-4 py-2">Title</th>
-                <th className="border border-gray-300 px-4 py-2">Slug</th>
-                <th className="border border-gray-300 px-4 py-2">Author</th>
-                <th className="border border-gray-300 px-4 py-2">Published</th>
-                <th className="border border-gray-300 px-4 py-2">Published At</th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Slug</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Author</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Published At</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredBlogs.map((blog) => (
-                <tr key={blog.id} className="hover:bg-gray-100 cursor-pointer">
-                  <td className="border border-gray-300 px-4 py-2">{blog.title}</td>
-                  <td className="border border-gray-300 px-4 py-2">{blog.slug}</td>
-                  <td className="border border-gray-300 px-4 py-2">{blog.author || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{blog.published ? "Yes" : "No"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{blog.publishedAt ? new Date(blog.publishedAt).toLocaleString() : "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2 space-x-3">
-                    <button onClick={() => onEdit(blog)} className="text-blue-600 hover:underline">Edit</button>
-                    <button onClick={() => onDelete(blog.id)} className="text-red-600 hover:underline">Delete</button>
+            <tbody className="divide-y divide-gray-200">
+              {filteredBlogs.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
+                    No blogs available.
                   </td>
                 </tr>
-              ))}
-              {filteredBlogs.length === 0 && (
-                <tr>
-                  <td colSpan="6" className="text-center p-4 text-gray-500">No blogs available.</td>
-                </tr>
+              ) : (
+                filteredBlogs.map((blog) => (
+                  <tr key={blog.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{blog.title}</td>
+                    <td className="px-4 py-3">{blog.slug}</td>
+                    <td className="px-4 py-3">{blog.author || "-"}</td>
+                    <td className="px-4 py-3">{blog.published ? "Yes" : "No"}</td>
+                    <td className="px-4 py-3">{blog.publishedAt ? new Date(blog.publishedAt).toLocaleString() : "-"}</td>
+                    <td className="px-4 py-3 whitespace-nowrap space-x-3">
+                      <button
+                        onClick={() => onEdit(blog)}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDelete(blog.id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

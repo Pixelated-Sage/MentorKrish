@@ -133,7 +133,7 @@ export default function AnnouncementsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <h2 className="text-2xl sm:text-3xl font-bold text-g1 mb-3 text-center">
-          📢 Latest Announcements
+          Latest Announcements
         </h2>
         <p className="text-center text-g2 mb-8 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
           Stay updated with deadlines, new programs, and exclusive opportunities from the Mentor Krish community.
