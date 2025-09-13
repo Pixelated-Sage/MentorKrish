@@ -136,36 +136,39 @@ export default function Blog() {
 
   return (
     <>
-
-    <Head>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            "headline": post.title,
-            "image": post.imageUrl, // main image
-            "author": {
-              "@type": "Person",
-              "name": post.author || "Mentor Krish Team"
-            },
-            "description": post.content.slice(0, 130),
-            "datePublished": post.publishedAt || post.createdAt,
-            "publisher": {
-              "@type": "Organization",
-              "name": "Mentor Krish",
-              "logo": {
+<Head>
+  <title>{post.title} | Blog | Mentor Krish</title>
+  <meta name="description" content={post.content.slice(0,130)} />
+  <link rel="canonical" href={`https://mentorkrish.in/blogs/${post.slug}`} />
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "image": post.imageUrl,
+        "author": {
+            "@type": "Person",
+            "name": post.author || "Mentor Krish Team"
+        },
+        "description": post.content.slice(0, 130),
+        "datePublished": post.publishedAt || post.createdAt,
+        "publisher": {
+            "@type": "Organization",
+            "name": "Mentor Krish",
+            "logo": {
                 "@type": "ImageObject",
                 "url": "https://mentorkrish.in/assets/img/logo.png"
-              }
-            },
-            "mainEntityOfPage": `https://mentorkrish.in/blogs/${post.slug}`,
-            "url": `https://mentorkrish.in/blogs/${post.slug}`
-          })
-        }}
-      />
-    </Head>
+            }
+        },
+        "mainEntityOfPage": `https://mentorkrish.in/blogs/${post.slug}`,
+        "url": `https://mentorkrish.in/blogs/${post.slug}`
+      })
+    }}
+  />
+</Head>
+
 
       <Navbar />
       {/* Hero */}
