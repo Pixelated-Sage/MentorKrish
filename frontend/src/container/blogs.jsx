@@ -138,9 +138,33 @@ export default function Blog() {
     <>
 
     <Head>
-      <title>Blog & Insights | Mentor Krish</title>
-      <meta name="description" content="Read the latest blogs and insights from Mentor Krish on education, test prep, admissions, and student success stories." />
-      <link rel="canonical" href="https://mentorkrish.in/blogs" />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "image": post.imageUrl, // main image
+            "author": {
+              "@type": "Person",
+              "name": post.author || "Mentor Krish Team"
+            },
+            "description": post.content.slice(0, 130),
+            "datePublished": post.publishedAt || post.createdAt,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Mentor Krish",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://mentorkrish.in/assets/img/logo.png"
+              }
+            },
+            "mainEntityOfPage": `https://mentorkrish.in/blogs/${post.slug}`,
+            "url": `https://mentorkrish.in/blogs/${post.slug}`
+          })
+        }}
+      />
     </Head>
 
       <Navbar />

@@ -12,9 +12,24 @@ const CoursesPage = () => {
   return (
     <div>
       <Head>
-        <title>Courses | Mentor Krish</title>
-        <meta name="description" content="Explore a wide range of academic and standardized test preparation courses offered by Mentor Krish" />
-        <link rel="canonical" href="https://mentorkrish.in/courses" />
+        <title>{course.title} | Mentor Krish</title>
+        <meta name="description" content={course.description} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Course",
+              "name": course.title,
+              "description": course.description,
+              "provider": {
+                "@type": "Organization",
+                "name": "Mentor Krish",
+                "sameAs": "https://mentorkrish.in"
+              }
+            })
+          }}
+        />
       </Head>
 
       <Navbar />

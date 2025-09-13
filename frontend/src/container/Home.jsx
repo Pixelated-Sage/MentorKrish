@@ -16,9 +16,31 @@ const Home = () => {
   return (
     <div>
       <Head>
-        <title>Mentor Krish | Trusted Mentorship & Admission Guidance</title>
-        <meta name="description" content="Mentor Krish provides expert SAT/IELTS tutoring, psychometric analysis, and guaranteed university admission support. Book your consultation today!" />
-        <link rel="canonical" href="https://mentorkrish.in/" />
+        {/* --- Usual SEO tags here --- */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Mentor Krish",
+              "url": "https://mentorkrish.in",
+              "logo": "https://mentorkrish.in/assets/img/logo.png", // update if needed
+              "sameAs": [
+                "https://www.instagram.com/mentorkrish", // add real social
+                "https://www.linkedin.com/company/mentorkrish"
+              ],
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "telephone": "+91-9983322553",
+                  "contactType": "customer service",
+                  "areaServed": "IN"
+                }
+              ]
+            })
+          }}
+        />
       </Head>
       <Navbar/>
       <ContactButton/>
