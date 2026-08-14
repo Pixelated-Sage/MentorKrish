@@ -1,5 +1,5 @@
-import Blogs from '../container/blogs'; // ADJUST IF YOUR src/ IS AT ROOT
+import Blogs from '../container/blogs';
 
-export default function contactPage() {
+export default function BlogsPage() {
   return <Blogs />;
 }

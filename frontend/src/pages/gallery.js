@@ -1,5 +1,5 @@
-import Gallery from '../container/gallery'; // ADJUST IF YOUR src/ IS AT ROOT
+import Gallery from '../container/gallery';
 
-export default function loginPage() {
+export default function GalleryPage() {
   return <Gallery />;
 }

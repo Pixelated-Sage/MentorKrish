@@ -1,229 +1,209 @@
-// pages/gallery.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { Play, Heart, Download, ExternalLink, Eye } from 'lucide-react';
-import { fetchGallery } from '../lib/api';
-import sample from "../../public/assets/img/dsat.jpg";
-import Head from 'next/head'
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { Eye, X, Image as ImageIcon, Play, Film } from "lucide-react";
+import { fetchGallery } from "../lib/api";
+import Head from "next/head";
 
-const ITEMS_PER_PAGE = 12;
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
-  hover: { y: -5, transition: { duration: 0.18 } },
-};
-
-const overlayVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.25 } },
-};
-
-// Media component with Intersection Observer for lazy video play
-function Media({ src, title }) {
-  const ref = useRef();
-  const [isVisible, setIsVisible] = useState(false);
+export default function Gallery() {
+  const [items, setItems] = useState([]);
+  const [activeTab, setActiveTab] = useState("All");
+  const [selectedMedia, setSelectedMedia] = useState(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.75 }
-    );
-
-    if (ref.current) observer.observe(ref.current);
-
-    return () => {
-      if (ref.current) observer.unobserve(ref.current);
-    };
-  }, []);
-
-  const isVideo = src?.match(/\.(mp4|mov|webm)$/i);
-
-  return (
-    <div ref={ref} className="relative w-full h-full">
-      {isVideo ? (
-        <video
-          src={src}
-          className="w-full h-full object-cover"
-          autoPlay={isVisible}
-          loop
-          muted
-          playsInline
-          draggable={false}
-        />
-      ) : (
-        <img
-          src={src || sample}
-          alt={title}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-          draggable={false}
-        />
-      )}
-    </div>
-  );
-}
-
-const Gallery = () => {
-  const [galleryData, setGalleryData] = useState([]);
-  const [filter, setFilter] = useState('all');
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [likedCards, setLikedCards] = useState(new Set());
-  const [loading, setLoading] = useState(true);
-  const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
-
-  useEffect(() => {
-    async function loadGallery() {
-      setLoading(true);
+    async function load() {
       const data = await fetchGallery();
-      setGalleryData(data);
-      setLoading(false);
+      setItems(data);
     }
-    loadGallery();
+    load();
   }, []);
 
-  const filteredData = filter === 'all' ? galleryData : galleryData.filter(item => item.category === filter);
-  const displayedData = filteredData.slice(0, visibleItems);
+  const filterTabs = ["All", "Photos", "Videos", "Mentorship", "Classroom", "Counseling", "Achievements", "Workshops"];
 
-  const handleLoadMore = () => {
-    setVisibleItems(prev => Math.min(prev + ITEMS_PER_PAGE, filteredData.length));
-  };
-
-  const toggleLike = (cardId) => {
-    setLikedCards(prev => {
-      const newSet = new Set(prev);
-      newSet.has(cardId) ? newSet.delete(cardId) : newSet.add(cardId);
-      return newSet;
-    });
-  };
-
-  const categoriesSet = new Set(['all']);
-  galleryData.forEach(item => item.category && categoriesSet.add(item.category));
-  const categoriesArr = Array.from(categoriesSet);
-
-  const getSizeClass = (size) => `
-    ${size === 'small' ? 'row-span-2' : size === 'medium' ? 'row-span-3' : size === 'large' ? 'row-span-4' : 'row-span-3'}
-    sm:${size === 'small' ? 'row-span-2' : size === 'medium' ? 'row-span-3' : size === 'large' ? 'row-span-4' : 'row-span-3'}
-    xs:row-span-2
-  `;
+  const filteredItems = items.filter((item) => {
+    if (activeTab === "All") return true;
+    if (activeTab === "Photos") return item.type === "image";
+    if (activeTab === "Videos") return item.type === "video";
+    return item.category === activeTab;
+  });
 
   return (
     <>
-    <Head>
-      <title>Gallery | Mentor Krish</title>
-      <meta name="description" content="Browse the Mentor Krish gallery for highlights from our mentoring journey, student success stories, and campus events." />
-      <link rel="canonical" href="https://mentorkrish.in/gallery" />
-    </Head>
+      <Head>
+        <title>Media Gallery & Highlights | Mentor Krish</title>
+        <meta
+          name="description"
+          content="Explore photos and video highlights from Mentor Krish SAT prep sessions, 1-on-1 mentoring, and student achievement celebrations."
+        />
+        <link rel="canonical" href="https://mentorkrish.in/gallery" />
+      </Head>
 
       <Navbar />
-      <main className="min-h-screen bg-w2 mt-18 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
-        {/* Page header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-g1 mb-2">Gallery</h1>
-          <p className="text-g2 max-w-xl mx-auto text-sm sm:text-base">
-            Explore our latest designs, tutorials, and development showcases. Filter based on category and dive into the details.
-          </p>
-        </motion.div>
 
-        {/* Sticky Filter Bar */}
-        <div className="sticky top-16 z-30 bg-w2/95 backdrop-blur-sm border-b border-w2 mb-6 py-3 flex flex-wrap justify-center gap-3 shadow-sm">
-          {categoriesArr.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => { setFilter(cat); setVisibleItems(ITEMS_PER_PAGE); setHoveredCard(null); }}
-              className={`px-5 py-2 rounded-full font-semibold text-sm transition ${filter === cat ? 'bg-r1 text-w1 shadow-md' : 'bg-w1 text-g2 border border-w2 hover:bg-g2 hover:text-w1'}`}
-              aria-pressed={filter === cat}
-            >
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </button>
-          ))}
+      <main className="min-h-screen bg-slate-50 pt-28 pb-20">
+        {/* Header Banner */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 mb-10">
+          <div className="bg-slate-900 text-white rounded-2xl p-8 md:p-12 shadow-xs border border-slate-800 relative overflow-hidden">
+            <div className="relative z-10 max-w-2xl space-y-3">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-800 text-slate-300 text-xs font-bold uppercase tracking-wider border border-slate-700">
+                <Film size={14} className="text-red-700" /> Photo & Video Library
+              </span>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+                Institute & <span className="text-red-700">Mentorship</span> Gallery
+              </h1>
+              <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                Highlights from 1-on-1 Digital SAT strategy sessions, diagnostic workshops, student felicitation ceremonies, and video walkthroughs.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Media Filter Bar */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 mb-8">
+          <div className="flex flex-wrap gap-2 justify-start">
+            {filterTabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-slate-200 border border-slate-200"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 auto-rows-[90px] sm:auto-rows-[100px] md:auto-rows-[120px]">
-          <AnimatePresence>
-            {loading ? (
-              <div className="col-span-full text-center py-10">Loading gallery...</div>
-            ) : (
-              displayedData.map((item) => (
-                <motion.div
-                  layout
-                  key={item.id}
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  whileHover="hover"
-                  className={`relative rounded-xl shadow-md overflow-hidden cursor-pointer bg-w1 ${getSizeClass(item.size)}`}
-                  onMouseEnter={() => setHoveredCard(item.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  tabIndex={0}
-                  aria-label={item.title}
-                >
-                  <Media src={item.src} title={item.title} />
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          {filteredItems.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+              <p className="text-slate-500 text-sm font-semibold">No media items available in this category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <AnimatePresence>
+                {filteredItems.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="group relative bg-white rounded-2xl overflow-hidden shadow-xs border border-slate-200 hover:shadow-md transition-all duration-200 cursor-pointer h-64 flex flex-col justify-between"
+                    onClick={() => setSelectedMedia(item)}
+                  >
+                    {/* Media Thumbnail */}
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
 
-                  {/* Overlay */}
-                  <AnimatePresence>
-                    {hoveredCard === item.id && (
-                      <motion.div variants={overlayVariants} initial="hidden" animate="visible" exit="hidden" className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3 sm:p-5 text-w1">
-                        <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
-                          <div className="flex flex-wrap gap-1">
-                            {item.tags?.map((tag, i) => (
-                              <span key={i} className="px-2 py-1 rounded-full bg-w1/20 text-xs font-semibold select-none">{tag}</span>
-                            ))}
-                          </div>
-                          <motion.button
-                            onClick={(e) => { e.stopPropagation(); toggleLike(item.id); }}
-                            aria-label={likedCards.has(item.id) ? 'Unlike' : 'Like'}
-                            className="p-1 rounded-full bg-w1/20 hover:bg-w1/30 transition"
-                            whileHover={{ scale: 1.2 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Heart className={`w-5 h-5 ${likedCards.has(item.id) ? 'fill-r1 text-r1' : 'text-w1'}`} />
-                          </motion.button>
+                    {/* Video Badge Overlay */}
+                    {item.type === "video" && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/30 group-hover:bg-slate-950/50 transition-colors">
+                        <div className="w-12 h-12 rounded-full bg-red-700 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          <Play size={20} className="ml-1" />
                         </div>
-
-                        <div>
-                          <h3 className="text-lg font-semibold">{item.title}</h3>
-                          <p className="text-xs sm:text-sm opacity-90 mt-1">{item.description}</p>
-
-                          <div className="flex gap-2 mt-3 flex-wrap">
-                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="View details">
-                              <Eye className="w-4 h-4" /> View
-                            </motion.button>
-                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Save">
-                              <Download className="w-4 h-4" /> Save
-                            </motion.button>
-                            <motion.button className="flex items-center gap-1 px-3 py-1 rounded-full bg-w1/20 text-xs hover:bg-w1/30 transition" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} onClick={(e) => e.stopPropagation()} aria-label="Open externally">
-                              <ExternalLink className="w-4 h-4" /> Open
-                            </motion.button>
-                          </div>
-                        </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
+
+                    {/* Hover Info Banner */}
+                    <div className="absolute inset-0 bg-slate-950/75 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-5">
+                      <div className="flex justify-between items-center">
+                        <span className="bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded">
+                          {item.type === "video" ? "Video" : "Photo"}
+                        </span>
+                        <span className="bg-slate-900 text-slate-300 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-slate-700">
+                          {item.category}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h3 className="text-base font-bold text-white mb-1">{item.title}</h3>
+                        <p className="text-slate-300 text-xs line-clamp-2">{item.description}</p>
+                        <div className="mt-2 flex items-center gap-1 text-[11px] text-red-400 font-bold uppercase tracking-wider">
+                          <Eye size={13} /> {item.type === "video" ? "Watch Video" : "View Photo"}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
-        {/* Load More */}
-        {visibleItems < filteredData.length && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-center mt-10">
-            <motion.button onClick={handleLoadMore} className="px-8 py-3 bg-r1 text-w1 rounded-full font-semibold text-sm sm:text-base shadow hover:bg-r2 transition-colors" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.95 }} aria-label="Load more gallery items">
-              Load More
-            </motion.button>
-          </motion.div>
-        )}
+        {/* Media Modal Lightbox / Player */}
+        <AnimatePresence>
+          {selectedMedia && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl relative border border-slate-200"
+              >
+                <button
+                  onClick={() => setSelectedMedia(null)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-950/80 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+
+                {selectedMedia.type === "video" && selectedMedia.videoUrl ? (
+                  <div className="aspect-video w-full bg-black flex items-center justify-center">
+                    {selectedMedia.videoUrl.endsWith(".mp4") || selectedMedia.videoUrl.startsWith("/assets") ? (
+                      <video
+                        src={selectedMedia.videoUrl}
+                        controls
+                        autoPlay
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <iframe
+                        src={selectedMedia.videoUrl}
+                        title={selectedMedia.title}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="h-80 w-full relative bg-slate-100">
+                    <img
+                      src={selectedMedia.src}
+                      alt={selectedMedia.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                <div className="p-6 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
+                      {selectedMedia.type === "video" ? "Video Highlights" : "Photo"}
+                    </span>
+                    <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                      {selectedMedia.category}
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-900">{selectedMedia.title}</h2>
+                  <p className="text-slate-600 text-xs md:text-sm leading-relaxed">{selectedMedia.description}</p>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </main>
+
       <Footer />
     </>
   );
-};
-
-export default Gallery;
+}

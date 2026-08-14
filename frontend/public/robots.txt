@@ -1,12 +1,9 @@
+# *
 User-agent: *
 Allow: /
 
-# Block old/deprecated paths
-Disallow: /shop/
-Disallow: /complete-stationary/
-Disallow: /admin/
-Disallow: /api/admin/
-
-# Sitemap and Host
+# Host
 Host: https://mentorkrish.in
+
+# Sitemaps
 Sitemap: https://mentorkrish.in/sitemap.xml

@@ -1,107 +1,166 @@
-import React from 'react';
-import { Linkedin, Instagram, Facebook, Youtube, Phone, Mail } from 'lucide-react';
-import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../lib/firebase'; // adjust path
+import React from "react";
+import Link from "next/link";
+import { Linkedin, Instagram, Facebook, Youtube, Phone, Mail, MapPin } from "lucide-react";
 
 const Footer = () => {
-
-  const trackClick = async (eventName, label) => {
-    try {
-      if (analytics) {
-        logEvent(analytics, eventName, { label, location: 'footer' });
-      }
-      if (db) {
-        await addDoc(collection(db, 'user_events'), {
-          event: eventName,
-          label,
-          location: 'footer',
-          user: typeof window !== 'undefined' ? localStorage.getItem('userEmail') || 'guest' : 'server',
-          timestamp: serverTimestamp(),
-          path: typeof window !== 'undefined' ? window.location.pathname : 'server',
-        });
-      }
-    } catch (e) {
-      console.error('Footer analytics error', e);
-    }
-  };
-
   return (
-    <footer className="relative bg-g3 pt-16 pb-8 overflow-hidden">
-      {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Logo and Description */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-r1 rounded flex items-center justify-center">
-                <span className="text-w1 font-bold text-sm">MK</span>
-              </div>
-              <span className="text-xl font-bold text-w1">Mentor Krish</span>
+    <footer className="bg-gray-950 text-gray-300 pt-16 pb-8 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-gray-800">
+          
+          {/* Brand Info */}
+          <div className="space-y-4 md:col-span-1">
+            <div className="flex items-center gap-3">
+              <img src="/assets/img/logo.png" alt="Mentor Krish" className="w-10 h-10 object-contain" />
+              <span className="text-2xl font-black text-white">
+                Mentor<span className="text-red-500">Krish</span>
+              </span>
             </div>
-            <p className="text-g2 text-sm leading-relaxed">
-              Guiding Your Path to Success with Personalized Career Counseling
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Empowering students worldwide with premier SAT preparation, admissions mentoring, and career psychometrics.
             </p>
-            <div className="flex space-x-3">
-              <a href="https://www.linkedin.com/company/mentor-krish/?originalSubdomain=in" onClick={() => trackClick('footer_social_click', 'Linkedin')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
-                <Linkedin className="w-4 h-4 text-w1" />
+            <div className="flex items-center space-x-3 pt-2">
+              <a
+                href="https://www.linkedin.com/company/mentor-krish/?originalSubdomain=in"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 bg-gray-900 border border-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+              >
+                <Linkedin size={18} />
               </a>
-              <a href="https://www.instagram.com/mentor.krish?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" onClick={() => trackClick('footer_social_click', 'Instagram')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
-                <Instagram className="w-4 h-4 text-w1" />
+              <a
+                href="https://www.instagram.com/mentor.krish"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 bg-gray-900 border border-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+              >
+                <Instagram size={18} />
               </a>
-              <a href="https://www.facebook.com/mentorkrish1/" onClick={() => trackClick('footer_social_click', 'Facebook')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
-                <Facebook className="w-4 h-4 text-w1" />
+              <a
+                href="https://www.facebook.com/mentorkrish1/"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 bg-gray-900 border border-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+              >
+                <Facebook size={18} />
               </a>
-              <a href="https://youtube.com/@mentorkrish1977?si=yqHiR9nKgCepwy8j" onClick={() => trackClick('footer_social_click', 'Youtube')} className="w-8 h-8 bg-r1 rounded-full flex items-center justify-center hover:bg-r2 transition-colors">
-                <Youtube className="w-4 h-4 text-w1" />
+              <a
+                href="https://youtube.com/@mentorkrish1977"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 bg-gray-900 border border-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+              >
+                <Youtube size={18} />
               </a>
             </div>
           </div>
 
-          {/* Useful Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-w1 mb-4">Useful Links</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-2">
-                <a href="/" onClick={() => trackClick('footer_link_click', 'Home')} className="block text-g2 hover:text-r1 transition-colors text-sm">Home</a>
-                <a href="/psycohmetric" onClick={() => trackClick('footer_link_click', 'Psychometric Test')} className="block text-g2 hover:text-r1 transition-colors text-sm">Psychometric Test</a>
-                <a href="/career" onClick={() => trackClick('footer_link_click', 'Career Counseling')} className="block text-g2 hover:text-r1 transition-colors text-sm">Career Counseling</a>
-                <a href="/courses" onClick={() => trackClick('footer_link_click', 'Courses')} className="block text-g2 hover:text-r1 transition-colors text-sm">Courses</a>
-              </div>
-              <div className="space-y-2">
-                <a href="https://prepsmart.mentorkrish.in" onClick={() => trackClick('footer_link_click', 'Prepsmart')} className="block text-g2 hover:text-r1 transition-colors text-sm">Prepsmart</a>
-                <a href="/gallery" onClick={() => trackClick('footer_link_click', 'Gallery')} className="block text-g2 hover:text-r1 transition-colors text-sm">Gallery</a>
-                <a href="/blogs" onClick={() => trackClick('footer_link_click', 'Blogs')} className="block text-g2 hover:text-r1 transition-colors text-sm">Gallery</a>
-                <a href="/contact" onClick={() => trackClick('footer_link_click', 'Contact')} className="block text-g2 hover:text-r1 transition-colors text-sm">Contact</a>
-              </div>
-            </div>
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-red-500">
+              Quick Links
+            </h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link href="/" className="hover:text-red-400 transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  Courses & Prep
+                </Link>
+              </li>
+              <li>
+                <Link href="/trial" className="hover:text-red-400 transition-colors">
+                  Book Free Trial
+                </Link>
+              </li>
+              <li>
+                <Link href="/blogs" className="hover:text-red-400 transition-colors">
+                  Insights & Blogs
+                </Link>
+              </li>
+              <li>
+                <Link href="/gallery" className="hover:text-red-400 transition-colors">
+                  Photo Gallery
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* Contact Us */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-w1 mb-4">Contact Us</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-r1/10 rounded-full flex items-center justify-center">
-                  <Phone className="w-4 h-4 text-r1" />
-                </div>
-                <a href="tel:+919983322553" onClick={() => trackClick('footer_contact_click', 'Phone')} className="text-g2 hover:text-r1 transition-colors text-sm">
+          {/* Key Programs */}
+          <div>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-red-500">
+              Programs
+            </h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  Digital SAT Prep
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  PSAT / NMSQT Track
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  ACT Mastery
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  IELTS / TOEFL Prep
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:text-red-400 transition-colors">
+                  Psychometric Assessment
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Details */}
+          <div>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-red-500">
+              Get in Touch
+            </h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-center space-x-3">
+                <Phone size={16} className="text-red-500 shrink-0" />
+                <a href="tel:+919983322553" className="hover:text-white transition-colors">
                   +91-9983322553
                 </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-r1/10 rounded-full flex items-center justify-center">
-                  <Mail className="w-4 h-4 text-r1" />
-                </div>
-                <a href="mailto:neelam@mentor-krish.com" onClick={() => trackClick('footer_contact_click', 'Email')} className="text-g2 hover:text-r1 transition-colors text-sm">
+              </li>
+              <li className="flex items-center space-x-3">
+                <Mail size={16} className="text-red-500 shrink-0" />
+                <a href="mailto:neelam@mentor-krish.com" className="hover:text-white transition-colors">
                   neelam@mentor-krish.com
                 </a>
-              </div>
-            </div>
+              </li>
+              <li className="flex items-start space-x-3">
+                <MapPin size={16} className="text-red-500 shrink-0 mt-1" />
+                <span className="text-gray-400">Global Online & In-Person Mentoring Sessions</span>
+              </li>
+            </ul>
           </div>
+
         </div>
 
-        {/* Bottom section */}
-        <div className="border-t border-g2/20 pt-6 text-center">
-          <p className="text-g2 text-sm">© 2024 Mentor Krish. All rights reserved.</p>
+        {/* Bottom Credits */}
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
+          <p>© {new Date().getFullYear()} Mentor Krish. All rights reserved.</p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <Link href="/contact" className="hover:text-gray-400 transition-colors">
+              Contact Support
+            </Link>
+            <Link href="/trial" className="hover:text-gray-400 transition-colors">
+              Book Session
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

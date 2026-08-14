@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../../lib/firebase'; // Adjust path if needed
+import { analytics, logEvent, db, addDoc, collection, serverTimestamp } from '../../lib/firebase';
 
-// Expanded course data with multiple sections for each course
 const courses = [
 	{
 		key: 'PSAT',
 		label: 'PSAT',
 		overview: {
 			heading: 'PSAT Overview',
-			content: `The PSAT (Preliminary SAT) is a standardized test for students in grades 8–11. It serves as a practice for the SAT and a qualifier for the National Merit Scholarship (for 11th graders).`,
+			content: `The PSAT (Preliminary SAT) is a standardized test for students in grades 8–11. It serves as practice for the SAT and a qualifier for the National Merit Scholarship program.`,
 		},
 		why: {
 			heading: 'Why Choose?',
@@ -26,8 +25,8 @@ const courses = [
 		curriculum: {
 			heading: 'Course Curriculum',
 			content: `Our PSAT course mirrors the SAT structure and prepares students across both Math and Reading & Writing modules:\n
-🔹 Reading & Writing — Craft and Structure, Central Ideas, English Conventions, Expression of Ideas.\n
-🔹 Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
+• Reading & Writing — Craft and Structure, Central Ideas, English Conventions, Expression of Ideas.\n
+• Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
 		},
 	},
 	{
@@ -35,24 +34,24 @@ const courses = [
 		label: 'SAT',
 		overview: {
 			heading: 'SAT Overview',
-			content: `The SAT is a globally recognized standardized test used for college admissions, assessing students' readiness in Reading, Writing, and Math. It is accepted by universities across the world, especially in the U.S.`,
+			content: `The SAT is a globally recognized standardized test used for college admissions, assessing students' readiness in Reading, Writing, and Math. It is accepted by top universities worldwide.`,
 		},
 		why: {
 			heading: 'Why Choose?',
-			content: `It opens doors to top global universities, scholarship opportunities, and builds strong academic and analytical skills essential for future success.`,
+			content: `It opens doors to top global universities, scholarship opportunities, and builds strong analytical skills essential for future academic success.`,
 		},
 		benefits: {
 			heading: 'Benefits of this Course',
-			content: `In-depth practice on Digital SAT format.\nConcept-based learning with targeted drills.\nAI-driven performance tracking.\nExpert strategies for time and stress management.\nReal-time doubt-solving and detailed feedback.`,
+			content: `In-depth practice on Digital SAT format.\nConcept-based learning with targeted drills.\nPerformance tracking and diagnostic analytics.\nExpert strategies for time and stress management.\nReal-time doubt-solving and detailed feedback.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue this course?',
-			content: `Students in grades 10–12 aiming for undergraduate programs in top universities abroad, especially those targeting the U.S., Canada, or global scholarships.`,
+			heading: 'Who Should Pursue this Course?',
+			content: `Students in grades 10–12 aiming for undergraduate programs in top universities abroad, especially those targeting the U.S., Canada, UK, or global scholarships.`,
 		},
 		curriculum: {
 			heading: 'Course Curriculum',
-			content: `🔹 Reading & Writing — Words in Context, Central Ideas, Grammar, Rhetorical Skills.\n
-🔹 Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
+			content: `• Reading & Writing — Words in Context, Central Ideas, Grammar, Rhetorical Skills.\n
+• Math — Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.`,
 		},
 	},
 	{
@@ -60,26 +59,26 @@ const courses = [
 		label: 'ACT',
 		overview: {
 			heading: 'ACT Overview',
-			content: `The ACT is a standardized test used for college admissions in the U.S. and accepted by universities worldwide. It assesses skills in English, Math, Reading, and Science Reasoning, with an optional Writing section.`,
+			content: `The ACT is a standardized test used for college admissions in the U.S. and accepted by universities worldwide. It assesses skills in English, Math, Reading, and Science Reasoning.`,
 		},
 		why: {
 			heading: 'Why Choose?',
-			content: `The ACT suits students who prefer straightforward questions and strong time management. It offers broader content coverage and includes a Science section, making it ideal for STEM-focused students.`,
+			content: `The ACT suits students who prefer straightforward questions and strong time management. It offers broader content coverage and includes a Science section.`,
 		},
 		benefits: {
 			heading: 'Benefits of this Course',
 			content: `Covers all four core sections plus optional writing.\nEmphasis on speed, accuracy, and time-saving techniques.\nScience reasoning strategies unique to ACT.\nFull-length practice tests simulating real exam conditions.\nPersonalized performance analysis and feedback.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue this course?',
-			content: `Students in grades 10–12 aiming to study in the U.S. or globally, especially those with strengths in science, fast-paced environments, or seeking an alternative to the SAT.`,
+			heading: 'Who Should Pursue this Course?',
+			content: `Students in grades 10–12 aiming to study in the U.S. or globally, especially those with strengths in science or fast-paced problem solving.`,
 		},
 		curriculum: {
 			heading: 'Course Curriculum',
-			content: `🔹 English — Grammar, punctuation, sentence structure, rhetorical skills.\n
-🔹 Math — Algebra, Geometry, Trigonometry, Elementary Statistics.\n
-🔹 Reading — Comprehension across prose, humanities, social sciences, and fiction.\n
-🔹 Science — Graph interpretation, experimental analysis, scientific reasoning.`,
+			content: `• English — Grammar, punctuation, sentence structure, rhetorical skills.\n
+• Math — Algebra, Geometry, Trigonometry, Elementary Statistics.\n
+• Reading — Comprehension across prose, humanities, social sciences, and fiction.\n
+• Science — Graph interpretation, experimental analysis, scientific reasoning.`,
 		},
 	},
 	{
@@ -87,7 +86,7 @@ const courses = [
 		label: 'IELTS',
 		overview: {
 			heading: 'IELTS Overview',
-			content: `The IELTS (International English Language Testing System) is an English proficiency test required by universities, employers, and immigration authorities in English-speaking countries like the UK, Canada, Australia, and New Zealand.`,
+			content: `The IELTS is an English proficiency test required by universities, employers, and immigration authorities in English-speaking countries like the UK, Canada, Australia, and New Zealand.`,
 		},
 		why: {
 			heading: 'Why Choose?',
@@ -98,15 +97,15 @@ const courses = [
 			content: `Comprehensive practice for Academic and General Training modules.\nPersonalized feedback on speaking and writing.\nVocabulary-building and grammar correction sessions.\nFull-length mock tests with scoring and analysis.\nTips to manage time and improve fluency.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue this course?',
-			content: `Students, professionals, or immigrants applying for higher education, job opportunities, or PR in countries like the UK, Australia, or Canada.`,
+			heading: 'Who Should Pursue this Course?',
+			content: `Students or professionals applying for higher education or job opportunities in countries like the UK, Australia, or Canada.`,
 		},
 		curriculum: {
 			heading: 'Course Curriculum',
-			content: `🔹 Listening — Practice across 4 sections with multiple accents.\n
-🔹 Reading — Skimming, scanning, main idea identification.\n
-🔹 Writing — Task 1: Reports or Letters; Task 2: Essays.\n
-🔹 Speaking — Interview, cue card, and follow-up practice.`,
+			content: `• Listening — Practice across 4 sections with multiple accents.\n
+• Reading — Skimming, scanning, main idea identification.\n
+• Writing — Task 1: Reports or Letters; Task 2: Essays.\n
+• Speaking — Interview, cue card, and follow-up practice.`,
 		},
 	},
 	{
@@ -114,226 +113,109 @@ const courses = [
 		label: 'TOEFL',
 		overview: {
 			heading: 'TOEFL Overview',
-			content: `The TOEFL (Test of English as a Foreign Language) is a computer-based test accepted by universities and institutions worldwide, especially in the U.S. and Canada, to assess academic English proficiency.`,
+			content: `The TOEFL is a computer-based test accepted by universities and institutions worldwide, especially in the U.S. and Canada, to assess academic English proficiency.`,
 		},
 		why: {
 			heading: 'Why Choose?',
-			content: `TOEFL focuses on academic language and integrated skills, making it ideal for university readiness. It is preferred by U.S. institutions and has a structured online format.`,
+			content: `TOEFL focuses on academic language and integrated skills, making it ideal for university readiness. It has a structured online format.`,
 		},
 		benefits: {
 			heading: 'Benefits of this Course',
-			content: `Training in integrated tasks (Reading + Speaking/Writing).\nPractice in academic listening and note-taking.\nAI-based speaking evaluations and writing reviews.\nReal-time mock test simulations.\nStrategic tips for navigating online format.`,
+			content: `Training in integrated tasks (Reading + Speaking/Writing).\nPractice in academic listening and note-taking.\nSpeaking evaluations and writing reviews.\nReal-time mock test simulations.\nStrategic tips for navigating online format.`,
 		},
 		audience: {
-			heading: 'Who Should Pursue this course?',
-			content: `Students applying to U.S. and Canadian universities or seeking scholarships, especially where TOEFL is the preferred English language test.`,
+			heading: 'Who Should Pursue this Course?',
+			content: `Students applying to U.S. and Canadian universities or seeking scholarships where TOEFL is accepted.`,
 		},
 		curriculum: {
 			heading: 'Course Curriculum',
-			content: `🔹 Reading — Academic texts, vocabulary-based and inference questions.\n
-🔹 Listening — Lectures and conversations from campus contexts.\n
-🔹 Speaking — 4 integrated and independent tasks.\n
-🔹 Writing — Summarizing listening + reading, and opinion essays.`,
+			content: `• Reading — Academic texts, vocabulary-based and inference questions.\n
+• Listening — Lectures and conversations from campus contexts.\n
+• Speaking — Integrated and independent tasks.\n
+• Writing — Summarizing listening + reading, and opinion essays.`,
 		},
 	},
 ];
 
-// Variants for fade word-by-word animations
-const lineVariants = {
-	hidden: { opacity: 0, y: -5 },
-	visible: (i) => ({
-		opacity: 1,
-		y: 0,
-		transition: {
-			delay: i * 0.4,
-			duration: 0.45,
-			ease: 'easeInOut',
-		},
-	}),
-};
-
-const wordVariants = {
-	hidden: { opacity: 0 },
-	visible: (i) => ({
-		opacity: 1,
-		transition: {
-			delay: i * 0.06,
-			duration: 0.07,
-		},
-	}),
-};
-
-const AnimatedContent = ({ heading, content }) => {
-    const lines = content.split('\n').map((line) => line.trim()).filter(Boolean);
-
-    return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="space-y-6 py-3" // <-- Increased vertical spacing between sections
-        >
-            <h3 className="flex items-center gap-3 text-2xl font-bold text-g1 mb-4"> {/* <-- Increased bottom margin */}
-                <img
-                    src="/assets/icons/square-bullet.svg"
-                    alt=""
-                    className="h-7 w-7"
-                    aria-hidden="true"
-                />
-                {heading}
-            </h3>
-            {lines.map((line, i) => (
-                <motion.div
-                    key={i}
-                    custom={i}
-                    variants={lineVariants}
-                    className="overflow-hidden text-g2 text-base leading-relaxed mb-2" // <-- Added bottom margin
-                >
-                    {line.split(' ').map((word, j) => (
-                        <motion.span
-                            key={j}
-                            custom={j}
-                            variants={wordVariants}
-                            className="inline-block mr-1"
-                        >
-                            {word}
-                        </motion.span>
-                    ))}
-                </motion.div>
-            ))}
-        </motion.div>
-    );
-};
-
 const CoursesDetails = ({ selectedCourseKey }) => {
 	const [active, setActive] = useState(0);
 
-	// Track page view & tab change
 	useEffect(() => {
 		if (selectedCourseKey) {
 			const idx = courses.findIndex(
 				(c) => c.key.toLowerCase() === selectedCourseKey.toLowerCase()
 			);
 			if (idx !== -1) setActive(idx);
-			// Track via analytics (page landed with key)
-			if (analytics) logEvent(analytics, "courses_page_view", { course: selectedCourseKey });
-			if (db) {
-				addDoc(collection(db, "user_events"), {
-					event: "courses_page_view",
-					course: selectedCourseKey,
-					user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
-					timestamp: serverTimestamp(),
-					path: typeof window !== "undefined" ? window.location.pathname : "server",
-				});
-			}
-		} else {
-			if (analytics) logEvent(analytics, "courses_page_view", { course: courses[active].key });
-			if (db) {
-				addDoc(collection(db, "user_events"), {
-					event: "courses_page_view",
-					course: courses[active].key,
-					user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
-					timestamp: serverTimestamp(),
-					path: typeof window !== "undefined" ? window.location.pathname : "server",
-				});
-			}
 		}
-		// Only run on mount and selectedCourseKey change
-		// eslint-disable-next-line
 	}, [selectedCourseKey]);
 
-	// Tab click tracker
-	const handleTabClick = (idx, course) => {
-		setActive(idx);
-		if (analytics) logEvent(analytics, "course_tab_switch", { course: course.key });
-		if (db) {
-			addDoc(collection(db, "user_events"), {
-				event: "course_tab_switch",
-				course: course.key,
-				user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
-				timestamp: serverTimestamp(),
-				path: typeof window !== "undefined" ? window.location.pathname : "server",
-			});
-		}
-	};
-
-	// Enroll click tracker
 	const activeCourse = courses[active];
-	const handleEnrollClick = async () => {
-		if (analytics) logEvent(analytics, "course_enroll_click", { course: activeCourse.key });
-		if (db) {
-			await addDoc(collection(db, "user_events"), {
-				event: "course_enroll_click",
-				course: activeCourse.key,
-				user: typeof window !== "undefined" ? localStorage.getItem("userEmail") || "guest" : "server",
-				timestamp: serverTimestamp(),
-				path: typeof window !== "undefined" ? window.location.pathname : "server",
-			});
-		}
-		// Scroll to enroll form or route as needed
-		window.location.hash = "https://prepsmart.mentorkrish.in";
-	};
 
 	return (
-		<section className="bg-w2 pt-12 pb-16 px-6 relative min-h-[60vh]">
-			{/* Course Buttons */}
-			<div className="flex justify-center mb-10 flex-wrap gap-5">
-				{courses.map((course, idx) => (
-					<button
-						key={course.key}
-						onClick={() => handleTabClick(idx, course)}
-						className={`rounded-full font-semibold text-base px-8 py-2 border transition-colors duration-300 min-w-[112px] whitespace-nowrap ${
-							active === idx
-								? 'bg-g1 text-w1 border-g1 shadow'
-								: 'bg-g2/30 text-g2 border-g2/50 opacity-80 hover:opacity-100'
-						}`}
-						aria-pressed={active === idx}
-					>
-						{course.label}
-					</button>
-				))}
-			</div>
-			{/* Course Content Sections with typewriter animations */}
-			<div className="max-w-6xl mx-auto space-y-12"> {/* <-- Increased spacing between content blocks */}
-				<AnimatePresence mode="wait" initial={false}>
-					<motion.div
-						key={activeCourse.key}
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.5 }}
-					>
-						<AnimatedContent
-							heading={activeCourse.overview.heading}
-							content={activeCourse.overview.content}
-						/>
-						<AnimatedContent
-							heading={activeCourse.why.heading}
-							content={activeCourse.why.content}
-						/>
-						<AnimatedContent
-							heading={activeCourse.benefits.heading}
-							content={activeCourse.benefits.content}
-						/>
-						<AnimatedContent
-							heading={activeCourse.audience.heading}
-							content={activeCourse.audience.content}
-						/>
-						<AnimatedContent
-							heading={activeCourse.curriculum.heading}
-							content={activeCourse.curriculum.content}
-						/>
-						{/* Enroll Button */}
-						<div className="mt-10 flex justify-center">
-							<button
-								onClick={handleEnrollClick}
-								className="bg-r1 text-w1 font-semibold rounded-full px-10 py-4 shadow-lg hover:bg-r2 transition-colors"
-							>
-								Enroll Now
-							</button>
+		<section className="bg-slate-50 py-16 px-4 md:px-8 border-t border-slate-200">
+			<div className="max-w-6xl mx-auto space-y-10">
+				{/* Course Filter Tabs */}
+				<div className="flex justify-center flex-wrap gap-2">
+					{courses.map((course, idx) => (
+						<button
+							key={course.key}
+							onClick={() => setActive(idx)}
+							className={`rounded-lg font-bold text-xs uppercase tracking-wider px-6 py-2.5 transition-all ${
+								active === idx
+									? 'bg-slate-900 text-white shadow-sm'
+									: 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
+							}`}
+						>
+							{course.label}
+						</button>
+					))}
+				</div>
+
+				{/* Course Content Details */}
+				<div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-slate-200 space-y-8">
+					<div>
+						<span className="bg-red-50 text-red-700 text-xs font-extrabold px-3 py-1 rounded uppercase tracking-wider">
+							{activeCourse.label} Program Overview
+						</span>
+						<h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+							{activeCourse.overview.heading}
+						</h2>
+						<p className="text-slate-600 text-sm md:text-base leading-relaxed mt-3">
+							{activeCourse.overview.content}
+						</p>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div className="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-2">
+							<h3 className="text-base font-bold text-slate-900">{activeCourse.why.heading}</h3>
+							<p className="text-slate-600 text-xs leading-relaxed">{activeCourse.why.content}</p>
 						</div>
-					</motion.div>
-				</AnimatePresence>
+
+						<div className="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-2">
+							<h3 className="text-base font-bold text-slate-900">{activeCourse.audience.heading}</h3>
+							<p className="text-slate-600 text-xs leading-relaxed">{activeCourse.audience.content}</p>
+						</div>
+					</div>
+
+					<div className="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-3">
+						<h3 className="text-base font-bold text-slate-900">{activeCourse.benefits.heading}</h3>
+						<p className="text-slate-600 text-xs leading-relaxed whitespace-pre-line">{activeCourse.benefits.content}</p>
+					</div>
+
+					<div className="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-3">
+						<h3 className="text-base font-bold text-slate-900">{activeCourse.curriculum.heading}</h3>
+						<p className="text-slate-600 text-xs leading-relaxed whitespace-pre-line">{activeCourse.curriculum.content}</p>
+					</div>
+
+					<div className="pt-4 flex justify-center">
+						<a
+							href="/trial"
+							className="bg-red-700 hover:bg-red-800 text-white font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg shadow-sm transition"
+						>
+							Book Free Trial Session for {activeCourse.label}
+						</a>
+					</div>
+				</div>
 			</div>
 		</section>
 	);

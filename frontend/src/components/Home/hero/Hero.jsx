@@ -34,7 +34,7 @@ const Hero = () => {
         console.error("Failed to log event to Firestore", e);
       }
     }
-    router.push("/register");
+    router.push("/trial");
   };
 
   return (
@@ -111,7 +111,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }}
           >
             <span className="relative z-10 transition-colors duration-300 tracking-wide">
-              Register Now
+              Book Free Trial
             </span>
           </motion.button>
         </motion.div>

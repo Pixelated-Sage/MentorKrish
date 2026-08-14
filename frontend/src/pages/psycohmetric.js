@@ -1,5 +1,5 @@
-import Psycohmetric from '../container/psycohmetric'; // ADJUST IF YOUR src/ IS AT ROOT
+import Psychometric from '../container/psycohmetric';
 
-export default function psycohmetricPage() {
-  return <Psycohmetric />;
+export default function PsychometricPage() {
+  return <Psychometric />;
 }
