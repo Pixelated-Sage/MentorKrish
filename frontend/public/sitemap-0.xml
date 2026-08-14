@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://mentorkrish.in</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/admin</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/blogs</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/career</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/contact</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/courses</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/forgot-password</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/gallery</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/login</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/profile</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/psycohmetric</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/register</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/reset-password</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/trial</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://mentorkrish.in/verifyotp</loc><lastmod>2026-08-14T19:54:55.761Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/admin</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/blogs</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/career</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/contact</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/courses</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/forgot-password</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/gallery</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/login</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/profile</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/psycohmetric</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/register</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/reset-password</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/trial</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://mentorkrish.in/verifyotp</loc><lastmod>2026-08-14T20:13:39.820Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>
